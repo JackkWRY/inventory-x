@@ -3,7 +3,24 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
-  modules: ["@pinia/nuxt", "@vueuse/nuxt"],
+  modules: ["@pinia/nuxt", "@vueuse/nuxt", "@nuxtjs/i18n"],
+
+  // @ts-ignore - i18n module configuration
+  i18n: {
+    locales: [
+      { code: 'en', name: 'English', files: ['locales/en.json'] },
+      { code: 'th', name: 'ไทย', files: ['locales/th.json'] }
+    ],
+    defaultLocale: 'en',
+    strategy: 'no_prefix',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root'
+    }
+  },
+
+
 
   runtimeConfig: {
     public: {

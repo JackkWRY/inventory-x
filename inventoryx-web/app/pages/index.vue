@@ -1,24 +1,27 @@
 <template>
   <div class="home">
     <header class="home__header">
-      <h1 class="home__title">InventoryX</h1>
-      <p class="home__subtitle">Stock Management System</p>
+      <h1 class="home__title">{{ $t('common.appName') }}</h1>
+      <p class="home__subtitle">{{ $t('common.welcome') }}</p>
+      <div class="home__lang-switcher">
+        <LanguageSwitcher />
+      </div>
     </header>
 
     <nav class="home__nav">
       <NuxtLink to="/inventory" class="nav-card">
-        <h2>Inventory</h2>
-        <p>Manage stock levels and movements</p>
+        <h2>{{ $t('navigation.inventory') }}</h2>
+        <p>{{ $t('inventory.subtitle') }}</p>
       </NuxtLink>
 
       <NuxtLink to="/products" class="nav-card">
-        <h2>Products</h2>
-        <p>Product catalog and SKU management</p>
+        <h2>{{ $t('navigation.products') }}</h2>
+        <p>{{ $t('products.subtitle') }}</p>
       </NuxtLink>
 
       <NuxtLink to="/warehouses" class="nav-card">
-        <h2>Warehouses</h2>
-        <p>Warehouse structure and locations</p>
+        <h2>{{ $t('navigation.warehouses') }}</h2>
+        <p>{{ $t('warehouses.subtitle') }}</p>
       </NuxtLink>
     </nav>
   </div>
@@ -48,6 +51,13 @@
   font-size: 1.25rem;
   color: #5f6368;
 }
+
+.home__lang-switcher {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
 
 .home__nav {
   display: grid;
