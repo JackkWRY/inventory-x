@@ -1,13 +1,37 @@
+# ============================================================================
+# Application Configuration - Main Profile
+# ============================================================================
+# Base configuration for Inventory Management Service
+#
+# PROFILE STRATEGY:
+# - application.yml: Base settings (this file)
+# - application-dev.yml: Development overrides
+# - application-prod.yml: Production overrides
+#
+# ACTIVATION: spring.profiles.active=dev|prod
+#
+# SECURITY: Use environment variables for sensitive values in production
+# ============================================================================
+
 spring:
   application:
     name: inventoryx-service
 
+  # --------------------------------------------------------------------------
+  # Database Configuration
+  # --------------------------------------------------------------------------
+  # CLEAN ARCHITECTURE: Infrastructure layer (domain is database-agnostic)
+  # SECURITY: Use env vars in production (SPRING_DATASOURCE_URL, etc.)
   datasource:
     url: jdbc:postgresql://localhost:5432/stockmanagement
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
 
+  # --------------------------------------------------------------------------
+  # JPA / Hibernate
+  # --------------------------------------------------------------------------
+  # DDL_AUTO: validate (Flyway manages schema, Hibernate only validates)
   jpa:
     hibernate:
       ddl-auto: validate
@@ -18,17 +42,31 @@ spring:
         format_sql: true
         default_schema: inventory
 
+  # --------------------------------------------------------------------------
+  # Flyway Database Migration
+  # --------------------------------------------------------------------------
+  # Manages schema evolution through versioned SQL scripts
+  # Naming: V1__description.sql, V2__description.sql, etc.
   flyway:
     enabled: true
     schemas: inventory
     baseline-on-migrate: true
     locations: classpath:db/migration
 
+# ============================================================================
+# Server Configuration
+# ============================================================================
+# Embedded Tomcat with API versioning
 server:
   port: 8081
   servlet:
-    context-path: /api/v1
+    context-path: /api/v1 # All endpoints under /api/v1
 
+# ============================================================================
+# Spring Boot Actuator (Monitoring)
+# ============================================================================
+# Health checks and metrics
+# PRODUCTION: Secure these endpoints (Spring Security, API Gateway)
 management:
   endpoints:
     web:
@@ -36,10 +74,29 @@ management:
         include: health,info,metrics
   endpoint:
     health:
-      show-details: always
+      show-details: always # PRODUCTION: Set to 'when-authorized'
 
+# ============================================================================
+# Logging
+# ============================================================================
+# LOG LEVELS: TRACE < DEBUG < INFO < WARN < ERROR
 logging:
   level:
-    com.stockmanagement: DEBUG
-    org.springframework.web: INFO
-    org.hibernate: INFO
+    com.stockmanagement: DEBUG # Our code (detailed)
+    org.springframework.web: INFO # Spring framework
+    org.hibernate: INFO # JPA/Hibernate
+
+# ============================================================================
+# Configuration Complete
+# ============================================================================
+# Provides:
+# ✓ Database connection (PostgreSQL)
+# ✓ JPA/Hibernate setup
+# ✓ Flyway migrations
+# ✓ Server port and API versioning
+# ✓ Actuator endpoints
+# ✓ Logging levels
+#
+# Next: Start PostgreSQL and run: mvn spring-boot:run
+# Health check: curl http://localhost:8081/api/v1/actuator/health
+# ============================================================================
