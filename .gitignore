@@ -1,0 +1,173 @@
+# ========================================
+# Root .gitignore for InventoryX Project
+# ========================================
+
+# ========================================
+# Operating System Files
+# ========================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ========================================
+# IDE & Editor Files
+# ========================================
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+
+# NetBeans
+nbproject/
+nbbuild/
+dist/
+nbdist/
+
+# ========================================
+# Backend (Spring Boot / Java)
+# ========================================
+
+# Maven
+inventoryx-service/target/
+inventoryx-service/.mvn/wrapper/maven-wrapper.jar
+inventoryx-service/pom.xml.tag
+inventoryx-service/pom.xml.releaseBackup
+inventoryx-service/pom.xml.versionsBackup
+inventoryx-service/pom.xml.next
+inventoryx-service/release.properties
+inventoryx-service/dependency-reduced-pom.xml
+inventoryx-service/buildNumber.properties
+inventoryx-service/.mvn/timing.properties
+
+# Gradle (if used)
+.gradle/
+build/
+
+# Spring Boot
+spring-boot-devtools.properties
+
+# Logs
+*.log
+logs/
+
+# ========================================
+# Frontend (Nuxt / Node.js)
+# ========================================
+
+# Dependencies
+inventoryx-web/node_modules/
+inventoryx-web/.pnp
+inventoryx-web/.pnp.js
+
+# Nuxt
+inventoryx-web/.nuxt/
+inventoryx-web/.output/
+inventoryx-web/dist/
+
+# Environment variables
+inventoryx-web/.env
+inventoryx-web/.env.local
+inventoryx-web/.env.*.local
+
+# Testing
+inventoryx-web/coverage/
+inventoryx-web/.nyc_output/
+
+# Misc
+inventoryx-web/.cache/
+inventoryx-web/.temp/
+inventoryx-web/.tmp/
+
+# ========================================
+# Database
+# ========================================
+
+# PostgreSQL
+*.sql.backup
+*.dump
+
+# ========================================
+# Docker
+# ========================================
+
+# Docker volumes
+docker-compose.override.yml
+.docker/
+
+# ========================================
+# Sensitive Information
+# ========================================
+
+# Environment variables (root level)
+.env
+.env.local
+.env.*.local
+
+# Secrets
+secrets/
+*.key
+*.pem
+*.p12
+*.jks
+
+# ========================================
+# Build Artifacts
+# ========================================
+
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# ========================================
+# Temporary Files
+# ========================================
+
+*.swp
+*.swo
+*~
+.tmp/
+temp/
+
+# ========================================
+# Documentation (generated)
+# ========================================
+
+# API documentation (if auto-generated)
+api-docs/
+
+# ========================================
+# Misc
+# ========================================
+
+# Package manager lock files (optional - comment out if you want to commit them)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
