@@ -46,8 +46,16 @@ public class StockRepositoryImpl implements StockRepository {
         // 1. Convert domain to entity
         StockEntity entity = mapper.toEntity(stock);
 
-        // 2. Save to database
-        StockEntity savedEntity = jpaRepository.save(entity);
+        // 2. Check if this is a new entity (version is null) or existing
+        StockEntity savedEntity;
+        if (stock.getVersion() == null) {
+            // New entity - let JPA generate version
+            entity.setVersion(null);
+            savedEntity = jpaRepository.save(entity);
+        } else {
+            // Existing entity - JPA will handle optimistic locking
+            savedEntity = jpaRepository.save(entity);
+        }
 
         // 3. Convert back to domain
         return mapper.toDomain(savedEntity);

@@ -46,7 +46,7 @@ public class StockEntityMapper {
         entity.setUnitOfMeasure(stock.getUnitOfMeasure());
         entity.setVersion(stock.getVersion());
         entity.setCreatedAt(stock.getCreatedAt());
-        entity.setUpdatedAt(stock.getUpdatedAt());
+        entity.setUpdatedAt(java.time.Instant.now()); // Always update timestamp
 
         return entity;
     }

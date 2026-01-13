@@ -2,6 +2,7 @@ package com.stockmanagement.inventory.domain.service;
 
 import com.stockmanagement.inventory.domain.model.Stock;
 import com.stockmanagement.inventory.domain.model.valueobject.Quantity;
+import org.springframework.stereotype.Component;
 
 /**
  * ReservationPolicy - Domain service for stock reservation business rules.
@@ -28,6 +29,7 @@ import com.stockmanagement.inventory.domain.model.valueobject.Quantity;
  * @author InventoryX Development Team
  * @since 2026-01-12
  */
+@Component
 public class ReservationPolicy {
 
     /**

@@ -76,7 +76,7 @@ public class Stock {
         Instant now = Instant.now();
         return new Stock(StockId.generate(), sku, locationId,
                 Quantity.zero(), Quantity.zero(), unitOfMeasure,
-                0L, now, now);
+                null, now, now); // version = null for new entities
     }
 
     /**
