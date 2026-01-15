@@ -256,5 +256,11 @@
     "successReserve": "Successfully reserved {count} items",
     "successAdjust": "Successfully adjusted {count} items",
     "errorPartial": "{success} succeeded, {failed} failed"
+  },
+  "chart": {
+    "title": "Stock Level History",
+    "stockLevel": "Stock Level",
+    "now": "Now",
+    "noData": "No movement history available"
   }
 }

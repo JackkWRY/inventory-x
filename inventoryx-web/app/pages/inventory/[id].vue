@@ -230,6 +230,13 @@ const handleAdjustSubmit = async (command: AdjustStockCommand) => {
         </div>
       </div>
 
+      <!-- Stock History Chart -->
+      <InventoryStockHistoryChart
+        :movements="movements"
+        :current-quantity="parseFloat(stock.availableQuantity)"
+        :filter-days="30"
+      />
+
       <!-- Movement History -->
       <div class="movements-section">
         <h2 class="movements-section__title">{{ t('inventory.movementHistory') }}</h2>

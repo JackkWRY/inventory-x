@@ -256,5 +256,11 @@
     "successReserve": "จองสำเร็จ {count} รายการ",
     "successAdjust": "ปรับปรุงสำเร็จ {count} รายการ",
     "errorPartial": "สำเร็จ {success} รายการ, ล้มเหลว {failed} รายการ"
+  },
+  "chart": {
+    "title": "ประวัติระดับสต็อก",
+    "stockLevel": "ระดับสต็อก",
+    "now": "ปัจจุบัน",
+    "noData": "ไม่มีประวัติการเคลื่อนไหว"
   }
 }
