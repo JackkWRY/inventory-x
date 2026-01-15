@@ -98,7 +98,10 @@
     "statusAll": "ทั้งหมด",
     "statusNormal": "มีสินค้า",
     "statusLow": "สต็อกต่ำ",
-    "statusOut": "หมด"
+    "statusOut": "หมด",
+    "adjustQuantity": "จำนวนที่ปรับ",
+    "adjustQuantityHint": "+/- ค่าที่ต้องการเพิ่มหรือลดจากจำนวนปัจจุบัน",
+    "reasonPlaceholder": "ระบุเหตุผลในการปรับปรุง"
   },
   "movementTypes": {
     "RECEIPT": "การรับเข้า",
@@ -235,5 +238,23 @@
   "theme": {
     "switchLight": "เปลี่ยนเป็นโหมดสว่าง",
     "switchDark": "เปลี่ยนเป็นโหมดมืด"
+  },
+  "bulk": {
+    "selectAll": "เลือกทั้งหมด",
+    "selected": "รายการที่เลือก",
+    "clearSelection": "ล้าง",
+    "reserveSelected": "จองที่เลือก",
+    "adjustSelected": "ปรับปรุงที่เลือก",
+    "confirmTitle": "ดำเนินการหลายรายการ",
+    "confirmReserveMessage": "จองสต็อก {count} รายการที่เลือก?",
+    "confirmAdjustMessage": "ปรับปรุงสต็อก {count} รายการที่เลือก?",
+    "reserveTitle": "จองหลายรายการ",
+    "adjustTitle": "ปรับปรุงหลายรายการ",
+    "itemsSelected": "รายการที่เลือก",
+    "confirmReserve": "จองทั้งหมด",
+    "confirmAdjust": "ปรับปรุงทั้งหมด",
+    "successReserve": "จองสำเร็จ {count} รายการ",
+    "successAdjust": "ปรับปรุงสำเร็จ {count} รายการ",
+    "errorPartial": "สำเร็จ {success} รายการ, ล้มเหลว {failed} รายการ"
   }
 }

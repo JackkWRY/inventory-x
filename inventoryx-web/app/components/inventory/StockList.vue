@@ -45,6 +45,10 @@ const emit = defineEmits<{
   adjust: [stock: Stock];
   /** Triggered when user clicks view details for a stock */
   view: [stock: Stock];
+  /** Triggered when bulk reserve is requested */
+  bulkReserve: [stocks: Stock[]];
+  /** Triggered when bulk adjust is requested */
+  bulkAdjust: [stocks: Stock[]];
 }>();
 
 // Search state
@@ -54,6 +58,9 @@ const stockStatus = ref("all"); // 'all' | 'low' | 'normal' | 'out'
 
 // Refs for keyboard shortcuts
 const skuInputRef = ref<HTMLInputElement | null>(null);
+
+// Selection state for bulk operations
+const selectedIds = ref<Set<string>>(new Set());
 
 // Configuration
 const LOW_STOCK_THRESHOLD = 10;
@@ -114,9 +121,58 @@ const focusSearch = () => {
   skuInputRef.value?.focus();
 };
 
+// Selection computed properties
+const isAllSelected = computed(() => {
+  if (filteredStocks.value.length === 0) return false;
+  return filteredStocks.value.every((s) => selectedIds.value.has(s.id));
+});
+
+const hasSelection = computed(() => selectedIds.value.size > 0);
+
+const selectedStocks = computed(() => {
+  return filteredStocks.value.filter((s) => selectedIds.value.has(s.id));
+});
+
+// Selection methods
+const toggleSelectAll = () => {
+  if (isAllSelected.value) {
+    // Deselect all filtered stocks
+    filteredStocks.value.forEach((s) => selectedIds.value.delete(s.id));
+  } else {
+    // Select all filtered stocks
+    filteredStocks.value.forEach((s) => selectedIds.value.add(s.id));
+  }
+};
+
+const toggleSelect = (id: string) => {
+  if (selectedIds.value.has(id)) {
+    selectedIds.value.delete(id);
+  } else {
+    selectedIds.value.add(id);
+  }
+};
+
+const clearSelection = () => {
+  selectedIds.value.clear();
+};
+
+// Bulk actions
+const handleBulkReserve = () => {
+  if (selectedStocks.value.length > 0) {
+    emit("bulkReserve", selectedStocks.value);
+  }
+};
+
+const handleBulkAdjust = () => {
+  if (selectedStocks.value.length > 0) {
+    emit("bulkAdjust", selectedStocks.value);
+  }
+};
+
 // Expose methods for parent components
 defineExpose({
   focusSearch,
+  clearSelection,
 });
 </script>
 
@@ -184,10 +240,43 @@ defineExpose({
       <p v-else>{{ t("messages.noData") }}</p>
     </div>
 
+    <!-- Bulk Action Bar (shows when items selected) -->
+    <div v-if="hasSelection && !loading" class="bulk-action-bar">
+      <div class="bulk-action-bar__info">
+        <span class="bulk-action-bar__count">
+          {{ selectedIds.size }} {{ t("bulk.selected") }}
+        </span>
+        <button class="btn btn--ghost btn--small" @click="clearSelection">
+          {{ t("bulk.clearSelection") }}
+        </button>
+      </div>
+      <div class="bulk-action-bar__actions">
+        <button
+          class="btn btn--secondary btn--small"
+          @click="handleBulkReserve"
+        >
+          📦 {{ t("bulk.reserveSelected") }}
+        </button>
+        <button class="btn btn--warning btn--small" @click="handleBulkAdjust">
+          ✏️ {{ t("bulk.adjustSelected") }}
+        </button>
+      </div>
+    </div>
+
     <!-- Stock Table -->
-    <table v-else class="stock-table">
+    <table v-if="!loading && filteredStocks.length > 0" class="stock-table">
       <thead>
         <tr>
+          <th class="checkbox-col">
+            <input
+              type="checkbox"
+              :checked="isAllSelected"
+              :indeterminate="hasSelection && !isAllSelected"
+              @change="toggleSelectAll"
+              :title="t('bulk.selectAll')"
+              class="checkbox"
+            />
+          </th>
           <th>{{ t("inventory.sku") }}</th>
           <th>{{ t("inventory.location") }}</th>
           <th class="text-right">{{ t("inventory.availableQuantity") }}</th>
@@ -197,7 +286,19 @@ defineExpose({
         </tr>
       </thead>
       <tbody>
-        <tr v-for="stock in filteredStocks" :key="stock.id">
+        <tr
+          v-for="stock in filteredStocks"
+          :key="stock.id"
+          :class="{ 'row--selected': selectedIds.has(stock.id) }"
+        >
+          <td class="checkbox-col">
+            <input
+              type="checkbox"
+              :checked="selectedIds.has(stock.id)"
+              @change="toggleSelect(stock.id)"
+              class="checkbox"
+            />
+          </td>
           <td>
             <NuxtLink
               :to="`/inventory/${stock.id}`"
@@ -509,5 +610,61 @@ defineExpose({
   border-radius: 4px;
   color: #6b7280;
   margin-left: 0.25rem;
+}
+
+/* Checkbox column */
+.checkbox-col {
+  width: 40px;
+  text-align: center;
+}
+
+.checkbox {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+/* Selected row */
+.row--selected {
+  background: var(--color-surface-hover) !important;
+}
+
+/* Bulk action bar */
+.bulk-action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--color-primary);
+  color: white;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.bulk-action-bar__info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.bulk-action-bar__count {
+  font-weight: 600;
+}
+
+.bulk-action-bar__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bulk-action-bar .btn--ghost {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.bulk-action-bar .btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 </style>

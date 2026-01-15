@@ -43,8 +43,14 @@ const showConfirmReservationConfirmation = ref(false);
 const pendingAdjustCommand = ref<AdjustStockCommand | null>(null);
 const pendingConfirmCommand = ref<ConfirmReservationCommand | null>(null);
 
+// Bulk action states
+const showBulkDialog = ref(false);
+const bulkActionType = ref<'reserve' | 'adjust'>('reserve');
+const bulkSelectedStocks = ref<Stock[]>([]);
+const bulkLoading = ref(false);
+
 // Component refs
-const stockListRef = ref<{ focusSearch: () => void } | null>(null);
+const stockListRef = ref<{ focusSearch: () => void; clearSelection: () => void } | null>(null);
 
 // Keyboard shortcuts
 useKeyboardShortcuts({
@@ -216,6 +222,73 @@ const handleViewStock = (stock: Stock) => {
   navigateTo(`/inventory/${stock.id}`);
 };
 
+// Bulk action handlers
+const handleBulkReserve = (stocks: Stock[]) => {
+  bulkSelectedStocks.value = stocks;
+  bulkActionType.value = 'reserve';
+  showBulkDialog.value = true;
+};
+
+const handleBulkAdjust = (stocks: Stock[]) => {
+  bulkSelectedStocks.value = stocks;
+  bulkActionType.value = 'adjust';
+  showBulkDialog.value = true;
+};
+
+const handleBulkConfirm = async (quantity: number, reason?: string) => {
+  bulkLoading.value = true;
+  let successCount = 0;
+  let failCount = 0;
+
+  for (const stock of bulkSelectedStocks.value) {
+    try {
+      if (bulkActionType.value === 'reserve') {
+        await store.reserveStock({
+          sku: stock.sku,
+          locationId: stock.locationId,
+          quantity: quantity.toString(),
+          orderId: `BULK-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        });
+      } else {
+        // For adjust, calculate new quantity
+        const currentQty = parseFloat(stock.availableQuantity);
+        const newQty = currentQty + quantity;
+        await store.adjustStock({
+          stockId: stock.id,
+          newQuantity: newQty.toString(),
+          reason: reason || 'Bulk adjustment',
+          performedBy: 'User',
+        });
+      }
+      successCount++;
+    } catch {
+      failCount++;
+    }
+  }
+
+  bulkLoading.value = false;
+  showBulkDialog.value = false;
+
+  // Show result
+  if (failCount === 0) {
+    const msg = bulkActionType.value === 'reserve'
+      ? t('bulk.successReserve', { count: successCount })
+      : t('bulk.successAdjust', { count: successCount });
+    toast.success(msg);
+  } else {
+    toast.warning(t('bulk.errorPartial', { success: successCount, failed: failCount }));
+  }
+
+  // Clear selection and refresh
+  stockListRef.value?.clearSelection();
+  await store.fetchStocksPaged();
+};
+
+const handleBulkCancel = () => {
+  showBulkDialog.value = false;
+  bulkSelectedStocks.value = [];
+};
+
 // Pagination handlers
 const handlePageChange = async (page: number) => {
   await store.changePage(page);
@@ -270,6 +343,8 @@ const handlePageSizeChange = async (size: number) => {
       @confirm="handleOpenConfirmDialog"
       @adjust="handleOpenAdjustDialog"
       @view="handleViewStock"
+      @bulk-reserve="handleBulkReserve"
+      @bulk-adjust="handleBulkAdjust"
     />
 
     <!-- Pagination -->
@@ -355,6 +430,16 @@ const handlePageSizeChange = async (size: number) => {
       :loading="loading"
       @confirm="handleConfirmReservationConfirmed"
       @cancel="handleCancelConfirmReservation"
+    />
+
+    <!-- Bulk Action Dialog -->
+    <InventoryBulkActionDialog
+      v-model="showBulkDialog"
+      :action-type="bulkActionType"
+      :stocks="bulkSelectedStocks"
+      :loading="bulkLoading"
+      @confirm="handleBulkConfirm"
+      @cancel="handleBulkCancel"
     />
   </div>
 </template>

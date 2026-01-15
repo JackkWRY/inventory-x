@@ -98,7 +98,10 @@
     "statusAll": "All",
     "statusNormal": "In Stock",
     "statusLow": "Low Stock",
-    "statusOut": "Out of Stock"
+    "statusOut": "Out of Stock",
+    "adjustQuantity": "Adjust Quantity",
+    "adjustQuantityHint": "+/- value to add or subtract from current quantity",
+    "reasonPlaceholder": "Enter reason for adjustment"
   },
   "movementTypes": {
     "RECEIPT": "Receipt",
@@ -235,5 +238,23 @@
   "theme": {
     "switchLight": "Switch to light mode",
     "switchDark": "Switch to dark mode"
+  },
+  "bulk": {
+    "selectAll": "Select all",
+    "selected": "selected",
+    "clearSelection": "Clear",
+    "reserveSelected": "Reserve Selected",
+    "adjustSelected": "Adjust Selected",
+    "confirmTitle": "Bulk Action",
+    "confirmReserveMessage": "Reserve stock for {count} selected items?",
+    "confirmAdjustMessage": "Adjust stock for {count} selected items?",
+    "reserveTitle": "Bulk Reserve",
+    "adjustTitle": "Bulk Adjust",
+    "itemsSelected": "items selected",
+    "confirmReserve": "Reserve All",
+    "confirmAdjust": "Adjust All",
+    "successReserve": "Successfully reserved {count} items",
+    "successAdjust": "Successfully adjusted {count} items",
+    "errorPartial": "{success} succeeded, {failed} failed"
   }
 }
