@@ -1,72 +1,41 @@
-# InventoryX - Stock Management System
+# InventoryX
 
-Modern Stock Management System built with Domain-Driven Design (DDD) principles, designed to scale into a full E-Commerce platform.
+> Modern Stock Management System built with **Domain-Driven Design** and **Clean Architecture**
 
-## 🏗️ Architecture
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.1-green)](https://spring.io/projects/spring-boot)
+[![Nuxt](https://img.shields.io/badge/Nuxt-4.2.2-00DC82)](https://nuxt.com)
+[![Java](https://img.shields.io/badge/Java-25-orange)](https://openjdk.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
-This project implements **Domain-Driven Design** with **Clean Architecture** principles, featuring:
+## ✨ Features
 
-- **Bounded Contexts**: Inventory, Product Catalog, Warehouse Management
-- **Event-Driven Communication**: Ready for future E-Commerce integration
-- **Microservices-Ready**: Each domain can be deployed independently
-- **CQRS Pattern**: Optimized read/write models
+- 📦 **Stock Management** - Track inventory levels across locations
+- 📊 **Dashboard** - KPI cards, low stock alerts, recent movements
+- 🔍 **Search & Filter** - Find stocks by SKU, location, status
+- 🌙 **Dark Mode** - Toggle between light/dark themes
+- ⌨️ **Keyboard Shortcuts** - `/` to search, `Esc` to close
+- 🌐 **i18n** - English & Thai language support
+- 📱 **Responsive** - Works on desktop and mobile
 
 ## 🛠️ Tech Stack
 
-### Backend
+| Layer    | Technology                       |
+| -------- | -------------------------------- |
+| Backend  | Spring Boot 4.0.1, Java 25, JPA  |
+| Frontend | Nuxt 4, Vue 3, Pinia, TypeScript |
+| Database | PostgreSQL 16, Flyway migrations |
 
-- **Spring Boot 4.0.1** (Java 25)
-- **PostgreSQL 16** - Database
-- **Flyway** - Database migrations
-- **Spring Security** - Authentication & Authorization
-- **Lombok** - Reduce boilerplate code
-
-### Frontend
-
-- **Nuxt 4.2.2** (Vue 3.5.26)
-- **Pinia** - State management
-- **TypeScript** - Type safety
-- **VueUse** - Utility composables
-- **Axios** - HTTP client
-
-### Infrastructure
-
-- **Docker** - Containerization
-- **PostgreSQL** - Primary database
-
-## 📁 Project Structure
-
-```
-inventoryx/
-├── inventoryx-service/          # Backend (Spring Boot)
-│   └── src/main/java/com/stockmanagement/inventory/
-│       ├── domain/              # Domain Layer (Aggregates, Value Objects)
-│       ├── application/         # Application Layer (Use Cases)
-│       ├── infrastructure/      # Infrastructure Layer (Persistence, Config)
-│       └── presentation/        # Presentation Layer (REST Controllers)
-│
-└── inventoryx-web/              # Frontend (Nuxt 4)
-    └── app/
-        ├── components/          # Vue Components (Domain-aligned)
-        ├── composables/         # Composables & API clients
-        ├── stores/              # Pinia Stores (State Management)
-        ├── pages/               # Pages (Auto-routing)
-        └── types/               # TypeScript Types
-```
-
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- **Java 25+**
-- **Node.js 18+**
-- **Docker** (for PostgreSQL)
-- **Maven 3.9+**
-- **npm 9+**
+- Java 25+
+- Node.js 18+
+- Docker
+- Maven 3.9+
 
-### Backend Setup
-
-1. **Start PostgreSQL**
+### 1. Start Database
 
 ```bash
 docker run --name postgres-inventoryx \
@@ -77,108 +46,72 @@ docker run --name postgres-inventoryx \
   -d postgres:16
 ```
 
-2. **Run Backend**
+### 2. Run Backend
 
 ```bash
 cd inventoryx-service
 ./mvnw spring-boot:run
 ```
 
-Backend will be available at: `http://localhost:8081/api/v1`
+> Backend: http://localhost:8081/api/v1
 
-### Frontend Setup
-
-1. **Install Dependencies**
+### 3. Run Frontend
 
 ```bash
 cd inventoryx-web
 npm install
-```
-
-2. **Run Development Server**
-
-```bash
 npm run dev
 ```
 
-Frontend will be available at: `http://localhost:3000`
+> Frontend: http://localhost:3000
 
-## 📊 Current Status
+## 📁 Project Structure
 
-### ✅ Completed
+```
+inventoryx/
+├── inventoryx-service/     # Spring Boot Backend
+│   └── src/main/java/.../
+│       ├── domain/         # Aggregates, Value Objects
+│       ├── application/    # Use Cases, Commands
+│       ├── infrastructure/ # Repositories, Config
+│       └── presentation/   # REST Controllers
+│
+└── inventoryx-web/         # Nuxt 4 Frontend
+    └── app/
+        ├── components/     # Vue Components
+        ├── composables/    # useTheme, useKeyboardShortcuts
+        ├── stores/         # Pinia State Management
+        └── pages/          # Auto-routing Pages
+```
 
-- [x] Project architecture design (DDD + Clean Architecture)
-- [x] Backend project setup (Spring Boot 4 + Java 25)
-- [x] Frontend project setup (Nuxt 4 + Vue 3)
-- [x] Database schema design (Flyway migrations)
-- [x] Project structure (Domain-aligned)
-- [x] Configuration files (Backend & Frontend)
-- [x] Design system (Google Antigravity-inspired)
+## 📊 API Endpoints
 
-### 🚧 In Progress
+| Method | Endpoint                 | Description         |
+| ------ | ------------------------ | ------------------- |
+| GET    | `/stocks`                | List stocks (paged) |
+| GET    | `/stocks/{id}`           | Get stock details   |
+| POST   | `/stocks/receive`        | Receive stock       |
+| POST   | `/stocks/{id}/reserve`   | Reserve stock       |
+| POST   | `/stocks/{id}/release`   | Release reservation |
+| POST   | `/stocks/{id}/confirm`   | Confirm reservation |
+| POST   | `/stocks/{id}/adjust`    | Adjust stock        |
+| GET    | `/stocks/{id}/movements` | Movement history    |
 
-- [ ] Domain Models implementation (Aggregates, Value Objects)
-- [ ] Use Cases implementation (Application Services)
-- [ ] REST API endpoints (Controllers)
-- [ ] Frontend components (UI)
-- [ ] API integration (Frontend ↔ Backend)
+## ⌨️ Keyboard Shortcuts
 
-### 📋 Planned
-
-- [ ] Unit & Integration tests
-- [ ] Product Catalog Service
-- [ ] Warehouse Management Service
-- [ ] Order Management (E-Commerce)
-- [ ] Customer Management (E-Commerce)
-- [ ] Payment & Shipping integration
-
-## 🎯 Features (Planned)
-
-### Phase 1: Stock Management (MVP)
-
-- Stock level tracking
-- Stock movements (Receipt, Transfer, Adjustment)
-- Multi-location inventory
-- Real-time stock updates
-- Movement history & audit trail
-
-### Phase 2: E-Commerce Foundation
-
-- Order management
-- Stock reservation
-- Customer management
-- Event-driven integration
-
-### Phase 3: Payment & Fulfillment
-
-- Payment processing
-- Shipping integration
-- Order fulfillment workflow
-- Saga orchestration
-
-## 📚 Documentation
-
-Detailed documentation available in `/docs` folder:
-
-- Architecture Design
-- Implementation Plan
-- API Documentation
-- Setup Guides
+| Key   | Action        |
+| ----- | ------------- |
+| `/`   | Focus search  |
+| `Esc` | Close dialogs |
 
 ## 🤝 Contributing
 
-This is a personal project. Contributions, issues, and feature requests are welcome!
+Contributions, issues, and feature requests are welcome!
 
 ## 📝 License
 
-This project is licensed under the MIT License.
+[MIT](LICENSE)
 
 ## 👨‍💻 Author
 
-**Weerayut Kiettiphisansakun**
-
-- GitHub: [@JackkWRY](https://github.com/JackkWRY)
-
----
-
-**Built with ❤️ using Domain-Driven Design principles**
+**Weerayut Kiettiphisansakun** - [@JackkWRY](https://github.com/JackkWRY)
