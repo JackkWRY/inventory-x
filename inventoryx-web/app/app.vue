@@ -1,6 +1,8 @@
 <template>
   <div>
     <NuxtPage />
+    <!-- Global Toast Notifications -->
+    <CommonToastContainer />
   </div>
 </template>
 

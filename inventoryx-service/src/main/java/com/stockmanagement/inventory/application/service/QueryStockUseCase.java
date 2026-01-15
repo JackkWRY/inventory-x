@@ -96,4 +96,30 @@ public class QueryStockUseCase {
         List<Stock> stocks = stockRepository.findByLocation(location);
         return stockMapper.toResponseList(stocks);
     }
+
+    /**
+     * Gets all stock in the system.
+     * 
+     * @return List of all stock responses
+     */
+    public List<StockResponse> getAll() {
+        List<Stock> stocks = stockRepository.findAll();
+        return stockMapper.toResponseList(stocks);
+    }
+
+    /**
+     * Gets all stock in the system with pagination.
+     * 
+     * BEST PRACTICE: Always paginate large result sets
+     * DEFAULT: page=0, size=20 if not specified
+     * 
+     * @param pageable Pagination parameters
+     * @return Paginated stock responses
+     */
+    public com.stockmanagement.inventory.application.dto.response.PagedStockResponse getAllPaged(
+            org.springframework.data.domain.Pageable pageable) {
+        org.springframework.data.domain.Page<Stock> stockPage = stockRepository.findAll(pageable);
+        List<StockResponse> content = stockMapper.toResponseList(stockPage.getContent());
+        return com.stockmanagement.inventory.application.dto.response.PagedStockResponse.from(stockPage, content);
+    }
 }

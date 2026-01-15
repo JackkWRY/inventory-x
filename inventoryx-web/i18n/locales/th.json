@@ -67,7 +67,16 @@
     "performedBy": "ดำเนินการโดย",
     "performedAt": "ดำเนินการเมื่อ",
     "createdAt": "สร้างเมื่อ",
-    "updatedAt": "แก้ไขเมื่อ"
+    "updatedAt": "แก้ไขเมื่อ",
+    "newQuantity": "จำนวนใหม่",
+    "currentAvailable": "จำนวนที่มีอยู่ปัจจุบัน",
+    "difference": "ผลต่าง",
+    "noChange": "ไม่มีการเปลี่ยนแปลง",
+    "minCharacters": "ขั้นต่ำ 10 ตัวอักษรเพื่อการตรวจสอบ",
+    "confirmWarning": "การดำเนินการนี้จะหักสต็อกถาวร ไม่สามารถย้อนกลับได้",
+    "maxReserved": "สูงสุด",
+    "orderReference": "อ้างอิงคำสั่งซื้อเดิม",
+    "orderFulfilling": "คำสั่งซื้อที่กำลังจัดส่ง"
   },
   "movementTypes": {
     "RECEIPT": "การรับเข้า",
@@ -171,5 +180,27 @@
     "noData": "ไม่มีข้อมูล",
     "confirmDelete": "คุณแน่ใจหรือไม่ว่าต้องการลบ?",
     "confirmCancel": "คุณแน่ใจหรือไม่ว่าต้องการยกเลิก?"
+  },
+  "pagination": {
+    "page": "หน้า",
+    "of": "จาก",
+    "items": "รายการ",
+    "perPage": "ต่อหน้า",
+    "first": "หน้าแรก",
+    "last": "หน้าสุดท้าย",
+    "next": "ถัดไป",
+    "previous": "ก่อนหน้า",
+    "showing": "แสดง",
+    "to": "ถึง"
+  },
+  "toast": {
+    "stockReceived": "รับสต็อกเข้าเรียบร้อยแล้ว",
+    "stockReserved": "จองสต็อกสำเร็จแล้ว",
+    "stockReleased": "ปลดปล่อยการจองสำเร็จแล้ว",
+    "stockConfirmed": "ยืนยันการจองสำเร็จแล้ว",
+    "stockAdjusted": "ปรับปรุงสต็อกสำเร็จแล้ว",
+    "operationFailed": "ดำเนินการไม่สำเร็จ",
+    "networkError": "เกิดข้อผิดพลาดเครือข่าย กรุณาลองใหม่อีกครั้ง",
+    "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิด"
   }
 }

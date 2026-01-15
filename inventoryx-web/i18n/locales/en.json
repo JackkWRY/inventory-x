@@ -67,7 +67,16 @@
     "performedBy": "Performed By",
     "performedAt": "Performed At",
     "createdAt": "Created At",
-    "updatedAt": "Updated At"
+    "updatedAt": "Updated At",
+    "newQuantity": "New Quantity",
+    "currentAvailable": "Current Available Quantity",
+    "difference": "Difference",
+    "noChange": "no change",
+    "minCharacters": "Minimum 10 characters for audit purposes",
+    "confirmWarning": "This will permanently deduct stock. This action cannot be undone.",
+    "maxReserved": "Maximum",
+    "orderReference": "Original order reference",
+    "orderFulfilling": "Order being fulfilled"
   },
   "movementTypes": {
     "RECEIPT": "Receipt",
@@ -171,5 +180,27 @@
     "noData": "No data available",
     "confirmDelete": "Are you sure you want to delete?",
     "confirmCancel": "Are you sure you want to cancel?"
+  },
+  "pagination": {
+    "page": "Page",
+    "of": "of",
+    "items": "items",
+    "perPage": "per page",
+    "first": "First",
+    "last": "Last",
+    "next": "Next",
+    "previous": "Previous",
+    "showing": "Showing",
+    "to": "to"
+  },
+  "toast": {
+    "stockReceived": "Stock received successfully",
+    "stockReserved": "Stock reserved successfully",
+    "stockReleased": "Reservation released successfully",
+    "stockConfirmed": "Reservation confirmed successfully",
+    "stockAdjusted": "Stock adjusted successfully",
+    "operationFailed": "Operation failed",
+    "networkError": "Network error. Please try again.",
+    "unexpectedError": "An unexpected error occurred"
   }
 }

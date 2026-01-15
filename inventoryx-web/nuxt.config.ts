@@ -7,9 +7,10 @@ export default defineNuxtConfig({
 
   // @ts-ignore - i18n module configuration
   i18n: {
+    langDir: 'locales',
     locales: [
-      { code: 'en', name: 'English', files: ['locales/en.json'] },
-      { code: 'th', name: 'ไทย', files: ['locales/th.json'] }
+      { code: 'en', name: 'English', file: 'en.json' },
+      { code: 'th', name: 'ไทย', file: 'th.json' }
     ],
     defaultLocale: 'en',
     strategy: 'no_prefix',

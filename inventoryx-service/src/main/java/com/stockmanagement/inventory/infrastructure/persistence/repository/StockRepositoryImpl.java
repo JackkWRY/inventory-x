@@ -98,4 +98,20 @@ public class StockRepositoryImpl implements StockRepository {
                 sku.value(),
                 locationId.value());
     }
+
+    @Override
+    public List<Stock> findAll() {
+        List<StockEntity> entities = jpaRepository.findAll();
+        return mapper.toDomainList(entities);
+    }
+
+    @Override
+    public org.springframework.data.domain.Page<Stock> findAll(org.springframework.data.domain.Pageable pageable) {
+        org.springframework.data.domain.Page<StockEntity> entityPage = jpaRepository.findAll(pageable);
+        List<Stock> domainList = mapper.toDomainList(entityPage.getContent());
+        return new org.springframework.data.domain.PageImpl<>(
+                domainList,
+                pageable,
+                entityPage.getTotalElements());
+    }
 }

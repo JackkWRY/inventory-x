@@ -96,6 +96,26 @@ public interface StockRepository {
     List<Stock> findByLocation(LocationId locationId);
 
     /**
+     * Finds all Stock records.
+     * 
+     * USE CASE: "Show me all stock in the system"
+     * 
+     * @return List of all stock records (may be empty)
+     */
+    List<Stock> findAll();
+
+    /**
+     * Finds all Stock records with pagination.
+     * 
+     * USE CASE: "Show me all stock in the system (paginated)"
+     * BEST PRACTICE: Always paginate large result sets
+     * 
+     * @param pageable Pagination parameters (page, size, sort)
+     * @return Page of stock records
+     */
+    org.springframework.data.domain.Page<Stock> findAll(org.springframework.data.domain.Pageable pageable);
+
+    /**
      * Deletes Stock by ID.
      * 
      * USE CASE: Product discontinued, location closed

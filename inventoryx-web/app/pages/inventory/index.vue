@@ -1,14 +1,274 @@
+<script setup lang="ts">
+import type { Stock, ReceiveStockCommand, ReserveStockCommand, ReleaseReservationCommand, ConfirmReservationCommand, AdjustStockCommand } from '~/types/inventory'
+import { useInventoryStore } from '~/stores/inventory'
+import { useToastStore } from '~/stores/toast'
+
+/**
+ * Inventory Page
+ *
+ * Main page for managing stock inventory.
+ * Integrates StockList, ReceiveStockDialog, and ReserveStockDialog components.
+ */
+
+// Page meta
+definePageMeta({
+  title: 'Inventory Management'
+})
+
+// i18n
+const { t } = useI18n()
+
+// Stores
+const store = useInventoryStore()
+const toast = useToastStore()
+
+// Modal states
+const showReceiveDialog = ref(false)
+const showReserveDialog = ref(false)
+const showReleaseDialog = ref(false)
+const showConfirmDialog = ref(false)
+const showAdjustDialog = ref(false)
+const selectedStock = ref<Stock | null>(null)
+
+// Computed
+const stocks = computed(() => store.stocks)
+const loading = computed(() => store.loading)
+const error = computed(() => store.error)
+const pagination = computed(() => store.pagination)
+
+// Fetch stocks on mount (with pagination)
+onMounted(async () => {
+  await store.fetchStocksPaged()
+})
+
+// Event handlers
+const handleOpenReceiveDialog = () => {
+  store.clearError()
+  showReceiveDialog.value = true
+}
+
+const handleCloseReceiveDialog = () => {
+  showReceiveDialog.value = false
+}
+
+const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
+  try {
+    await store.receiveStock(command)
+    showReceiveDialog.value = false
+    toast.success(t('toast.stockReceived'))
+    // Refresh with pagination
+    await store.fetchStocksPaged()
+  } catch {
+    toast.error(t('toast.operationFailed'))
+  }
+}
+
+const handleOpenReserveDialog = (stock: Stock) => {
+  store.clearError()
+  selectedStock.value = stock
+  showReserveDialog.value = true
+}
+
+const handleCloseReserveDialog = () => {
+  showReserveDialog.value = false
+  selectedStock.value = null
+}
+
+const handleReserveSubmit = async (command: ReserveStockCommand) => {
+  try {
+    await store.reserveStock(command)
+    showReserveDialog.value = false
+    selectedStock.value = null
+    toast.success(t('toast.stockReserved'))
+    await store.fetchStocksPaged()
+  } catch {
+    toast.error(t('toast.operationFailed'))
+  }
+}
+
+// Release Reservation handlers
+const handleOpenReleaseDialog = (stock: Stock) => {
+  store.clearError()
+  selectedStock.value = stock
+  showReleaseDialog.value = true
+}
+
+const handleCloseReleaseDialog = () => {
+  showReleaseDialog.value = false
+  selectedStock.value = null
+}
+
+const handleReleaseSubmit = async (command: ReleaseReservationCommand) => {
+  try {
+    await store.releaseReservation(command)
+    showReleaseDialog.value = false
+    selectedStock.value = null
+    toast.success(t('toast.stockReleased'))
+    await store.fetchStocksPaged()
+  } catch {
+    toast.error(t('toast.operationFailed'))
+  }
+}
+
+// Confirm Reservation handlers
+const handleOpenConfirmDialog = (stock: Stock) => {
+  store.clearError()
+  selectedStock.value = stock
+  showConfirmDialog.value = true
+}
+
+const handleCloseConfirmDialog = () => {
+  showConfirmDialog.value = false
+  selectedStock.value = null
+}
+
+const handleConfirmSubmit = async (command: ConfirmReservationCommand) => {
+  try {
+    await store.confirmReservation(command)
+    showConfirmDialog.value = false
+    selectedStock.value = null
+    toast.success(t('toast.stockConfirmed'))
+    await store.fetchStocksPaged()
+  } catch {
+    toast.error(t('toast.operationFailed'))
+  }
+}
+
+// Adjust Stock handlers
+const handleOpenAdjustDialog = (stock: Stock) => {
+  store.clearError()
+  selectedStock.value = stock
+  showAdjustDialog.value = true
+}
+
+const handleCloseAdjustDialog = () => {
+  showAdjustDialog.value = false
+  selectedStock.value = null
+}
+
+const handleAdjustSubmit = async (command: AdjustStockCommand) => {
+  try {
+    await store.adjustStock(command)
+    showAdjustDialog.value = false
+    selectedStock.value = null
+    toast.success(t('toast.stockAdjusted'))
+    await store.fetchStocksPaged()
+  } catch {
+    toast.error(t('toast.operationFailed'))
+  }
+}
+
+const handleViewStock = (stock: Stock) => {
+  navigateTo(`/inventory/${stock.id}`)
+}
+
+// Pagination handlers
+const handlePageChange = async (page: number) => {
+  await store.changePage(page)
+}
+
+const handlePageSizeChange = async (size: number) => {
+  await store.changePageSize(size)
+}
+</script>
+
 <template>
   <div class="inventory-page">
+    <!-- Page Header -->
     <header class="page-header">
-      <h1>Inventory Management</h1>
-      <p class="text-secondary">Manage stock levels and movements</p>
+      <div class="page-header__content">
+        <h1 class="page-header__title">{{ t('inventory.title') }}</h1>
+        <p class="page-header__subtitle">{{ t('inventory.subtitle') }}</p>
+      </div>
+      <div class="page-header__actions">
+        <CommonLanguageSwitcher />
+        <NuxtLink to="/" class="btn btn--ghost">
+          ← {{ t('common.back') }}
+        </NuxtLink>
+      </div>
     </header>
 
-    <div class="page-content">
-      <p>Inventory features coming soon...</p>
-      <NuxtLink to="/" class="btn btn-secondary">← Back to Home</NuxtLink>
+    <!-- Error Banner (hide when any dialog is open) -->
+    <div 
+      v-if="error && !showReceiveDialog && !showReserveDialog && !showReleaseDialog && !showConfirmDialog && !showAdjustDialog" 
+      class="error-banner"
+    >
+      <span>{{ error }}</span>
+      <button class="error-banner__close" @click="store.clearError()">✕</button>
     </div>
+
+    <!-- Stock List -->
+    <InventoryStockList
+      :stocks="stocks"
+      :loading="loading"
+      @receive="handleOpenReceiveDialog"
+      @reserve="handleOpenReserveDialog"
+      @release="handleOpenReleaseDialog"
+      @confirm="handleOpenConfirmDialog"
+      @adjust="handleOpenAdjustDialog"
+      @view="handleViewStock"
+    />
+
+    <!-- Pagination -->
+    <CommonPagination
+      :current-page="pagination.currentPage"
+      :total-pages="pagination.totalPages"
+      :total-items="pagination.totalElements"
+      :page-size="pagination.pageSize"
+      :is-first="pagination.isFirst"
+      :is-last="pagination.isLast"
+      @page-change="handlePageChange"
+      @page-size-change="handlePageSizeChange"
+    />
+
+    <!-- Receive Stock Dialog -->
+    <InventoryReceiveStockDialog
+      :open="showReceiveDialog"
+      :loading="loading"
+      :error="error"
+      @submit="handleReceiveSubmit"
+      @close="handleCloseReceiveDialog"
+    />
+
+    <!-- Reserve Stock Dialog -->
+    <InventoryReserveStockDialog
+      :open="showReserveDialog"
+      :stock="selectedStock"
+      :loading="loading"
+      :error="error"
+      @submit="handleReserveSubmit"
+      @close="handleCloseReserveDialog"
+    />
+
+    <!-- Release Reservation Dialog -->
+    <InventoryReleaseReservationDialog
+      :open="showReleaseDialog"
+      :stock="selectedStock"
+      :loading="loading"
+      :error="error"
+      @submit="handleReleaseSubmit"
+      @close="handleCloseReleaseDialog"
+    />
+
+    <!-- Confirm Reservation Dialog -->
+    <InventoryConfirmReservationDialog
+      :open="showConfirmDialog"
+      :stock="selectedStock"
+      :loading="loading"
+      :error="error"
+      @submit="handleConfirmSubmit"
+      @close="handleCloseConfirmDialog"
+    />
+
+    <!-- Adjust Stock Dialog -->
+    <InventoryAdjustStockDialog
+      :open="showAdjustDialog"
+      :stock="selectedStock"
+      :loading="loading"
+      :error="error"
+      @submit="handleAdjustSubmit"
+      @close="handleCloseAdjustDialog"
+    />
   </div>
 </template>
 
@@ -16,24 +276,90 @@
 .inventory-page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 3rem 1.5rem;
+  padding: 2rem 1.5rem;
 }
 
 .page-header {
-  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
-.page-header h1 {
-  font-size: 2rem;
+.page-header__content {
+  flex: 1;
+}
+
+.page-header__title {
+  font-size: 1.75rem;
   font-weight: 500;
   color: #1a1a1a;
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.25rem 0;
 }
 
-.page-content {
-  background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 2rem;
+.page-header__subtitle {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0;
+}
+
+.page-header__actions {
+  flex-shrink: 0;
+}
+
+.error-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.error-banner__close {
+  background: none;
+  border: none;
+  color: #dc2626;
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1rem;
+  line-height: 1;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.error-banner__close:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+/* Button Styles */
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: #666;
+}
+
+.btn--ghost:hover {
+  background: #f0f0f0;
+  color: #333;
 }
 </style>

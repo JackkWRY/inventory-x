@@ -180,8 +180,40 @@ public class StockController {
             List<StockResponse> responses = queryStockUseCase.getByLocation(locationId);
             return ResponseEntity.ok(responses);
         } else {
-            // No parameters: bad request
-            return ResponseEntity.badRequest().build();
+            // No parameters: return all stocks
+            List<StockResponse> responses = queryStockUseCase.getAll();
+            return ResponseEntity.ok(responses);
         }
+    }
+
+    /**
+     * Query stocks with pagination.
+     * 
+     * GET /api/v1/stocks/paged
+     * GET /api/v1/stocks/paged?page=0&size=20
+     * GET /api/v1/stocks/paged?page=0&size=10&sort=sku,asc
+     * 
+     * BEST PRACTICE: Always paginate large result sets
+     * DEFAULT: page=0, size=20
+     * 
+     * @param page Page number (0-indexed), default 0
+     * @param size Number of items per page, default 20, max 100
+     * @return Paginated stock response
+     */
+    @GetMapping("/paged")
+    public ResponseEntity<com.stockmanagement.inventory.application.dto.response.PagedStockResponse> queryStocksPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        // Enforce max page size to prevent memory issues
+        int safeSize = Math.min(size, 100);
+
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page,
+                safeSize);
+
+        com.stockmanagement.inventory.application.dto.response.PagedStockResponse response = queryStockUseCase
+                .getAllPaged(pageable);
+
+        return ResponseEntity.ok(response);
     }
 }
