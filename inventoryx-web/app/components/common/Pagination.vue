@@ -208,14 +208,15 @@ const handlePageSizeChange = (event: Event) => {
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem 1.5rem;
-  background: #f8f9fa;
-  border-top: 1px solid #e0e0e0;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
   font-size: 0.875rem;
   flex-wrap: wrap;
+  transition: var(--theme-transition);
 }
 
 .pagination__info {
-  color: #666;
+  color: var(--color-text-secondary);
   flex-shrink: 0;
 }
 
@@ -223,21 +224,22 @@ const handlePageSizeChange = (event: Event) => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 .pagination__select {
   padding: 0.25rem 0.5rem;
-  border: 1px solid #d0d0d0;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 0.875rem;
-  background: white;
+  background: var(--color-card);
+  color: var(--color-text-primary);
   cursor: pointer;
 }
 
 .pagination__select:focus {
   outline: none;
-  border-color: #1a73e8;
+  border-color: var(--color-primary);
 }
 
 .pagination__nav {
@@ -253,19 +255,19 @@ const handlePageSizeChange = (event: Event) => {
   min-width: 2rem;
   height: 2rem;
   padding: 0 0.5rem;
-  border: 1px solid #d0d0d0;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
-  background: white;
-  color: #333;
+  background: var(--color-card);
+  color: var(--color-text-primary);
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .pagination__btn:hover:not(:disabled) {
-  background: #e8f0fe;
-  border-color: #1a73e8;
-  color: #1a73e8;
+  background: var(--color-surface-hover);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .pagination__btn:disabled {
@@ -278,18 +280,18 @@ const handlePageSizeChange = (event: Event) => {
 }
 
 .pagination__btn--active {
-  background: #1a73e8;
-  border-color: #1a73e8;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
   color: white;
 }
 
 .pagination__btn--active:hover:not(:disabled) {
-  background: #1557b0;
+  background: var(--color-primary-hover);
 }
 
 .pagination__ellipsis {
   padding: 0 0.25rem;
-  color: #999;
+  color: var(--color-text-secondary);
 }
 
 /* Responsive */

@@ -1,7 +1,14 @@
 <script setup lang="ts">
-import type { Stock, ReceiveStockCommand, ReserveStockCommand, ReleaseReservationCommand, ConfirmReservationCommand, AdjustStockCommand } from '~/types/inventory'
-import { useInventoryStore } from '~/stores/inventory'
-import { useToastStore } from '~/stores/toast'
+import type {
+  Stock,
+  ReceiveStockCommand,
+  ReserveStockCommand,
+  ReleaseReservationCommand,
+  ConfirmReservationCommand,
+  AdjustStockCommand,
+} from "~/types/inventory";
+import { useInventoryStore } from "~/stores/inventory";
+import { useToastStore } from "~/stores/toast";
 
 /**
  * Inventory Page
@@ -12,202 +19,211 @@ import { useToastStore } from '~/stores/toast'
 
 // Page meta
 definePageMeta({
-  title: 'Inventory Management'
-})
+  title: "Inventory Management",
+});
 
 // i18n
-const { t } = useI18n()
+const { t } = useI18n();
 
 // Stores
-const store = useInventoryStore()
-const toast = useToastStore()
+const store = useInventoryStore();
+const toast = useToastStore();
 
 // Modal states
-const showReceiveDialog = ref(false)
-const showReserveDialog = ref(false)
-const showReleaseDialog = ref(false)
-const showConfirmDialog = ref(false)
-const showAdjustDialog = ref(false)
-const selectedStock = ref<Stock | null>(null)
+const showReceiveDialog = ref(false);
+const showReserveDialog = ref(false);
+const showReleaseDialog = ref(false);
+const showConfirmDialog = ref(false);
+const showAdjustDialog = ref(false);
+const selectedStock = ref<Stock | null>(null);
 
 // Confirmation modal states
-const showAdjustConfirmation = ref(false)
-const showConfirmReservationConfirmation = ref(false)
-const pendingAdjustCommand = ref<AdjustStockCommand | null>(null)
-const pendingConfirmCommand = ref<ConfirmReservationCommand | null>(null)
+const showAdjustConfirmation = ref(false);
+const showConfirmReservationConfirmation = ref(false);
+const pendingAdjustCommand = ref<AdjustStockCommand | null>(null);
+const pendingConfirmCommand = ref<ConfirmReservationCommand | null>(null);
+
+// Component refs
+const stockListRef = ref<{ focusSearch: () => void } | null>(null);
+
+// Keyboard shortcuts
+useKeyboardShortcuts({
+  onSearch: () => stockListRef.value?.focusSearch(),
+  onNew: () => handleOpenReceiveDialog(),
+});
 
 // Computed
-const stocks = computed(() => store.stocks)
-const loading = computed(() => store.loading)
-const error = computed(() => store.error)
-const pagination = computed(() => store.pagination)
+const stocks = computed(() => store.stocks);
+const loading = computed(() => store.loading);
+const error = computed(() => store.error);
+const pagination = computed(() => store.pagination);
 
 // Fetch stocks on mount (with pagination)
 onMounted(async () => {
-  await store.fetchStocksPaged()
-})
+  await store.fetchStocksPaged();
+});
 
 // Event handlers
 const handleOpenReceiveDialog = () => {
-  store.clearError()
-  showReceiveDialog.value = true
-}
+  store.clearError();
+  showReceiveDialog.value = true;
+};
 
 const handleCloseReceiveDialog = () => {
-  showReceiveDialog.value = false
-}
+  showReceiveDialog.value = false;
+};
 
 const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
   try {
-    await store.receiveStock(command)
-    showReceiveDialog.value = false
-    toast.success(t('toast.stockReceived'))
+    await store.receiveStock(command);
+    showReceiveDialog.value = false;
+    toast.success(t("toast.stockReceived"));
     // Refresh with pagination
-    await store.fetchStocksPaged()
+    await store.fetchStocksPaged();
   } catch {
-    toast.error(t('toast.operationFailed'))
+    toast.error(t("toast.operationFailed"));
   }
-}
+};
 
 const handleOpenReserveDialog = (stock: Stock) => {
-  store.clearError()
-  selectedStock.value = stock
-  showReserveDialog.value = true
-}
+  store.clearError();
+  selectedStock.value = stock;
+  showReserveDialog.value = true;
+};
 
 const handleCloseReserveDialog = () => {
-  showReserveDialog.value = false
-  selectedStock.value = null
-}
+  showReserveDialog.value = false;
+  selectedStock.value = null;
+};
 
 const handleReserveSubmit = async (command: ReserveStockCommand) => {
   try {
-    await store.reserveStock(command)
-    showReserveDialog.value = false
-    selectedStock.value = null
-    toast.success(t('toast.stockReserved'))
-    await store.fetchStocksPaged()
+    await store.reserveStock(command);
+    showReserveDialog.value = false;
+    selectedStock.value = null;
+    toast.success(t("toast.stockReserved"));
+    await store.fetchStocksPaged();
   } catch {
-    toast.error(t('toast.operationFailed'))
+    toast.error(t("toast.operationFailed"));
   }
-}
+};
 
 // Release Reservation handlers
 const handleOpenReleaseDialog = (stock: Stock) => {
-  store.clearError()
-  selectedStock.value = stock
-  showReleaseDialog.value = true
-}
+  store.clearError();
+  selectedStock.value = stock;
+  showReleaseDialog.value = true;
+};
 
 const handleCloseReleaseDialog = () => {
-  showReleaseDialog.value = false
-  selectedStock.value = null
-}
+  showReleaseDialog.value = false;
+  selectedStock.value = null;
+};
 
 const handleReleaseSubmit = async (command: ReleaseReservationCommand) => {
   try {
-    await store.releaseReservation(command)
-    showReleaseDialog.value = false
-    selectedStock.value = null
-    toast.success(t('toast.stockReleased'))
-    await store.fetchStocksPaged()
+    await store.releaseReservation(command);
+    showReleaseDialog.value = false;
+    selectedStock.value = null;
+    toast.success(t("toast.stockReleased"));
+    await store.fetchStocksPaged();
   } catch {
-    toast.error(t('toast.operationFailed'))
+    toast.error(t("toast.operationFailed"));
   }
-}
+};
 
 // Confirm Reservation handlers
 const handleOpenConfirmDialog = (stock: Stock) => {
-  store.clearError()
-  selectedStock.value = stock
-  showConfirmDialog.value = true
-}
+  store.clearError();
+  selectedStock.value = stock;
+  showConfirmDialog.value = true;
+};
 
 const handleCloseConfirmDialog = () => {
-  showConfirmDialog.value = false
-  selectedStock.value = null
-}
+  showConfirmDialog.value = false;
+  selectedStock.value = null;
+};
 
 // Confirm Reservation - with confirmation modal
 const handleConfirmSubmit = async (command: ConfirmReservationCommand) => {
   // Store command and show confirmation
-  pendingConfirmCommand.value = command
-  showConfirmReservationConfirmation.value = true
-}
+  pendingConfirmCommand.value = command;
+  showConfirmReservationConfirmation.value = true;
+};
 
 const handleConfirmReservationConfirmed = async () => {
-  if (!pendingConfirmCommand.value) return
-  
+  if (!pendingConfirmCommand.value) return;
+
   try {
-    await store.confirmReservation(pendingConfirmCommand.value)
-    showConfirmDialog.value = false
-    showConfirmReservationConfirmation.value = false
-    selectedStock.value = null
-    pendingConfirmCommand.value = null
-    toast.success(t('toast.stockConfirmed'))
-    await store.fetchStocksPaged()
+    await store.confirmReservation(pendingConfirmCommand.value);
+    showConfirmDialog.value = false;
+    showConfirmReservationConfirmation.value = false;
+    selectedStock.value = null;
+    pendingConfirmCommand.value = null;
+    toast.success(t("toast.stockConfirmed"));
+    await store.fetchStocksPaged();
   } catch {
-    toast.error(t('toast.operationFailed'))
+    toast.error(t("toast.operationFailed"));
   }
-}
+};
 
 const handleCancelConfirmReservation = () => {
-  showConfirmReservationConfirmation.value = false
-  pendingConfirmCommand.value = null
-}
+  showConfirmReservationConfirmation.value = false;
+  pendingConfirmCommand.value = null;
+};
 
 // Adjust Stock handlers
 const handleOpenAdjustDialog = (stock: Stock) => {
-  store.clearError()
-  selectedStock.value = stock
-  showAdjustDialog.value = true
-}
+  store.clearError();
+  selectedStock.value = stock;
+  showAdjustDialog.value = true;
+};
 
 const handleCloseAdjustDialog = () => {
-  showAdjustDialog.value = false
-  selectedStock.value = null
-}
+  showAdjustDialog.value = false;
+  selectedStock.value = null;
+};
 
 // Adjust Stock - with confirmation modal
 const handleAdjustSubmit = async (command: AdjustStockCommand) => {
   // Store command and show confirmation
-  pendingAdjustCommand.value = command
-  showAdjustConfirmation.value = true
-}
+  pendingAdjustCommand.value = command;
+  showAdjustConfirmation.value = true;
+};
 
 const handleAdjustConfirmed = async () => {
-  if (!pendingAdjustCommand.value) return
-  
+  if (!pendingAdjustCommand.value) return;
+
   try {
-    await store.adjustStock(pendingAdjustCommand.value)
-    showAdjustDialog.value = false
-    showAdjustConfirmation.value = false
-    selectedStock.value = null
-    pendingAdjustCommand.value = null
-    toast.success(t('toast.stockAdjusted'))
-    await store.fetchStocksPaged()
+    await store.adjustStock(pendingAdjustCommand.value);
+    showAdjustDialog.value = false;
+    showAdjustConfirmation.value = false;
+    selectedStock.value = null;
+    pendingAdjustCommand.value = null;
+    toast.success(t("toast.stockAdjusted"));
+    await store.fetchStocksPaged();
   } catch {
-    toast.error(t('toast.operationFailed'))
+    toast.error(t("toast.operationFailed"));
   }
-}
+};
 
 const handleCancelAdjust = () => {
-  showAdjustConfirmation.value = false
-  pendingAdjustCommand.value = null
-}
+  showAdjustConfirmation.value = false;
+  pendingAdjustCommand.value = null;
+};
 
 const handleViewStock = (stock: Stock) => {
-  navigateTo(`/inventory/${stock.id}`)
-}
+  navigateTo(`/inventory/${stock.id}`);
+};
 
 // Pagination handlers
 const handlePageChange = async (page: number) => {
-  await store.changePage(page)
-}
+  await store.changePage(page);
+};
 
 const handlePageSizeChange = async (size: number) => {
-  await store.changePageSize(size)
-}
+  await store.changePageSize(size);
+};
 </script>
 
 <template>
@@ -215,20 +231,28 @@ const handlePageSizeChange = async (size: number) => {
     <!-- Page Header -->
     <header class="page-header">
       <div class="page-header__content">
-        <h1 class="page-header__title">{{ t('inventory.title') }}</h1>
-        <p class="page-header__subtitle">{{ t('inventory.subtitle') }}</p>
+        <h1 class="page-header__title">{{ t("inventory.title") }}</h1>
+        <p class="page-header__subtitle">{{ t("inventory.subtitle") }}</p>
       </div>
       <div class="page-header__actions">
+        <CommonThemeToggle />
         <CommonLanguageSwitcher />
         <NuxtLink to="/" class="btn btn--ghost">
-          ← {{ t('common.back') }}
+          ← {{ t("common.back") }}
         </NuxtLink>
       </div>
     </header>
 
     <!-- Error Banner (hide when any dialog is open) -->
-    <div 
-      v-if="error && !showReceiveDialog && !showReserveDialog && !showReleaseDialog && !showConfirmDialog && !showAdjustDialog" 
+    <div
+      v-if="
+        error &&
+        !showReceiveDialog &&
+        !showReserveDialog &&
+        !showReleaseDialog &&
+        !showConfirmDialog &&
+        !showAdjustDialog
+      "
       class="error-banner"
     >
       <span>{{ error }}</span>
@@ -237,6 +261,7 @@ const handlePageSizeChange = async (size: number) => {
 
     <!-- Stock List -->
     <InventoryStockList
+      ref="stockListRef"
       :stocks="stocks"
       :loading="loading"
       @receive="handleOpenReceiveDialog"
@@ -357,17 +382,20 @@ const handlePageSizeChange = async (size: number) => {
 .page-header__title {
   font-size: 1.75rem;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
   margin: 0 0 0.25rem 0;
 }
 
 .page-header__subtitle {
   font-size: 0.875rem;
-  color: #666;
+  color: var(--color-text-secondary);
   margin: 0;
 }
 
 .page-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   flex-shrink: 0;
 }
 

@@ -1,11 +1,12 @@
 <template>
   <div class="home">
     <header class="home__header">
+      <div class="home__controls">
+        <CommonThemeToggle />
+        <CommonLanguageSwitcher />
+      </div>
       <h1 class="home__title">{{ $t('common.appName') }}</h1>
       <p class="home__subtitle">{{ $t('common.welcome') }}</p>
-      <div class="home__lang-switcher">
-        <LanguageSwitcher />
-      </div>
     </header>
 
     <nav class="home__nav">
@@ -40,6 +41,7 @@
 }
 
 .home__header {
+  position: relative;
   text-align: center;
   margin-bottom: 4rem;
 }
@@ -48,19 +50,21 @@
   font-size: 3rem;
   font-weight: 500;
   letter-spacing: -0.02em;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
   margin-bottom: 0.5rem;
 }
 
 .home__subtitle {
   font-size: 1.25rem;
-  color: #5f6368;
+  color: var(--color-text-secondary);
 }
 
-.home__lang-switcher {
-  margin-top: 1.5rem;
+.home__controls {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
   display: flex;
-  justify-content: center;
+  gap: 0.5rem;
 }
 
 

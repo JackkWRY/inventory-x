@@ -231,5 +231,9 @@
     "confirmReservationTitle": "Confirm Reservation",
     "confirmReservationMessage": "This will permanently deduct stock from inventory. This action cannot be undone. Do you want to continue?",
     "proceedAction": "Yes, Proceed"
+  },
+  "theme": {
+    "switchLight": "Switch to light mode",
+    "switchDark": "Switch to dark mode"
   }
 }

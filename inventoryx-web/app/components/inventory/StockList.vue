@@ -52,6 +52,9 @@ const searchSku = ref("");
 const searchLocation = ref("");
 const stockStatus = ref("all"); // 'all' | 'low' | 'normal' | 'out'
 
+// Refs for keyboard shortcuts
+const skuInputRef = ref<HTMLInputElement | null>(null);
+
 // Configuration
 const LOW_STOCK_THRESHOLD = 10;
 
@@ -105,6 +108,16 @@ const clearFilters = () => {
   searchLocation.value = "";
   stockStatus.value = "all";
 };
+
+// Focus search input (for keyboard shortcut)
+const focusSearch = () => {
+  skuInputRef.value?.focus();
+};
+
+// Expose methods for parent components
+defineExpose({
+  focusSearch,
+});
 </script>
 
 <template>
@@ -113,9 +126,12 @@ const clearFilters = () => {
     <div class="stock-list__header">
       <div class="stock-list__search">
         <div class="search-field">
-          <label for="search-sku">{{ t("inventory.sku") }}</label>
+          <label for="search-sku"
+            >{{ t("inventory.sku") }} <kbd class="kbd-hint">/</kbd></label
+          >
           <input
             id="search-sku"
+            ref="skuInputRef"
             v-model="searchSku"
             type="text"
             :placeholder="t('common.search') + '...'"
@@ -249,10 +265,11 @@ const clearFilters = () => {
 
 <style scoped>
 .stock-list {
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   overflow: hidden;
+  transition: var(--theme-transition);
 }
 
 .stock-list__header {
@@ -260,7 +277,7 @@ const clearFilters = () => {
   justify-content: space-between;
   align-items: flex-end;
   padding: 1.5rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-border);
   gap: 1rem;
   flex-wrap: wrap;
 }
@@ -281,18 +298,20 @@ const clearFilters = () => {
 .search-field label {
   font-size: 0.75rem;
   font-weight: 500;
-  color: #666;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .input {
   padding: 0.5rem 0.75rem;
-  border: 1px solid #d0d0d0;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 0.875rem;
   min-width: 180px;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.3s;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
 }
 
 .input:focus {
@@ -339,21 +358,22 @@ const clearFilters = () => {
   text-align: left;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #666;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: #f8f9fa;
-  border-bottom: 1px solid #e0e0e0;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .stock-table td {
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-border);
   font-size: 0.875rem;
+  color: var(--color-text-primary);
 }
 
 .stock-table tbody tr:hover {
-  background: #f8f9fa;
+  background: var(--color-surface-hover);
 }
 
 .text-right {
@@ -367,7 +387,7 @@ const clearFilters = () => {
 .stock-sku {
   font-family: "SF Mono", "Consolas", monospace;
   font-weight: 500;
-  color: #1a73e8;
+  color: var(--color-primary);
 }
 
 .stock-sku--link {
@@ -377,7 +397,7 @@ const clearFilters = () => {
 
 .stock-sku--link:hover {
   text-decoration: underline;
-  color: #1557b0;
+  color: var(--color-primary-hover);
 }
 
 .quantity {
@@ -471,5 +491,23 @@ const clearFilters = () => {
 
 .btn--danger:hover:not(:disabled) {
   background: #dc2626;
+}
+
+/* Keyboard hint */
+.kbd-hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.25rem;
+  font-family: monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: #e5e7eb;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  color: #6b7280;
+  margin-left: 0.25rem;
 }
 </style>

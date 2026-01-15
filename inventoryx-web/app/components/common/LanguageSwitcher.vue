@@ -1,15 +1,11 @@
 <template>
-  <div class="language-switcher">
-    <button 
-      v-for="locale in availableLocales" 
-      :key="locale.code"
-      @click="setLocale(locale.code)"
-      :class="{ active: currentLocale === locale.code }"
-      class="lang-btn"
-    >
-      {{ locale.name }}
-    </button>
-  </div>
+  <button 
+    class="lang-toggle"
+    :title="currentLocaleName"
+    @click="toggleLocale"
+  >
+    {{ currentLocaleCode }}
+  </button>
 </template>
 
 <script setup lang="ts">
@@ -17,38 +13,39 @@
 const { locale, locales, setLocale: switchLocale } = useI18n()
 
 const currentLocale = computed(() => locale.value)
-const availableLocales = computed(() => locales.value)
+const currentLocaleCode = computed(() => locale.value.toUpperCase())
+const currentLocaleName = computed(() => {
+  const loc = locales.value.find((l: { code: string }) => l.code === locale.value)
+  return loc?.name || locale.value
+})
 
-const setLocale = (code: string) => {
-  switchLocale(code as 'en' | 'th')
+const toggleLocale = () => {
+  // Toggle between 'en' and 'th'
+  const newLocale = locale.value === 'en' ? 'th' : 'en'
+  switchLocale(newLocale as 'en' | 'th')
 }
 </script>
 
 <style scoped>
-.language-switcher {
+.lang-toggle {
   display: flex;
-  gap: 0.5rem;
-}
-
-.lang-btn {
-  padding: 0.5rem 1rem;
-  border: 1px solid #e0e0e0;
-  background: #f8f9fa;
-  border-radius: 4px;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 0.875rem;
-  color: #666;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
   transition: all 0.2s;
 }
 
-.lang-btn:hover {
-  border-color: #1a73e8;
-  background: #e8f0fe;
-}
-
-.lang-btn.active {
-  background: #1a73e8;
-  color: white;
-  border-color: #1a73e8;
+.lang-toggle:hover {
+  background: var(--color-surface-hover);
+  transform: scale(1.05);
 }
 </style>

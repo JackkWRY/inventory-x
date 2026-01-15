@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import type { Stock, StockMovement } from '~/types/inventory'
-import { useInventoryStore } from '~/stores/inventory'
-import { useInventoryApi } from '~/composables/api/useInventoryApi'
+import type {
+  Stock,
+  StockMovement,
+  ReceiveStockCommand,
+} from "~/types/inventory";
+import { useInventoryStore } from "~/stores/inventory";
+import { useInventoryApi } from "~/composables/api/useInventoryApi";
+import { useToastStore } from "~/stores/toast";
 
 /**
  * Dashboard Overview Page
@@ -17,44 +22,50 @@ import { useInventoryApi } from '~/composables/api/useInventoryApi'
 
 // Page Meta
 definePageMeta({
-  title: 'Dashboard'
-})
+  title: "Dashboard",
+});
 
 // i18n
-const { t } = useI18n()
+const { t } = useI18n();
 
 // Store
-const inventoryStore = useInventoryStore()
+const inventoryStore = useInventoryStore();
+const toast = useToastStore();
 
 // State
-const loading = ref(true)
-const error = ref<string | null>(null)
-const stocks = ref<Stock[]>([])
-const recentMovements = ref<StockMovement[]>([])
+const loading = ref(true);
+const error = ref<string | null>(null);
+const stocks = ref<Stock[]>([]);
+const recentMovements = ref<StockMovement[]>([]);
+
+// Receive Stock Dialog State
+const showReceiveDialog = ref(false);
+const receiveLoading = ref(false);
+const receiveError = ref<string | null>(null);
 
 // Configuration - with localStorage persistence
-const DEFAULT_THRESHOLD = 10
-const lowStockThreshold = ref(DEFAULT_THRESHOLD)
-const showSettings = ref(false)
-const thresholdInput = ref(DEFAULT_THRESHOLD.toString())
+const DEFAULT_THRESHOLD = 10;
+const lowStockThreshold = ref(DEFAULT_THRESHOLD);
+const showSettings = ref(false);
+const thresholdInput = ref(DEFAULT_THRESHOLD.toString());
 
 // Load threshold from localStorage on mount
 onMounted(async () => {
-  loadThresholdFromStorage()
-  await fetchDashboardData()
-})
+  loadThresholdFromStorage();
+  await fetchDashboardData();
+});
 
 /**
  * Load threshold from localStorage
  */
 function loadThresholdFromStorage() {
   if (import.meta.client) {
-    const saved = localStorage.getItem('inventoryx_low_stock_threshold')
+    const saved = localStorage.getItem("inventoryx_low_stock_threshold");
     if (saved) {
-      const parsed = parseFloat(saved)
+      const parsed = parseFloat(saved);
       if (!isNaN(parsed) && parsed > 0) {
-        lowStockThreshold.value = parsed
-        thresholdInput.value = parsed.toString()
+        lowStockThreshold.value = parsed;
+        thresholdInput.value = parsed.toString();
       }
     }
   }
@@ -64,13 +75,13 @@ function loadThresholdFromStorage() {
  * Save threshold to localStorage
  */
 function saveThreshold() {
-  const value = parseFloat(thresholdInput.value)
+  const value = parseFloat(thresholdInput.value);
   if (!isNaN(value) && value > 0) {
-    lowStockThreshold.value = value
+    lowStockThreshold.value = value;
     if (import.meta.client) {
-      localStorage.setItem('inventoryx_low_stock_threshold', value.toString())
+      localStorage.setItem("inventoryx_low_stock_threshold", value.toString());
     }
-    showSettings.value = false
+    showSettings.value = false;
   }
 }
 
@@ -78,32 +89,32 @@ function saveThreshold() {
  * Reset threshold to default
  */
 function resetThreshold() {
-  lowStockThreshold.value = DEFAULT_THRESHOLD
-  thresholdInput.value = DEFAULT_THRESHOLD.toString()
+  lowStockThreshold.value = DEFAULT_THRESHOLD;
+  thresholdInput.value = DEFAULT_THRESHOLD.toString();
   if (import.meta.client) {
-    localStorage.removeItem('inventoryx_low_stock_threshold')
+    localStorage.removeItem("inventoryx_low_stock_threshold");
   }
-  showSettings.value = false
+  showSettings.value = false;
 }
 
 /**
  * Fetch dashboard data
  */
 async function fetchDashboardData() {
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
 
   try {
     // Fetch all stocks for KPIs
-    await inventoryStore.fetchStocks()
-    stocks.value = inventoryStore.stocks
+    await inventoryStore.fetchStocks();
+    stocks.value = inventoryStore.stocks;
 
     // Fetch recent movements (mock for now - will use real API when available)
-    recentMovements.value = await fetchRecentMovements()
+    recentMovements.value = await fetchRecentMovements();
   } catch (e) {
-    error.value = e instanceof Error ? e.message : t('messages.loadError')
+    error.value = e instanceof Error ? e.message : t("messages.loadError");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
@@ -111,16 +122,16 @@ async function fetchDashboardData() {
  * Fetch recent movements from multiple stocks
  */
 async function fetchRecentMovements(): Promise<StockMovement[]> {
-  const api = useInventoryApi()
-  const allMovements: StockMovement[] = []
+  const api = useInventoryApi();
+  const allMovements: StockMovement[] = [];
 
   // Get movements from first 5 stocks
-  const stocksToCheck = stocks.value.slice(0, 5)
+  const stocksToCheck = stocks.value.slice(0, 5);
 
   for (const stock of stocksToCheck) {
     try {
-      const movements = await api.getStockMovements(stock.id)
-      allMovements.push(...movements.slice(0, 2))
+      const movements = await api.getStockMovements(stock.id);
+      allMovements.push(...movements.slice(0, 2));
     } catch {
       // Skip if no movements
     }
@@ -128,61 +139,97 @@ async function fetchRecentMovements(): Promise<StockMovement[]> {
 
   // Sort by date (newest first) and take top 5
   return allMovements
-    .sort((a, b) => new Date(b.performedAt).getTime() - new Date(a.performedAt).getTime())
-    .slice(0, 5)
+    .sort(
+      (a, b) =>
+        new Date(b.performedAt).getTime() - new Date(a.performedAt).getTime()
+    )
+    .slice(0, 5);
 }
 
 // Computed KPIs
-const totalSKUs = computed(() => stocks.value.length)
+const totalSKUs = computed(() => stocks.value.length);
 
 const totalAvailableQty = computed(() => {
   return stocks.value.reduce((sum, stock) => {
-    return sum + parseFloat(stock.availableQuantity || '0')
-  }, 0)
-})
+    return sum + parseFloat(stock.availableQuantity || "0");
+  }, 0);
+});
 
 const totalReservedQty = computed(() => {
   return stocks.value.reduce((sum, stock) => {
-    return sum + parseFloat(stock.reservedQuantity || '0')
-  }, 0)
-})
+    return sum + parseFloat(stock.reservedQuantity || "0");
+  }, 0);
+});
 
 const lowStockItems = computed(() => {
-  return stocks.value.filter(stock => {
-    const qty = parseFloat(stock.availableQuantity || '0')
-    return qty > 0 && qty <= lowStockThreshold.value
-  })
-})
+  return stocks.value.filter((stock) => {
+    const qty = parseFloat(stock.availableQuantity || "0");
+    return qty > 0 && qty <= lowStockThreshold.value;
+  });
+});
 
 const outOfStockItems = computed(() => {
-  return stocks.value.filter(stock => {
-    const qty = parseFloat(stock.availableQuantity || '0')
-    return qty <= 0
-  })
-})
+  return stocks.value.filter((stock) => {
+    const qty = parseFloat(stock.availableQuantity || "0");
+    return qty <= 0;
+  });
+});
 
 // Helpers
 const formatNumber = (value: number): string => {
-  return value.toLocaleString('en-US', { maximumFractionDigits: 2 })
-}
+  return value.toLocaleString("en-US", { maximumFractionDigits: 2 });
+};
 
 const formatDate = (isoDate: string): string => {
-  const date = new Date(isoDate)
-  return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
+  const date = new Date(isoDate);
+  return (
+    date.toLocaleDateString() +
+    " " +
+    date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  );
+};
 
 const getMovementIcon = (type: string): string => {
   const icons: Record<string, string> = {
-    RECEIPT: '📥',
-    RESERVATION: '🔒',
-    RELEASE: '🔓',
-    CONFIRMATION: '✅',
-    SALE: '💰',
-    TRANSFER: '🔄',
-    ADJUSTMENT: '📝'
+    RECEIPT: "📥",
+    RESERVATION: "🔒",
+    RELEASE: "🔓",
+    CONFIRMATION: "✅",
+    SALE: "💰",
+    ADJUSTMENT: "🔧",
+    RETURN: "↩️",
+  };
+  return icons[type] || "📋";
+};
+
+// Receive Stock handlers
+const handleOpenReceiveDialog = () => {
+  receiveError.value = null;
+  showReceiveDialog.value = true;
+};
+
+const handleCloseReceiveDialog = () => {
+  showReceiveDialog.value = false;
+};
+
+const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
+  receiveLoading.value = true;
+  receiveError.value = null;
+
+  try {
+    await inventoryStore.receiveStock(command);
+    showReceiveDialog.value = false;
+    toast.success(t("toast.stockReceived"));
+    // Refresh dashboard data
+    await fetchDashboardData();
+  } catch (e) {
+    receiveError.value =
+      e instanceof Error ? e.message : t("toast.operationFailed");
+    toast.error(t("toast.operationFailed"));
+  } finally {
+    receiveLoading.value = false;
   }
-  return icons[type] || '📋'
-}
+};
 </script>
 
 <template>
@@ -190,16 +237,22 @@ const getMovementIcon = (type: string): string => {
     <!-- Header -->
     <header class="page-header">
       <div class="page-header__nav">
-        <h1 class="page-header__title">{{ t('dashboard.title') }}</h1>
-        <CommonLanguageSwitcher />
+        <h1 class="page-header__title">{{ t("dashboard.title") }}</h1>
+        <div class="header-controls">
+          <CommonThemeToggle />
+          <CommonLanguageSwitcher />
+          <NuxtLink to="/" class="btn btn--ghost">
+            ← {{ t("common.back") }}
+          </NuxtLink>
+        </div>
       </div>
-      <p class="page-header__subtitle">{{ t('dashboard.subtitle') }}</p>
+      <p class="page-header__subtitle">{{ t("dashboard.subtitle") }}</p>
     </header>
 
     <!-- Loading -->
     <div v-if="loading" class="loading-state">
       <span class="spinner"></span>
-      {{ t('common.loading') }}
+      {{ t("common.loading") }}
     </div>
 
     <!-- Error -->
@@ -207,7 +260,7 @@ const getMovementIcon = (type: string): string => {
       <span class="error-icon">⚠️</span>
       <p>{{ error }}</p>
       <button class="btn btn--primary" @click="fetchDashboardData">
-        {{ t('common.submit') }}
+        {{ t("common.submit") }}
       </button>
     </div>
 
@@ -220,7 +273,7 @@ const getMovementIcon = (type: string): string => {
           <div class="kpi-card__icon">📦</div>
           <div class="kpi-card__content">
             <span class="kpi-card__value">{{ formatNumber(totalSKUs) }}</span>
-            <span class="kpi-card__label">{{ t('dashboard.totalSKUs') }}</span>
+            <span class="kpi-card__label">{{ t("dashboard.totalSKUs") }}</span>
           </div>
         </div>
 
@@ -228,8 +281,12 @@ const getMovementIcon = (type: string): string => {
         <div class="kpi-card kpi-card--success">
           <div class="kpi-card__icon">✅</div>
           <div class="kpi-card__content">
-            <span class="kpi-card__value">{{ formatNumber(totalAvailableQty) }}</span>
-            <span class="kpi-card__label">{{ t('dashboard.totalAvailable') }}</span>
+            <span class="kpi-card__value">{{
+              formatNumber(totalAvailableQty)
+            }}</span>
+            <span class="kpi-card__label">{{
+              t("dashboard.totalAvailable")
+            }}</span>
           </div>
         </div>
 
@@ -237,17 +294,24 @@ const getMovementIcon = (type: string): string => {
         <div class="kpi-card kpi-card--warning">
           <div class="kpi-card__icon">🔒</div>
           <div class="kpi-card__content">
-            <span class="kpi-card__value">{{ formatNumber(totalReservedQty) }}</span>
-            <span class="kpi-card__label">{{ t('dashboard.totalReserved') }}</span>
+            <span class="kpi-card__value">{{
+              formatNumber(totalReservedQty)
+            }}</span>
+            <span class="kpi-card__label">{{
+              t("dashboard.totalReserved")
+            }}</span>
           </div>
         </div>
 
         <!-- Low Stock -->
-        <div class="kpi-card" :class="{ 'kpi-card--danger': lowStockItems.length > 0 }">
+        <div
+          class="kpi-card"
+          :class="{ 'kpi-card--danger': lowStockItems.length > 0 }"
+        >
           <div class="kpi-card__icon">⚠️</div>
           <div class="kpi-card__content">
             <span class="kpi-card__value">{{ lowStockItems.length }}</span>
-            <span class="kpi-card__label">{{ t('dashboard.lowStock') }}</span>
+            <span class="kpi-card__label">{{ t("dashboard.lowStock") }}</span>
           </div>
         </div>
       </div>
@@ -258,7 +322,7 @@ const getMovementIcon = (type: string): string => {
         <section class="dashboard-section">
           <div class="dashboard-section__header">
             <h2 class="dashboard-section__title">
-              ⚠️ {{ t('dashboard.lowStockAlerts') }}
+              ⚠️ {{ t("dashboard.lowStockAlerts") }}
             </h2>
             <button class="settings-btn" @click="showSettings = !showSettings">
               ⚙️
@@ -268,7 +332,9 @@ const getMovementIcon = (type: string): string => {
           <!-- Settings Panel -->
           <div v-if="showSettings" class="settings-panel">
             <div class="settings-panel__row">
-              <label class="settings-panel__label">{{ t('dashboard.thresholdLabel') }}</label>
+              <label class="settings-panel__label">{{
+                t("dashboard.thresholdLabel")
+              }}</label>
               <input
                 v-model="thresholdInput"
                 type="number"
@@ -279,16 +345,22 @@ const getMovementIcon = (type: string): string => {
             </div>
             <div class="settings-panel__actions">
               <button class="btn btn--small btn--ghost" @click="resetThreshold">
-                {{ t('dashboard.resetDefault') }}
+                {{ t("dashboard.resetDefault") }}
               </button>
-              <button class="btn btn--small btn--primary" @click="saveThreshold">
-                {{ t('common.save') }}
+              <button
+                class="btn btn--small btn--primary"
+                @click="saveThreshold"
+              >
+                {{ t("common.save") }}
               </button>
             </div>
           </div>
 
-          <div v-if="lowStockItems.length === 0" class="dashboard-section__empty">
-            {{ t('dashboard.noLowStock') }}
+          <div
+            v-if="lowStockItems.length === 0"
+            class="dashboard-section__empty"
+          >
+            {{ t("dashboard.noLowStock") }}
           </div>
 
           <div v-else class="alert-list">
@@ -302,7 +374,9 @@ const getMovementIcon = (type: string): string => {
                 <span class="alert-item__sku">{{ stock.sku }}</span>
                 <span class="alert-item__location">{{ stock.locationId }}</span>
               </div>
-              <span class="alert-item__qty">{{ formatNumber(parseFloat(stock.availableQuantity)) }}</span>
+              <span class="alert-item__qty">{{
+                formatNumber(parseFloat(stock.availableQuantity))
+              }}</span>
             </NuxtLink>
           </div>
         </section>
@@ -310,11 +384,14 @@ const getMovementIcon = (type: string): string => {
         <!-- Recent Movements -->
         <section class="dashboard-section">
           <h2 class="dashboard-section__title">
-            📋 {{ t('dashboard.recentMovements') }}
+            📋 {{ t("dashboard.recentMovements") }}
           </h2>
 
-          <div v-if="recentMovements.length === 0" class="dashboard-section__empty">
-            {{ t('messages.noData') }}
+          <div
+            v-if="recentMovements.length === 0"
+            class="dashboard-section__empty"
+          >
+            {{ t("messages.noData") }}
           </div>
 
           <div v-else class="movement-list">
@@ -323,14 +400,23 @@ const getMovementIcon = (type: string): string => {
               :key="movement.id"
               class="movement-item"
             >
-              <span class="movement-item__icon">{{ getMovementIcon(movement.movementType) }}</span>
+              <span class="movement-item__icon">{{
+                getMovementIcon(movement.movementType)
+              }}</span>
               <div class="movement-item__content">
-                <span class="movement-item__type">{{ t(`movementTypes.${movement.movementType}`) }}</span>
-                <span class="movement-item__qty" :class="{ 'positive': movement.quantity.startsWith('+') }">
+                <span class="movement-item__type">{{
+                  t(`movementTypes.${movement.movementType}`)
+                }}</span>
+                <span
+                  class="movement-item__qty"
+                  :class="{ positive: movement.quantity.startsWith('+') }"
+                >
                   {{ movement.quantity }}
                 </span>
               </div>
-              <span class="movement-item__date">{{ formatDate(movement.performedAt) }}</span>
+              <span class="movement-item__date">{{
+                formatDate(movement.performedAt)
+              }}</span>
             </div>
           </div>
         </section>
@@ -338,10 +424,25 @@ const getMovementIcon = (type: string): string => {
 
       <!-- Quick Actions -->
       <div class="quick-actions">
-        <NuxtLink to="/inventory" class="btn btn--primary">
-          📦 {{ t('dashboard.viewInventory') }}
+        <button
+          class="btn btn--success btn--lg"
+          @click="handleOpenReceiveDialog"
+        >
+          📥 {{ t("inventory.receiveStock") }}
+        </button>
+        <NuxtLink to="/inventory" class="btn btn--primary btn--lg">
+          📦 {{ t("dashboard.viewInventory") }}
         </NuxtLink>
       </div>
+
+      <!-- Receive Stock Dialog -->
+      <InventoryReceiveStockDialog
+        :open="showReceiveDialog"
+        :loading="receiveLoading"
+        :error="receiveError"
+        @submit="handleReceiveSubmit"
+        @close="handleCloseReceiveDialog"
+      />
     </template>
   </div>
 </template>
@@ -368,13 +469,19 @@ const getMovementIcon = (type: string): string => {
 .page-header__title {
   font-size: 1.75rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text-primary);
   margin: 0;
 }
 
 .page-header__subtitle {
-  color: #6b7280;
+  color: var(--color-text-secondary);
   margin: 0;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 /* Loading & Error States */
@@ -401,7 +508,9 @@ const getMovementIcon = (type: string): string => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error-icon {
@@ -460,7 +569,7 @@ const getMovementIcon = (type: string): string => {
   font-size: 1.75rem;
   font-weight: 700;
   color: #111827;
-  font-family: 'SF Mono', 'Consolas', monospace;
+  font-family: "SF Mono", "Consolas", monospace;
 }
 
 .kpi-card__label {
@@ -595,7 +704,7 @@ const getMovementIcon = (type: string): string => {
 }
 
 .alert-item__sku {
-  font-family: 'SF Mono', 'Consolas', monospace;
+  font-family: "SF Mono", "Consolas", monospace;
   font-weight: 500;
   color: #1a73e8;
 }
@@ -606,7 +715,7 @@ const getMovementIcon = (type: string): string => {
 }
 
 .alert-item__qty {
-  font-family: 'SF Mono', 'Consolas', monospace;
+  font-family: "SF Mono", "Consolas", monospace;
   font-weight: 600;
   color: #ef4444;
 }
@@ -644,7 +753,7 @@ const getMovementIcon = (type: string): string => {
 }
 
 .movement-item__qty {
-  font-family: 'SF Mono', 'Consolas', monospace;
+  font-family: "SF Mono", "Consolas", monospace;
   font-weight: 600;
   color: #ef4444;
 }
@@ -687,6 +796,20 @@ const getMovementIcon = (type: string): string => {
 
 .btn--primary:hover {
   background: #1557b0;
+}
+
+.btn--success {
+  background: #10b981;
+  color: white;
+}
+
+.btn--success:hover {
+  background: #059669;
+}
+
+.btn--lg {
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
 }
 
 /* Responsive */

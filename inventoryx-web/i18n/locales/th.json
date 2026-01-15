@@ -231,5 +231,9 @@
     "confirmReservationTitle": "ยืนยันการจอง",
     "confirmReservationMessage": "การดำเนินการนี้จะหักสต็อกจากคลังถาวร ไม่สามารถย้อนกลับได้ ต้องการดำเนินการต่อหรือไม่?",
     "proceedAction": "ใช่ ดำเนินการ"
+  },
+  "theme": {
+    "switchLight": "เปลี่ยนเป็นโหมดสว่าง",
+    "switchDark": "เปลี่ยนเป็นโหมดมืด"
   }
 }
