@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Stock } from '~/types/inventory'
+import type { Stock } from "~/types/inventory";
 
 /**
  * StockList Component
@@ -17,62 +17,94 @@ import type { Stock } from '~/types/inventory'
  */
 
 // i18n
-const { t } = useI18n()
+const { t } = useI18n();
 
 // Props
 interface Props {
   /** List of stocks to display */
-  stocks: Stock[]
+  stocks: Stock[];
   /** Loading state */
-  loading?: boolean
+  loading?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  loading: false
-})
+  loading: false,
+});
 
 // Emits
 const emit = defineEmits<{
   /** Triggered when user clicks receive stock button */
-  receive: []
+  receive: [];
   /** Triggered when user clicks reserve button for a stock */
-  reserve: [stock: Stock]
+  reserve: [stock: Stock];
   /** Triggered when user clicks release button for a stock */
-  release: [stock: Stock]
+  release: [stock: Stock];
   /** Triggered when user clicks confirm button for a stock */
-  confirm: [stock: Stock]
+  confirm: [stock: Stock];
   /** Triggered when user clicks adjust button for a stock */
-  adjust: [stock: Stock]
+  adjust: [stock: Stock];
   /** Triggered when user clicks view details for a stock */
-  view: [stock: Stock]
-}>()
+  view: [stock: Stock];
+}>();
 
 // Search state
-const searchSku = ref('')
-const searchLocation = ref('')
+const searchSku = ref("");
+const searchLocation = ref("");
+const stockStatus = ref("all"); // 'all' | 'low' | 'normal' | 'out'
+
+// Configuration
+const LOW_STOCK_THRESHOLD = 10;
 
 // Computed filtered stocks
 const filteredStocks = computed(() => {
-  return props.stocks.filter(stock => {
-    const matchesSku = !searchSku.value ||
-      stock.sku.toLowerCase().includes(searchSku.value.toLowerCase())
-    const matchesLocation = !searchLocation.value ||
-      stock.locationId.toLowerCase().includes(searchLocation.value.toLowerCase())
-    return matchesSku && matchesLocation
-  })
-})
+  return props.stocks.filter((stock) => {
+    // SKU filter
+    const matchesSku =
+      !searchSku.value ||
+      stock.sku.toLowerCase().includes(searchSku.value.toLowerCase());
+
+    // Location filter
+    const matchesLocation =
+      !searchLocation.value ||
+      stock.locationId
+        .toLowerCase()
+        .includes(searchLocation.value.toLowerCase());
+
+    // Stock status filter
+    const qty = parseFloat(stock.availableQuantity || "0");
+    let matchesStatus = true;
+    if (stockStatus.value === "low") {
+      matchesStatus = qty > 0 && qty <= LOW_STOCK_THRESHOLD;
+    } else if (stockStatus.value === "normal") {
+      matchesStatus = qty > LOW_STOCK_THRESHOLD;
+    } else if (stockStatus.value === "out") {
+      matchesStatus = qty <= 0;
+    }
+
+    return matchesSku && matchesLocation && matchesStatus;
+  });
+});
+
+// Check if any filter is active
+const hasActiveFilters = computed(() => {
+  return searchSku.value || searchLocation.value || stockStatus.value !== "all";
+});
 
 // Format quantity for display
 const formatQuantity = (value: string): string => {
-  const num = parseFloat(value || '0')
-  return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-}
+  const num = parseFloat(value || "0");
+  return num.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
 
 // Clear search filters
 const clearFilters = () => {
-  searchSku.value = ''
-  searchLocation.value = ''
-}
+  searchSku.value = "";
+  searchLocation.value = "";
+  stockStatus.value = "all";
+};
 </script>
 
 <template>
@@ -81,7 +113,7 @@ const clearFilters = () => {
     <div class="stock-list__header">
       <div class="stock-list__search">
         <div class="search-field">
-          <label for="search-sku">{{ t('inventory.sku') }}</label>
+          <label for="search-sku">{{ t("inventory.sku") }}</label>
           <input
             id="search-sku"
             v-model="searchSku"
@@ -91,7 +123,7 @@ const clearFilters = () => {
           />
         </div>
         <div class="search-field">
-          <label for="search-location">{{ t('inventory.location') }}</label>
+          <label for="search-location">{{ t("inventory.location") }}</label>
           <input
             id="search-location"
             v-model="searchLocation"
@@ -100,17 +132,26 @@ const clearFilters = () => {
             class="input"
           />
         </div>
+        <div class="search-field">
+          <label for="stock-status">{{ t("inventory.stockStatus") }}</label>
+          <select id="stock-status" v-model="stockStatus" class="input">
+            <option value="all">{{ t("inventory.statusAll") }}</option>
+            <option value="normal">{{ t("inventory.statusNormal") }}</option>
+            <option value="low">{{ t("inventory.statusLow") }}</option>
+            <option value="out">{{ t("inventory.statusOut") }}</option>
+          </select>
+        </div>
         <button
-          v-if="searchSku || searchLocation"
-          class="btn btn--secondary"
+          v-if="hasActiveFilters"
+          class="btn btn--secondary btn--clear"
           @click="clearFilters"
         >
-          {{ t('common.filter') }}
+          ✕ {{ t("common.clearFilter") }}
         </button>
       </div>
       <div class="stock-list__actions">
         <button class="btn btn--primary" @click="emit('receive')">
-          + {{ t('inventory.receiveStock') }}
+          + {{ t("inventory.receiveStock") }}
         </button>
       </div>
     </div>
@@ -118,40 +159,47 @@ const clearFilters = () => {
     <!-- Loading State -->
     <div v-if="loading" class="stock-list__loading">
       <span class="spinner"></span>
-      {{ t('common.loading') }}
+      {{ t("common.loading") }}
     </div>
 
     <!-- Empty State -->
     <div v-else-if="filteredStocks.length === 0" class="stock-list__empty">
-      <p v-if="stocks.length === 0">{{ t('messages.noData') }}</p>
-      <p v-else>{{ t('messages.noData') }}</p>
+      <p v-if="stocks.length === 0">{{ t("messages.noData") }}</p>
+      <p v-else>{{ t("messages.noData") }}</p>
     </div>
 
     <!-- Stock Table -->
     <table v-else class="stock-table">
       <thead>
         <tr>
-          <th>{{ t('inventory.sku') }}</th>
-          <th>{{ t('inventory.location') }}</th>
-          <th class="text-right">{{ t('inventory.availableQuantity') }}</th>
-          <th class="text-right">{{ t('inventory.reservedQuantity') }}</th>
-          <th>{{ t('inventory.unitOfMeasure') }}</th>
-          <th class="text-center">{{ t('common.actions') }}</th>
+          <th>{{ t("inventory.sku") }}</th>
+          <th>{{ t("inventory.location") }}</th>
+          <th class="text-right">{{ t("inventory.availableQuantity") }}</th>
+          <th class="text-right">{{ t("inventory.reservedQuantity") }}</th>
+          <th>{{ t("inventory.unitOfMeasure") }}</th>
+          <th class="text-center">{{ t("common.actions") }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="stock in filteredStocks" :key="stock.id">
           <td>
-            <NuxtLink :to="`/inventory/${stock.id}`" class="stock-sku stock-sku--link">
+            <NuxtLink
+              :to="`/inventory/${stock.id}`"
+              class="stock-sku stock-sku--link"
+            >
               {{ stock.sku }}
             </NuxtLink>
           </td>
           <td>{{ stock.locationId }}</td>
           <td class="text-right">
-            <span class="quantity available">{{ formatQuantity(stock.availableQuantity) }}</span>
+            <span class="quantity available">{{
+              formatQuantity(stock.availableQuantity)
+            }}</span>
           </td>
           <td class="text-right">
-            <span class="quantity reserved">{{ formatQuantity(stock.reservedQuantity) }}</span>
+            <span class="quantity reserved">{{
+              formatQuantity(stock.reservedQuantity)
+            }}</span>
           </td>
           <td>{{ stock.unitOfMeasure }}</td>
           <td class="text-center">
@@ -161,27 +209,27 @@ const clearFilters = () => {
                 :disabled="parseFloat(stock.availableQuantity) <= 0"
                 @click="emit('reserve', stock)"
               >
-                {{ t('inventory.reserveStock') }}
+                {{ t("inventory.reserveStock") }}
               </button>
               <button
                 class="btn btn--small btn--warning"
                 :disabled="parseFloat(stock.reservedQuantity) <= 0"
                 @click="emit('release', stock)"
               >
-                {{ t('inventory.releaseReservation') }}
+                {{ t("inventory.releaseReservation") }}
               </button>
               <button
                 class="btn btn--small btn--danger"
                 :disabled="parseFloat(stock.reservedQuantity) <= 0"
                 @click="emit('confirm', stock)"
               >
-                {{ t('inventory.confirmReservation') }}
+                {{ t("inventory.confirmReservation") }}
               </button>
               <button
                 class="btn btn--small btn--ghost"
                 @click="emit('adjust', stock)"
               >
-                {{ t('inventory.adjustStock') }}
+                {{ t("inventory.adjustStock") }}
               </button>
             </div>
           </td>
@@ -191,7 +239,10 @@ const clearFilters = () => {
 
     <!-- Summary Footer -->
     <div v-if="filteredStocks.length > 0" class="stock-list__footer">
-      <span>{{ filteredStocks.length }} / {{ stocks.length }} {{ t('inventory.stocks') }}</span>
+      <span
+        >{{ filteredStocks.length }} / {{ stocks.length }}
+        {{ t("inventory.stocks") }}</span
+      >
     </div>
   </div>
 </template>
@@ -273,7 +324,9 @@ const clearFilters = () => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .stock-table {
@@ -312,7 +365,7 @@ const clearFilters = () => {
 }
 
 .stock-sku {
-  font-family: 'SF Mono', 'Consolas', monospace;
+  font-family: "SF Mono", "Consolas", monospace;
   font-weight: 500;
   color: #1a73e8;
 }
@@ -328,7 +381,7 @@ const clearFilters = () => {
 }
 
 .quantity {
-  font-family: 'SF Mono', 'Consolas', monospace;
+  font-family: "SF Mono", "Consolas", monospace;
   font-weight: 500;
 }
 

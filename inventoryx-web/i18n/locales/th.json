@@ -27,7 +27,8 @@
     "details": "รายละเอียด",
     "view": "ดู",
     "download": "ดาวน์โหลด",
-    "upload": "อัพโหลด"
+    "upload": "อัพโหลด",
+    "clearFilter": "ล้าง"
   },
   "navigation": {
     "home": "หน้าแรก",
@@ -92,7 +93,12 @@
     "maxReserved": "สูงสุด",
     "orderReference": "อ้างอิงคำสั่งซื้อเดิม",
     "orderFulfilling": "คำสั่งซื้อที่กำลังจัดส่ง",
-    "stockDetails": "รายละเอียดสต็อก"
+    "stockDetails": "รายละเอียดสต็อก",
+    "stockStatus": "สถานะ",
+    "statusAll": "ทั้งหมด",
+    "statusNormal": "มีสินค้า",
+    "statusLow": "สต็อกต่ำ",
+    "statusOut": "หมด"
   },
   "movementTypes": {
     "RECEIPT": "การรับเข้า",

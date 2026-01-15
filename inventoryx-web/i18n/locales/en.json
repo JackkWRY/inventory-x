@@ -27,7 +27,8 @@
     "details": "Details",
     "view": "View",
     "download": "Download",
-    "upload": "Upload"
+    "upload": "Upload",
+    "clearFilter": "Clear"
   },
   "navigation": {
     "home": "Home",
@@ -92,7 +93,12 @@
     "maxReserved": "Maximum",
     "orderReference": "Original order reference",
     "orderFulfilling": "Order being fulfilled",
-    "stockDetails": "Stock Details"
+    "stockDetails": "Stock Details",
+    "stockStatus": "Status",
+    "statusAll": "All",
+    "statusNormal": "In Stock",
+    "statusLow": "Low Stock",
+    "statusOut": "Out of Stock"
   },
   "movementTypes": {
     "RECEIPT": "Receipt",
