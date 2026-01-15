@@ -1,5 +1,6 @@
 import type {
   Stock,
+  StockMovement,
   ReceiveStockCommand,
   ReserveStockCommand,
   ReleaseReservationCommand,
@@ -63,6 +64,15 @@ export const useInventoryApi = () => {
           size: params?.size ?? 20
         }
       })
+    },
+
+    /**
+     * Get stock movement history
+     * @param stockId - Stock ID
+     * @returns Promise<StockMovement[]> - List of movements (newest first)
+     */
+    async getStockMovements(stockId: string): Promise<StockMovement[]> {
+      return await $fetch<StockMovement[]>(`${baseUrl}/stocks/${stockId}/movements`)
     },
 
     // ============================================

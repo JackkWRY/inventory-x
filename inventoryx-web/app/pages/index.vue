@@ -9,6 +9,11 @@
     </header>
 
     <nav class="home__nav">
+      <NuxtLink to="/dashboard" class="nav-card nav-card--primary">
+        <h2>{{ $t('navigation.dashboard') }}</h2>
+        <p>{{ $t('dashboard.subtitle') }}</p>
+      </NuxtLink>
+
       <NuxtLink to="/inventory" class="nav-card">
         <h2>{{ $t('navigation.inventory') }}</h2>
         <p>{{ $t('inventory.subtitle') }}</p>
@@ -90,5 +95,14 @@
 .nav-card p {
   font-size: 0.875rem;
   color: #5f6368;
+}
+
+.nav-card--primary {
+  background: linear-gradient(135deg, #e8f0fe 0%, #ffffff 100%);
+  border-color: #1a73e8;
+}
+
+.nav-card--primary h2 {
+  color: #1a73e8;
 }
 </style>

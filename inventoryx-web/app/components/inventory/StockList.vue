@@ -142,7 +142,9 @@ const clearFilters = () => {
       <tbody>
         <tr v-for="stock in filteredStocks" :key="stock.id">
           <td>
-            <span class="stock-sku">{{ stock.sku }}</span>
+            <NuxtLink :to="`/inventory/${stock.id}`" class="stock-sku stock-sku--link">
+              {{ stock.sku }}
+            </NuxtLink>
           </td>
           <td>{{ stock.locationId }}</td>
           <td class="text-right">
@@ -313,6 +315,16 @@ const clearFilters = () => {
   font-family: 'SF Mono', 'Consolas', monospace;
   font-weight: 500;
   color: #1a73e8;
+}
+
+.stock-sku--link {
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.stock-sku--link:hover {
+  text-decoration: underline;
+  color: #1557b0;
 }
 
 .quantity {

@@ -31,6 +31,7 @@
   },
   "navigation": {
     "home": "หน้าแรก",
+    "dashboard": "แดชบอร์ด",
     "inventory": "สินค้าคงคลัง",
     "products": "สินค้า",
     "warehouses": "คลังสินค้า",
@@ -38,6 +39,20 @@
     "customers": "ลูกค้า",
     "reports": "รายงาน",
     "settings": "ตั้งค่า"
+  },
+  "dashboard": {
+    "title": "แดชบอร์ด",
+    "subtitle": "ภาพรวมสถานะสินค้าคงคลัง",
+    "totalSKUs": "จำนวน SKU ทั้งหมด",
+    "totalAvailable": "จำนวนที่พร้อมใช้",
+    "totalReserved": "จำนวนที่ถูกจอง",
+    "lowStock": "สต็อกต่ำ",
+    "lowStockAlerts": "แจ้งเตือนสต็อกต่ำ",
+    "noLowStock": "สต็อกทั้งหมดอยู่ในระดับปกติ",
+    "recentMovements": "การเคลื่อนไหวล่าสุด",
+    "viewInventory": "ดูสินค้าคงคลัง",
+    "thresholdLabel": "เกณฑ์สต็อกต่ำ",
+    "resetDefault": "รีเซ็ตเป็นค่าเริ่มต้น"
   },
   "inventory": {
     "title": "จัดการสินค้าคงคลัง",
@@ -76,7 +91,8 @@
     "confirmWarning": "การดำเนินการนี้จะหักสต็อกถาวร ไม่สามารถย้อนกลับได้",
     "maxReserved": "สูงสุด",
     "orderReference": "อ้างอิงคำสั่งซื้อเดิม",
-    "orderFulfilling": "คำสั่งซื้อที่กำลังจัดส่ง"
+    "orderFulfilling": "คำสั่งซื้อที่กำลังจัดส่ง",
+    "stockDetails": "รายละเอียดสต็อก"
   },
   "movementTypes": {
     "RECEIPT": "การรับเข้า",

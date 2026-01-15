@@ -31,6 +31,7 @@
   },
   "navigation": {
     "home": "Home",
+    "dashboard": "Dashboard",
     "inventory": "Inventory",
     "products": "Products",
     "warehouses": "Warehouses",
@@ -38,6 +39,20 @@
     "customers": "Customers",
     "reports": "Reports",
     "settings": "Settings"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of your inventory status",
+    "totalSKUs": "Total SKUs",
+    "totalAvailable": "Available Qty",
+    "totalReserved": "Reserved Qty",
+    "lowStock": "Low Stock",
+    "lowStockAlerts": "Low Stock Alerts",
+    "noLowStock": "All stock levels are healthy",
+    "recentMovements": "Recent Movements",
+    "viewInventory": "View Inventory",
+    "thresholdLabel": "Low Stock Threshold",
+    "resetDefault": "Reset to Default"
   },
   "inventory": {
     "title": "Inventory Management",
@@ -76,7 +91,8 @@
     "confirmWarning": "This will permanently deduct stock. This action cannot be undone.",
     "maxReserved": "Maximum",
     "orderReference": "Original order reference",
-    "orderFulfilling": "Order being fulfilled"
+    "orderFulfilling": "Order being fulfilled",
+    "stockDetails": "Stock Details"
   },
   "movementTypes": {
     "RECEIPT": "Receipt",

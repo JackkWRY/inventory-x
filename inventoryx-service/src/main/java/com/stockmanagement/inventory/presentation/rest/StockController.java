@@ -2,6 +2,7 @@ package com.stockmanagement.inventory.presentation.rest;
 
 import com.stockmanagement.inventory.application.dto.command.*;
 import com.stockmanagement.inventory.application.dto.response.StockResponse;
+import com.stockmanagement.inventory.application.dto.response.StockMovementResponse;
 import com.stockmanagement.inventory.application.service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ import java.util.List;
  * - POST /confirm - Confirm reservation (sale)
  * - POST /adjust - Adjust stock quantity
  * - GET /{id} - Get stock by ID
+ * - GET /{id}/movements - Get stock movement history
  * - GET ?sku=X - Query stocks by SKU
  * - GET ?locationId=X - Query stocks by location
  * 
@@ -36,6 +38,7 @@ public class StockController {
     private final ConfirmReservationUseCase confirmReservationUseCase;
     private final AdjustStockUseCase adjustStockUseCase;
     private final QueryStockUseCase queryStockUseCase;
+    private final QueryStockMovementUseCase queryStockMovementUseCase;
 
     public StockController(
             ReceiveStockUseCase receiveStockUseCase,
@@ -43,13 +46,15 @@ public class StockController {
             ReleaseReservationUseCase releaseReservationUseCase,
             ConfirmReservationUseCase confirmReservationUseCase,
             AdjustStockUseCase adjustStockUseCase,
-            QueryStockUseCase queryStockUseCase) {
+            QueryStockUseCase queryStockUseCase,
+            QueryStockMovementUseCase queryStockMovementUseCase) {
         this.receiveStockUseCase = receiveStockUseCase;
         this.reserveStockUseCase = reserveStockUseCase;
         this.releaseReservationUseCase = releaseReservationUseCase;
         this.confirmReservationUseCase = confirmReservationUseCase;
         this.adjustStockUseCase = adjustStockUseCase;
         this.queryStockUseCase = queryStockUseCase;
+        this.queryStockMovementUseCase = queryStockMovementUseCase;
     }
 
     /**
@@ -149,6 +154,22 @@ public class StockController {
     public ResponseEntity<StockResponse> getStockById(@PathVariable String id) {
         StockResponse response = queryStockUseCase.getById(id);
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Get stock movement history.
+     * 
+     * GET /api/v1/stocks/{id}/movements
+     * 
+     * USE CASE: View movement history on Stock Detail page
+     * 
+     * @param id Stock identifier
+     * @return List of movements (newest first)
+     */
+    @GetMapping("/{id}/movements")
+    public ResponseEntity<List<StockMovementResponse>> getStockMovements(@PathVariable String id) {
+        List<StockMovementResponse> movements = queryStockMovementUseCase.getMovementsByStockId(id);
+        return ResponseEntity.ok(movements);
     }
 
     /**
