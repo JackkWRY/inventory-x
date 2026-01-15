@@ -224,5 +224,12 @@
     "operationFailed": "Operation failed",
     "networkError": "Network error. Please try again.",
     "unexpectedError": "An unexpected error occurred"
+  },
+  "confirm": {
+    "adjustStockTitle": "Adjust Stock",
+    "adjustStockMessage": "This will permanently change the stock quantity. This action cannot be undone. Do you want to continue?",
+    "confirmReservationTitle": "Confirm Reservation",
+    "confirmReservationMessage": "This will permanently deduct stock from inventory. This action cannot be undone. Do you want to continue?",
+    "proceedAction": "Yes, Proceed"
   }
 }

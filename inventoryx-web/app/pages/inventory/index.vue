@@ -30,6 +30,12 @@ const showConfirmDialog = ref(false)
 const showAdjustDialog = ref(false)
 const selectedStock = ref<Stock | null>(null)
 
+// Confirmation modal states
+const showAdjustConfirmation = ref(false)
+const showConfirmReservationConfirmation = ref(false)
+const pendingAdjustCommand = ref<AdjustStockCommand | null>(null)
+const pendingConfirmCommand = ref<ConfirmReservationCommand | null>(null)
+
 // Computed
 const stocks = computed(() => store.stocks)
 const loading = computed(() => store.loading)
@@ -122,16 +128,32 @@ const handleCloseConfirmDialog = () => {
   selectedStock.value = null
 }
 
+// Confirm Reservation - with confirmation modal
 const handleConfirmSubmit = async (command: ConfirmReservationCommand) => {
+  // Store command and show confirmation
+  pendingConfirmCommand.value = command
+  showConfirmReservationConfirmation.value = true
+}
+
+const handleConfirmReservationConfirmed = async () => {
+  if (!pendingConfirmCommand.value) return
+  
   try {
-    await store.confirmReservation(command)
+    await store.confirmReservation(pendingConfirmCommand.value)
     showConfirmDialog.value = false
+    showConfirmReservationConfirmation.value = false
     selectedStock.value = null
+    pendingConfirmCommand.value = null
     toast.success(t('toast.stockConfirmed'))
     await store.fetchStocksPaged()
   } catch {
     toast.error(t('toast.operationFailed'))
   }
+}
+
+const handleCancelConfirmReservation = () => {
+  showConfirmReservationConfirmation.value = false
+  pendingConfirmCommand.value = null
 }
 
 // Adjust Stock handlers
@@ -146,16 +168,32 @@ const handleCloseAdjustDialog = () => {
   selectedStock.value = null
 }
 
+// Adjust Stock - with confirmation modal
 const handleAdjustSubmit = async (command: AdjustStockCommand) => {
+  // Store command and show confirmation
+  pendingAdjustCommand.value = command
+  showAdjustConfirmation.value = true
+}
+
+const handleAdjustConfirmed = async () => {
+  if (!pendingAdjustCommand.value) return
+  
   try {
-    await store.adjustStock(command)
+    await store.adjustStock(pendingAdjustCommand.value)
     showAdjustDialog.value = false
+    showAdjustConfirmation.value = false
     selectedStock.value = null
+    pendingAdjustCommand.value = null
     toast.success(t('toast.stockAdjusted'))
     await store.fetchStocksPaged()
   } catch {
     toast.error(t('toast.operationFailed'))
   }
+}
+
+const handleCancelAdjust = () => {
+  showAdjustConfirmation.value = false
+  pendingAdjustCommand.value = null
 }
 
 const handleViewStock = (stock: Stock) => {
@@ -268,6 +306,30 @@ const handlePageSizeChange = async (size: number) => {
       :error="error"
       @submit="handleAdjustSubmit"
       @close="handleCloseAdjustDialog"
+    />
+
+    <!-- Adjust Stock Confirmation Modal -->
+    <CommonConfirmDialog
+      :show="showAdjustConfirmation"
+      :title="t('confirm.adjustStockTitle')"
+      :message="t('confirm.adjustStockMessage')"
+      :confirm-text="t('confirm.proceedAction')"
+      type="warning"
+      :loading="loading"
+      @confirm="handleAdjustConfirmed"
+      @cancel="handleCancelAdjust"
+    />
+
+    <!-- Confirm Reservation Confirmation Modal -->
+    <CommonConfirmDialog
+      :show="showConfirmReservationConfirmation"
+      :title="t('confirm.confirmReservationTitle')"
+      :message="t('confirm.confirmReservationMessage')"
+      :confirm-text="t('confirm.proceedAction')"
+      type="danger"
+      :loading="loading"
+      @confirm="handleConfirmReservationConfirmed"
+      @cancel="handleCancelConfirmReservation"
     />
   </div>
 </template>
