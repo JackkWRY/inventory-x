@@ -1,5 +1,8 @@
 package com.stockmanagement.inventory.application.dto.command;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+
 /**
  * ReserveStockCommand - Command to reserve stock for an order.
  * 
@@ -15,8 +18,11 @@ package com.stockmanagement.inventory.application.dto.command;
  * @since 2026-01-12
  */
 public record ReserveStockCommand(
-        String sku,
-        String locationId,
-        String quantity,
-        String orderId) {
+                @NotBlank(message = "SKU is required") String sku,
+
+                @NotBlank(message = "Location ID is required") String locationId,
+
+                @NotBlank(message = "Quantity is required") @Pattern(regexp = "^\\d+(\\.\\d+)?$", message = "Quantity must be a positive number") String quantity,
+
+                @NotBlank(message = "Order ID is required") String orderId) {
 }

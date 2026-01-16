@@ -4,6 +4,7 @@ import com.stockmanagement.inventory.application.dto.command.*;
 import com.stockmanagement.inventory.application.dto.response.StockResponse;
 import com.stockmanagement.inventory.application.dto.response.StockMovementResponse;
 import com.stockmanagement.inventory.application.service.*;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,8 +40,8 @@ public class StockController {
     private final AdjustStockUseCase adjustStockUseCase;
     private final WithdrawStockUseCase withdrawStockUseCase;
     private final QuickSaleUseCase quickSaleUseCase;
-    private final QueryStockUseCase queryStockUseCase;
-    private final QueryStockMovementUseCase queryStockMovementUseCase;
+    private final StockQueryService stockQueryService;
+    private final StockMovementQueryService stockMovementQueryService;
 
     public StockController(
             ReceiveStockUseCase receiveStockUseCase,
@@ -50,8 +51,8 @@ public class StockController {
             AdjustStockUseCase adjustStockUseCase,
             WithdrawStockUseCase withdrawStockUseCase,
             QuickSaleUseCase quickSaleUseCase,
-            QueryStockUseCase queryStockUseCase,
-            QueryStockMovementUseCase queryStockMovementUseCase) {
+            StockQueryService stockQueryService,
+            StockMovementQueryService stockMovementQueryService) {
         this.receiveStockUseCase = receiveStockUseCase;
         this.reserveStockUseCase = reserveStockUseCase;
         this.releaseReservationUseCase = releaseReservationUseCase;
@@ -59,8 +60,8 @@ public class StockController {
         this.adjustStockUseCase = adjustStockUseCase;
         this.withdrawStockUseCase = withdrawStockUseCase;
         this.quickSaleUseCase = quickSaleUseCase;
-        this.queryStockUseCase = queryStockUseCase;
-        this.queryStockMovementUseCase = queryStockMovementUseCase;
+        this.stockQueryService = stockQueryService;
+        this.stockMovementQueryService = stockMovementQueryService;
     }
 
     /**
@@ -75,7 +76,7 @@ public class StockController {
      */
     @PostMapping("/receive")
     public ResponseEntity<StockResponse> receiveStock(
-            @RequestBody ReceiveStockCommand command) {
+            @Valid @RequestBody ReceiveStockCommand command) {
         StockResponse response = receiveStockUseCase.execute(command);
         return ResponseEntity.ok(response);
     }
@@ -92,7 +93,7 @@ public class StockController {
      */
     @PostMapping("/reserve")
     public ResponseEntity<StockResponse> reserveStock(
-            @RequestBody ReserveStockCommand command) {
+            @Valid @RequestBody ReserveStockCommand command) {
         StockResponse response = reserveStockUseCase.execute(command);
         return ResponseEntity.ok(response);
     }
@@ -109,7 +110,7 @@ public class StockController {
      */
     @PostMapping("/release")
     public ResponseEntity<StockResponse> releaseReservation(
-            @RequestBody ReleaseReservationCommand command) {
+            @Valid @RequestBody ReleaseReservationCommand command) {
         StockResponse response = releaseReservationUseCase.execute(command);
         return ResponseEntity.ok(response);
     }
@@ -126,7 +127,7 @@ public class StockController {
      */
     @PostMapping("/confirm")
     public ResponseEntity<StockResponse> confirmReservation(
-            @RequestBody ConfirmReservationCommand command) {
+            @Valid @RequestBody ConfirmReservationCommand command) {
         StockResponse response = confirmReservationUseCase.execute(command);
         return ResponseEntity.ok(response);
     }
@@ -143,7 +144,7 @@ public class StockController {
      */
     @PostMapping("/adjust")
     public ResponseEntity<StockResponse> adjustStock(
-            @RequestBody AdjustStockCommand command) {
+            @Valid @RequestBody AdjustStockCommand command) {
         StockResponse response = adjustStockUseCase.execute(command);
         return ResponseEntity.ok(response);
     }
@@ -160,7 +161,7 @@ public class StockController {
      */
     @PostMapping("/withdraw")
     public ResponseEntity<StockResponse> withdrawStock(
-            @RequestBody WithdrawStockCommand command) {
+            @Valid @RequestBody WithdrawStockCommand command) {
         StockResponse response = withdrawStockUseCase.execute(command);
         return ResponseEntity.ok(response);
     }
@@ -177,7 +178,7 @@ public class StockController {
      */
     @PostMapping("/sale")
     public ResponseEntity<StockResponse> quickSale(
-            @RequestBody QuickSaleCommand command) {
+            @Valid @RequestBody QuickSaleCommand command) {
         StockResponse response = quickSaleUseCase.execute(command);
         return ResponseEntity.ok(response);
     }
@@ -192,7 +193,7 @@ public class StockController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<StockResponse> getStockById(@PathVariable String id) {
-        StockResponse response = queryStockUseCase.getById(id);
+        StockResponse response = stockQueryService.getById(id);
         return ResponseEntity.ok(response);
     }
 
@@ -208,7 +209,7 @@ public class StockController {
      */
     @GetMapping("/{id}/movements")
     public ResponseEntity<List<StockMovementResponse>> getStockMovements(@PathVariable String id) {
-        List<StockMovementResponse> movements = queryStockMovementUseCase.getMovementsByStockId(id);
+        List<StockMovementResponse> movements = stockMovementQueryService.getMovementsByStockId(id);
         return ResponseEntity.ok(movements);
     }
 
@@ -230,19 +231,19 @@ public class StockController {
 
         if (sku != null && locationId != null) {
             // Both parameters: get specific stock
-            StockResponse response = queryStockUseCase.getBySkuAndLocation(sku, locationId);
+            StockResponse response = stockQueryService.getBySkuAndLocation(sku, locationId);
             return ResponseEntity.ok(List.of(response));
         } else if (sku != null) {
             // SKU only: get all locations
-            List<StockResponse> responses = queryStockUseCase.getBySku(sku);
+            List<StockResponse> responses = stockQueryService.getBySku(sku);
             return ResponseEntity.ok(responses);
         } else if (locationId != null) {
             // Location only: get all products
-            List<StockResponse> responses = queryStockUseCase.getByLocation(locationId);
+            List<StockResponse> responses = stockQueryService.getByLocation(locationId);
             return ResponseEntity.ok(responses);
         } else {
             // No parameters: return all stocks
-            List<StockResponse> responses = queryStockUseCase.getAll();
+            List<StockResponse> responses = stockQueryService.getAll();
             return ResponseEntity.ok(responses);
         }
     }
@@ -272,7 +273,7 @@ public class StockController {
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page,
                 safeSize);
 
-        com.stockmanagement.inventory.application.dto.response.PagedStockResponse response = queryStockUseCase
+        com.stockmanagement.inventory.application.dto.response.PagedStockResponse response = stockQueryService
                 .getAllPaged(pageable);
 
         return ResponseEntity.ok(response);

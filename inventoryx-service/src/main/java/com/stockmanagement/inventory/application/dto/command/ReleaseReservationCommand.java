@@ -1,5 +1,8 @@
 package com.stockmanagement.inventory.application.dto.command;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+
 /**
  * ReleaseReservationCommand - Command to release/cancel a reservation.
  * 
@@ -14,7 +17,9 @@ package com.stockmanagement.inventory.application.dto.command;
  * @since 2026-01-12
  */
 public record ReleaseReservationCommand(
-        String stockId,
-        String quantity,
-        String orderId) {
+                @NotBlank(message = "Stock ID is required") String stockId,
+
+                @NotBlank(message = "Quantity is required") @Pattern(regexp = "^\\d+(\\.\\d+)?$", message = "Quantity must be a positive number") String quantity,
+
+                @NotBlank(message = "Order ID is required") String orderId) {
 }

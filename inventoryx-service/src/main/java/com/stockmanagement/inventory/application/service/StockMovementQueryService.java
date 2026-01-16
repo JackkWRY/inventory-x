@@ -10,11 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * QueryStockMovementUseCase - Handles read-only stock movement queries.
+ * StockMovementQueryService - Handles read-only stock movement queries.
  * 
- * CLEAN ARCHITECTURE: Application Layer
- * =====================================
- * Use Case for querying stock movement history.
+ * CQRS Pattern: Query Service for READ operations only.
  * 
  * QUERIES:
  * - Get all movements for a stock (ordered by date desc)
@@ -26,12 +24,12 @@ import java.util.List;
  */
 @Service
 @Transactional(readOnly = true)
-public class QueryStockMovementUseCase {
+public class StockMovementQueryService {
 
     private final JpaStockMovementRepository movementRepository;
     private final StockMovementMapper mapper;
 
-    public QueryStockMovementUseCase(
+    public StockMovementQueryService(
             JpaStockMovementRepository movementRepository,
             StockMovementMapper mapper) {
         this.movementRepository = movementRepository;

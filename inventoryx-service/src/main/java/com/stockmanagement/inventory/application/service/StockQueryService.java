@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * QueryStockUseCase - Handles read-only stock queries.
+ * StockQueryService - Handles read-only stock queries.
+ * 
+ * CQRS Pattern: Query Service for READ operations only.
  * 
  * QUERIES:
  * - Get stock by ID
@@ -27,12 +29,12 @@ import java.util.List;
  */
 @Service
 @Transactional(readOnly = true)
-public class QueryStockUseCase {
+public class StockQueryService {
 
     private final StockRepository stockRepository;
     private final StockMapper stockMapper;
 
-    public QueryStockUseCase(
+    public StockQueryService(
             StockRepository stockRepository,
             StockMapper stockMapper) {
         this.stockRepository = stockRepository;

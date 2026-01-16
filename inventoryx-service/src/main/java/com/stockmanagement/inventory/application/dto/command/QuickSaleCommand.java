@@ -1,5 +1,8 @@
 package com.stockmanagement.inventory.application.dto.command;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+
 /**
  * QuickSaleCommand - Command for immediate POS/Walk-in sales.
  * 
@@ -11,7 +14,7 @@ package com.stockmanagement.inventory.application.dto.command;
  * 
  * VALIDATION:
  * - stockId: Required, must exist
- * - quantity: Required, must be positive, cannot exceed available
+ * - quantity: Required, must be positive
  * - orderId: Required, POS receipt/invoice number
  * - performedBy: Required, who made the sale
  * 
@@ -19,23 +22,11 @@ package com.stockmanagement.inventory.application.dto.command;
  * @since 2026-01-16
  */
 public record QuickSaleCommand(
-        String stockId,
-        String quantity,
-        String orderId,
-        String performedBy) {
-    // Compact constructor for validation
-    public QuickSaleCommand {
-        if (stockId == null || stockId.isBlank()) {
-            throw new IllegalArgumentException("Stock ID is required");
-        }
-        if (quantity == null || quantity.isBlank()) {
-            throw new IllegalArgumentException("Quantity is required");
-        }
-        if (orderId == null || orderId.isBlank()) {
-            throw new IllegalArgumentException("Order ID is required");
-        }
-        if (performedBy == null || performedBy.isBlank()) {
-            throw new IllegalArgumentException("Performed by is required");
-        }
-    }
+        @NotBlank(message = "Stock ID is required") String stockId,
+
+        @NotBlank(message = "Quantity is required") @Pattern(regexp = "^\\d+(\\.\\d+)?$", message = "Quantity must be a positive number") String quantity,
+
+        @NotBlank(message = "Order ID is required") String orderId,
+
+        @NotBlank(message = "Performed by is required") String performedBy) {
 }

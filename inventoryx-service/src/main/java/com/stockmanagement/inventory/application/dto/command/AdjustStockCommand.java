@@ -1,5 +1,8 @@
 package com.stockmanagement.inventory.application.dto.command;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+
 /**
  * AdjustStockCommand - Command to manually adjust stock quantity.
  * 
@@ -15,8 +18,11 @@ package com.stockmanagement.inventory.application.dto.command;
  * @since 2026-01-12
  */
 public record AdjustStockCommand(
-        String stockId,
-        String newQuantity,
-        String reason,
-        String performedBy) {
+                @NotBlank(message = "Stock ID is required") String stockId,
+
+                @NotBlank(message = "New quantity is required") @Pattern(regexp = "^\\d+(\\.\\d+)?$", message = "Quantity must be a non-negative number") String newQuantity,
+
+                @NotBlank(message = "Reason is required for audit trail") String reason,
+
+                @NotBlank(message = "Performed by is required") String performedBy) {
 }
