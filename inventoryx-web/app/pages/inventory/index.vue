@@ -530,11 +530,11 @@ const handlePageSizeChange = async (size: number) => {
 
 .btn--ghost {
   background: transparent;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 .btn--ghost:hover {
-  background: #f0f0f0;
-  color: #333;
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
 }
 </style>

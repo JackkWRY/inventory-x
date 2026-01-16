@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ReceiveStockCommand } from '~/types/inventory'
+import type { ReceiveStockCommand } from "~/types/inventory";
 
 /**
  * ReceiveStockDialog Component
@@ -19,45 +19,45 @@ import type { ReceiveStockCommand } from '~/types/inventory'
 // Props
 interface Props {
   /** Whether dialog is open */
-  open: boolean
+  open: boolean;
   /** Loading state during submission */
-  loading?: boolean
+  loading?: boolean;
   /** Error message to display */
-  error?: string | null
+  error?: string | null;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
-  error: null
-})
+  error: null,
+});
 
 // Emits
 const emit = defineEmits<{
   /** Triggered when form is submitted */
-  submit: [command: ReceiveStockCommand]
+  submit: [command: ReceiveStockCommand];
   /** Triggered when dialog should close */
-  close: []
-}>()
+  close: [];
+}>();
 
 // Form state
 const form = reactive({
-  sku: '',
-  locationId: '',
-  quantity: '',
-  unitOfMeasure: 'PIECE',
-  reason: '',
-  performedBy: ''
-})
+  sku: "",
+  locationId: "",
+  quantity: "",
+  unitOfMeasure: "PIECE",
+  reason: "",
+  performedBy: "",
+});
 
 // Unit options
 const unitOptions = [
-  { value: 'PIECE', label: 'Piece' },
-  { value: 'KILOGRAM', label: 'Kilogram' },
-  { value: 'LITER', label: 'Liter' },
-  { value: 'METER', label: 'Meter' },
-  { value: 'BOX', label: 'Box' },
-  { value: 'PACK', label: 'Pack' }
-]
+  { value: "PIECE", label: "Piece" },
+  { value: "KILOGRAM", label: "Kilogram" },
+  { value: "LITER", label: "Liter" },
+  { value: "METER", label: "Meter" },
+  { value: "BOX", label: "Box" },
+  { value: "PACK", label: "Pack" },
+];
 
 // Validation
 const isValid = computed(() => {
@@ -67,12 +67,12 @@ const isValid = computed(() => {
     parseFloat(form.quantity) > 0 &&
     form.unitOfMeasure.length > 0 &&
     form.performedBy.trim().length > 0
-  )
-})
+  );
+});
 
 // Handle form submission
 const handleSubmit = () => {
-  if (!isValid.value) return
+  if (!isValid.value) return;
 
   const command: ReceiveStockCommand = {
     sku: form.sku.trim().toUpperCase(),
@@ -80,56 +80,68 @@ const handleSubmit = () => {
     quantity: form.quantity,
     unitOfMeasure: form.unitOfMeasure,
     reason: form.reason.trim(),
-    performedBy: form.performedBy.trim()
-  }
+    performedBy: form.performedBy.trim(),
+  };
 
-  emit('submit', command)
-}
+  emit("submit", command);
+};
 
 // Reset form when dialog opens
-watch(() => props.open, (isOpen) => {
-  if (isOpen) {
-    form.sku = ''
-    form.locationId = ''
-    form.quantity = ''
-    form.unitOfMeasure = 'PIECE'
-    form.reason = ''
-    form.performedBy = ''
+watch(
+  () => props.open,
+  (isOpen) => {
+    if (isOpen) {
+      form.sku = "";
+      form.locationId = "";
+      form.quantity = "";
+      form.unitOfMeasure = "PIECE";
+      form.reason = "";
+      form.performedBy = "";
+    }
   }
-})
+);
 
 // Handle backdrop click
 const handleBackdropClick = (event: MouseEvent) => {
-  if ((event.target as HTMLElement).classList.contains('dialog-backdrop')) {
-    emit('close')
+  if ((event.target as HTMLElement).classList.contains("dialog-backdrop")) {
+    emit("close");
   }
-}
+};
 
 // Handle escape key
 const handleKeydown = (event: KeyboardEvent) => {
-  if (event.key === 'Escape' && props.open) {
-    emit('close')
+  if (event.key === "Escape" && props.open) {
+    emit("close");
   }
-}
+};
 
 onMounted(() => {
-  document.addEventListener('keydown', handleKeydown)
-})
+  document.addEventListener("keydown", handleKeydown);
+});
 
 onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeydown)
-})
+  document.removeEventListener("keydown", handleKeydown);
+});
 </script>
 
 <template>
   <Teleport to="body">
     <Transition name="fade">
       <div v-if="open" class="dialog-backdrop" @click="handleBackdropClick">
-        <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
+        <div
+          class="dialog"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="dialog-title"
+        >
           <!-- Header -->
           <div class="dialog__header">
             <h2 id="dialog-title" class="dialog__title">Receive Stock</h2>
-            <button class="dialog__close" @click="emit('close')" aria-label="Close dialog">
+            <button
+              class="dialog__close"
+              @click="emit('close')"
+              aria-label="Close dialog"
+            >
               ✕
             </button>
           </div>
@@ -157,7 +169,9 @@ onUnmounted(() => {
                 minlength="3"
                 maxlength="20"
               />
-              <span class="form-hint">3-20 characters, alphanumeric and hyphens</span>
+              <span class="form-hint"
+                >3-20 characters, alphanumeric and hyphens</span
+              >
             </div>
 
             <!-- Location -->
@@ -205,7 +219,11 @@ onUnmounted(() => {
                   :disabled="loading"
                   required
                 >
-                  <option v-for="unit in unitOptions" :key="unit.value" :value="unit.value">
+                  <option
+                    v-for="unit in unitOptions"
+                    :key="unit.value"
+                    :value="unit.value"
+                  >
                     {{ unit.label }}
                   </option>
                 </select>
@@ -259,7 +277,7 @@ onUnmounted(() => {
               @click="handleSubmit"
             >
               <span v-if="loading" class="spinner"></span>
-              {{ loading ? 'Saving...' : 'Receive Stock' }}
+              {{ loading ? "Saving..." : "Receive Stock" }}
             </button>
           </div>
         </div>
@@ -281,9 +299,9 @@ onUnmounted(() => {
 }
 
 .dialog {
-  background: white;
+  background: var(--color-card);
   border-radius: 8px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
   max-width: 480px;
   width: 100%;
   max-height: 90vh;
@@ -297,21 +315,21 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .dialog__title {
   font-size: 1.25rem;
   font-weight: 500;
   margin: 0;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
 }
 
 .dialog__close {
   background: none;
   border: none;
   font-size: 1.25rem;
-  color: #666;
+  color: var(--color-text-secondary);
   cursor: pointer;
   padding: 0.25rem;
   line-height: 1;
@@ -320,7 +338,7 @@ onUnmounted(() => {
 }
 
 .dialog__close:hover {
-  background: #f0f0f0;
+  background: var(--color-surface-hover);
 }
 
 .dialog__error {
@@ -343,8 +361,8 @@ onUnmounted(() => {
   justify-content: flex-end;
   gap: 0.75rem;
   padding: 1rem 1.5rem;
-  border-top: 1px solid #e0e0e0;
-  background: #f8f9fa;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
 
 .form-group {
@@ -361,7 +379,7 @@ onUnmounted(() => {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-text-primary);
   margin-bottom: 0.375rem;
 }
 
@@ -372,21 +390,24 @@ onUnmounted(() => {
 .form-input {
   width: 100%;
   padding: 0.625rem 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 0.875rem;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #1a73e8;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
 }
 
 .form-input:disabled {
-  background: #f3f4f6;
+  background: var(--color-surface);
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .form-textarea {
@@ -398,7 +419,7 @@ onUnmounted(() => {
   display: block;
   margin-top: 0.25rem;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 /* Buttons */
@@ -430,12 +451,13 @@ onUnmounted(() => {
 }
 
 .btn--secondary {
-  background: #f1f3f4;
-  color: #3c4043;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
 }
 
 .btn--secondary:hover:not(:disabled) {
-  background: #e8eaed;
+  background: var(--color-surface-hover);
 }
 
 .spinner {
@@ -449,7 +471,9 @@ onUnmounted(() => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Transitions */

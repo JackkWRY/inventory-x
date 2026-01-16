@@ -247,9 +247,9 @@ onUnmounted(() => {
 }
 
 .dialog {
-  background: white;
+  background: var(--color-card);
   border-radius: 8px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
   max-width: 420px;
   width: 100%;
   max-height: 90vh;
@@ -263,21 +263,21 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .dialog__title {
   font-size: 1.25rem;
   font-weight: 500;
   margin: 0;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
 }
 
 .dialog__close {
   background: none;
   border: none;
   font-size: 1.25rem;
-  color: #666;
+  color: var(--color-text-secondary);
   cursor: pointer;
   padding: 0.25rem;
   line-height: 1;
@@ -286,7 +286,7 @@ onUnmounted(() => {
 }
 
 .dialog__close:hover {
-  background: #f0f0f0;
+  background: var(--color-surface-hover);
 }
 
 .dialog__error {
@@ -302,7 +302,7 @@ onUnmounted(() => {
 .stock-info {
   margin: 0 1.5rem;
   padding: 1rem;
-  background: #f8f9fa;
+  background: var(--color-surface);
   border-radius: 4px;
   margin-top: 1rem;
 }
@@ -314,24 +314,25 @@ onUnmounted(() => {
 }
 
 .stock-info__row:not(:last-child) {
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .stock-info__label {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 .stock-info__value {
   font-weight: 500;
   font-size: 0.875rem;
+  color: var(--color-text-primary);
 }
 
 .stock-info__value--sku {
   font-family: 'SF Mono', 'Consolas', monospace;
-  color: #1a73e8;
+  color: var(--color-primary);
 }
 
 .stock-info__value--available {
@@ -352,8 +353,8 @@ onUnmounted(() => {
   justify-content: flex-end;
   gap: 0.75rem;
   padding: 1rem 1.5rem;
-  border-top: 1px solid #e0e0e0;
-  background: #f8f9fa;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
 
 .form-group {
@@ -364,7 +365,7 @@ onUnmounted(() => {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-text-primary);
   margin-bottom: 0.375rem;
 }
 
@@ -375,15 +376,17 @@ onUnmounted(() => {
 .form-input {
   width: 100%;
   padding: 0.625rem 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 0.875rem;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #1a73e8;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
 }
 
@@ -396,15 +399,16 @@ onUnmounted(() => {
 }
 
 .form-input:disabled {
-  background: #f3f4f6;
+  background: var(--color-surface);
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .form-hint {
   display: block;
   margin-top: 0.25rem;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 .form-error {
@@ -443,12 +447,13 @@ onUnmounted(() => {
 }
 
 .btn--secondary {
-  background: #f1f3f4;
-  color: #3c4043;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
 }
 
 .btn--secondary:hover:not(:disabled) {
-  background: #e8eaed;
+  background: var(--color-surface-hover);
 }
 
 .spinner {

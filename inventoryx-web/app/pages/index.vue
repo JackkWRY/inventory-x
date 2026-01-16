@@ -76,37 +76,36 @@
 
 .nav-card {
   padding: 2rem;
-  background: white;
-  border: 1px solid #e0e0e0;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   text-decoration: none;
   color: inherit;
-  transition: all 0.2s;
+  transition: all 0.2s, var(--theme-transition);
 }
 
 .nav-card:hover {
-  border-color: #1a73e8;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .nav-card h2 {
   font-size: 1.5rem;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--color-text-primary);
   margin-bottom: 0.5rem;
 }
 
 .nav-card p {
   font-size: 0.875rem;
-  color: #5f6368;
+  color: var(--color-text-secondary);
 }
 
 .nav-card--primary {
-  background: linear-gradient(135deg, #e8f0fe 0%, #ffffff 100%);
-  border-color: #1a73e8;
+  border-color: var(--color-primary);
 }
 
 .nav-card--primary h2 {
-  color: #1a73e8;
+  color: var(--color-primary);
 }
 </style>

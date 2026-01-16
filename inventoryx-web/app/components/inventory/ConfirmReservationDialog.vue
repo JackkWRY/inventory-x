@@ -236,9 +236,9 @@ onUnmounted(() => {
 }
 
 .dialog {
-  background: white;
+  background: var(--color-card);
   border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   width: 100%;
   max-width: 480px;
   max-height: 90vh;
@@ -252,13 +252,13 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .dialog__title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text-primary);
   margin: 0;
 }
 
@@ -266,15 +266,15 @@ onUnmounted(() => {
   background: none;
   border: none;
   font-size: 1.25rem;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   cursor: pointer;
   padding: 0.25rem;
   border-radius: 4px;
 }
 
 .dialog__close:hover {
-  background: #f3f4f6;
-  color: #111827;
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
 }
 
 .dialog__warning {
@@ -294,8 +294,8 @@ onUnmounted(() => {
 
 .stock-info {
   padding: 1rem 1.5rem;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .stock-info__row {
@@ -305,18 +305,18 @@ onUnmounted(() => {
 }
 
 .stock-info__label {
-  color: #6b7280;
+  color: var(--color-text-secondary);
   font-size: 0.875rem;
 }
 
 .stock-info__value {
   font-weight: 500;
-  color: #111827;
+  color: var(--color-text-primary);
 }
 
 .stock-info__value--sku {
   font-family: monospace;
-  color: #1a73e8;
+  color: var(--color-primary);
 }
 
 .stock-info__value--reserved {
@@ -340,7 +340,7 @@ onUnmounted(() => {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-text-primary);
   margin-bottom: 0.5rem;
 }
 
@@ -351,9 +351,11 @@ onUnmounted(() => {
 .form-input {
   width: 100%;
   padding: 0.625rem 0.875rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   font-size: 0.9375rem;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -364,8 +366,9 @@ onUnmounted(() => {
 }
 
 .form-input:disabled {
-  background: #f9fafb;
+  background: var(--color-surface);
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .form-error {
@@ -378,7 +381,7 @@ onUnmounted(() => {
 .form-hint {
   display: block;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   margin-top: 0.375rem;
 }
 
@@ -387,8 +390,8 @@ onUnmounted(() => {
   justify-content: flex-end;
   gap: 0.75rem;
   padding: 1rem 1.5rem;
-  border-top: 1px solid #e0e0e0;
-  background: #f9fafb;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
 
 .btn {
@@ -404,14 +407,13 @@ onUnmounted(() => {
 }
 
 .btn--secondary {
-  background: white;
-  border: 1px solid #d1d5db;
-  color: #374151;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
 }
 
 .btn--secondary:hover:not(:disabled) {
-  background: #f9fafb;
-  border-color: #9ca3af;
+  background: var(--color-surface-hover);
 }
 
 .btn--danger {

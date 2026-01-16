@@ -389,11 +389,12 @@ const handleAdjustSubmit = async (command: AdjustStockCommand) => {
 
 /* Stock Card */
 .stock-card {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 2rem;
+  transition: var(--theme-transition);
 }
 
 .stock-card__header {
@@ -401,19 +402,19 @@ const handleAdjustSubmit = async (command: AdjustStockCommand) => {
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .stock-card__sku {
   font-family: 'SF Mono', 'Consolas', monospace;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #1a73e8;
+  color: var(--color-primary);
 }
 
 .stock-card__location {
-  color: #6b7280;
+  color: var(--color-text-secondary);
   font-size: 0.9375rem;
 }
 
@@ -430,7 +431,7 @@ const handleAdjustSubmit = async (command: AdjustStockCommand) => {
 .quantity-item {
   text-align: center;
   padding: 1rem;
-  background: #f9fafb;
+  background: var(--color-surface);
   border-radius: 8px;
 }
 
@@ -438,7 +439,7 @@ const handleAdjustSubmit = async (command: AdjustStockCommand) => {
   display: block;
   font-size: 0.75rem;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0.5rem;
@@ -449,6 +450,7 @@ const handleAdjustSubmit = async (command: AdjustStockCommand) => {
   font-size: 1.5rem;
   font-weight: 600;
   font-family: 'SF Mono', 'Consolas', monospace;
+  color: var(--color-text-primary);
 }
 
 .quantity-item--available .quantity-item__value {
@@ -463,8 +465,8 @@ const handleAdjustSubmit = async (command: AdjustStockCommand) => {
   display: flex;
   gap: 0.75rem;
   padding: 1rem 1.5rem;
-  border-top: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
 
 /* Buttons */
@@ -496,46 +498,47 @@ const handleAdjustSubmit = async (command: AdjustStockCommand) => {
 }
 
 .btn--secondary {
-  background: white;
-  border: 1px solid #d1d5db;
-  color: #374151;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
 }
 
 .btn--secondary:hover:not(:disabled) {
-  background: #f9fafb;
+  background: var(--color-surface-hover);
 }
 
 .btn--ghost {
   background: transparent;
-  color: #1a73e8;
+  color: var(--color-primary);
 }
 
 .btn--ghost:hover:not(:disabled) {
-  background: #e8f0fe;
+  background: var(--color-surface-hover);
 }
 
 /* Movement History */
 .movements-section {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   overflow: hidden;
+  transition: var(--theme-transition);
 }
 
 .movements-section__title {
   font-size: 1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text-primary);
   padding: 1rem 1.5rem;
   margin: 0;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .movements-empty {
   padding: 3rem 2rem;
   text-align: center;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 .movements-timeline {
@@ -546,7 +549,7 @@ const handleAdjustSubmit = async (command: AdjustStockCommand) => {
   display: flex;
   gap: 1rem;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .movement-item:last-child {
@@ -572,7 +575,7 @@ const handleAdjustSubmit = async (command: AdjustStockCommand) => {
 
 .movement-item__type {
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text-primary);
 }
 
 .movement-item__quantity {
@@ -593,12 +596,12 @@ const handleAdjustSubmit = async (command: AdjustStockCommand) => {
   flex-wrap: wrap;
   gap: 0.75rem;
   font-size: 0.875rem;
-  color: #4b5563;
+  color: var(--color-text-secondary);
   margin-bottom: 0.25rem;
 }
 
 .movement-item__reference {
-  color: #1a73e8;
+  color: var(--color-primary);
   font-family: monospace;
 }
 
@@ -606,7 +609,7 @@ const handleAdjustSubmit = async (command: AdjustStockCommand) => {
   display: flex;
   gap: 1rem;
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-text-secondary);
 }
 
 /* Movement Colors */

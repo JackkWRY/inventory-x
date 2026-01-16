@@ -532,28 +532,26 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
 }
 
 .kpi-card {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
+  transition: var(--theme-transition);
 }
 
 .kpi-card--success {
   border-color: #10b981;
-  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
 }
 
 .kpi-card--warning {
   border-color: #f59e0b;
-  background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
 }
 
 .kpi-card--danger {
   border-color: #ef4444;
-  background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
 }
 
 .kpi-card__icon {
@@ -568,13 +566,13 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
 .kpi-card__value {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-text-primary);
   font-family: "SF Mono", "Consolas", monospace;
 }
 
 .kpi-card__label {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 /* Dashboard Grid */
@@ -586,25 +584,26 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
 }
 
 .dashboard-section {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   overflow: hidden;
+  transition: var(--theme-transition);
 }
 
 .dashboard-section__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
   padding-right: 1rem;
 }
 
 .dashboard-section__title {
   font-size: 1rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text-primary);
   padding: 1rem 1.5rem;
   margin: 0;
 }
@@ -620,14 +619,14 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
 }
 
 .settings-btn:hover {
-  background: #e5e7eb;
+  background: var(--color-surface-hover);
 }
 
 /* Settings Panel */
 .settings-panel {
   padding: 1rem 1.5rem;
-  background: #fef3c7;
-  border-bottom: 1px solid #f59e0b;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .settings-panel__row {
@@ -640,21 +639,23 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
 .settings-panel__label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--color-text-primary);
 }
 
 .settings-panel__input {
   width: 80px;
   padding: 0.5rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   font-size: 0.875rem;
   text-align: center;
+  background: var(--color-card);
+  color: var(--color-text-primary);
 }
 
 .settings-panel__input:focus {
   outline: none;
-  border-color: #1a73e8;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
 }
 
@@ -672,7 +673,7 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
 .dashboard-section__empty {
   padding: 2rem;
   text-align: center;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
 /* Alert List */
@@ -686,7 +687,7 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
   align-items: center;
   padding: 0.75rem 1.5rem;
   text-decoration: none;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-border);
   transition: background 0.2s;
 }
 
@@ -695,7 +696,7 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
 }
 
 .alert-item:hover {
-  background: #fef2f2;
+  background: var(--color-surface-hover);
 }
 
 .alert-item__info {
@@ -706,12 +707,12 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
 .alert-item__sku {
   font-family: "SF Mono", "Consolas", monospace;
   font-weight: 500;
-  color: #1a73e8;
+  color: var(--color-primary);
 }
 
 .alert-item__location {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-text-secondary);
 }
 
 .alert-item__qty {
@@ -730,7 +731,7 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1.5rem;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .movement-item:last-child {
@@ -749,7 +750,7 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
 
 .movement-item__type {
   font-weight: 500;
-  color: #374151;
+  color: var(--color-text-primary);
 }
 
 .movement-item__qty {
@@ -764,7 +765,7 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
 
 .movement-item__date {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--color-text-secondary);
 }
 
 /* Quick Actions */

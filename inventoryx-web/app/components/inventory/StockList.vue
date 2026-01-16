@@ -522,10 +522,10 @@ defineExpose({
 
 .stock-list__footer {
   padding: 0.75rem 1.5rem;
-  background: #f8f9fa;
-  border-top: 1px solid #e0e0e0;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
   font-size: 0.75rem;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 /* Button Styles */
@@ -554,21 +554,22 @@ defineExpose({
 }
 
 .btn--secondary {
-  background: #f1f3f4;
-  color: #3c4043;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
 }
 
 .btn--secondary:hover:not(:disabled) {
-  background: #e8eaed;
+  background: var(--color-surface-hover);
 }
 
 .btn--ghost {
   background: transparent;
-  color: #1a73e8;
+  color: var(--color-primary);
 }
 
 .btn--ghost:hover:not(:disabled) {
-  background: #e8f0fe;
+  background: var(--color-surface-hover);
 }
 
 .btn--small {
@@ -605,10 +606,10 @@ defineExpose({
   font-family: monospace;
   font-size: 0.7rem;
   font-weight: 500;
-  background: #e5e7eb;
-  border: 1px solid #d1d5db;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 4px;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   margin-left: 0.25rem;
 }
 
