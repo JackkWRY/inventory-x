@@ -288,5 +288,12 @@
     "stockLevel": "Stock Level",
     "now": "Now",
     "noData": "No movement history available"
+  },
+  "error": {
+    "loadFailed": "Failed to load data",
+    "networkError": "Network error occurred",
+    "serverError": "Server is not responding",
+    "retry": "Try again",
+    "dismiss": "Dismiss"
   }
 }

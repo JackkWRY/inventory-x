@@ -49,12 +49,15 @@ const pendingConfirmCommand = ref<ConfirmReservationCommand | null>(null);
 
 // Bulk action states
 const showBulkDialog = ref(false);
-const bulkActionType = ref<'reserve' | 'adjust'>('reserve');
+const bulkActionType = ref<"reserve" | "adjust">("reserve");
 const bulkSelectedStocks = ref<Stock[]>([]);
 const bulkLoading = ref(false);
 
 // Component refs
-const stockListRef = ref<{ focusSearch: () => void; clearSelection: () => void } | null>(null);
+const stockListRef = ref<{
+  focusSearch: () => void;
+  clearSelection: () => void;
+} | null>(null);
 
 // Keyboard shortcuts
 useKeyboardShortcuts({
@@ -277,13 +280,13 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
 // Bulk action handlers
 const handleBulkReserve = (stocks: Stock[]) => {
   bulkSelectedStocks.value = stocks;
-  bulkActionType.value = 'reserve';
+  bulkActionType.value = "reserve";
   showBulkDialog.value = true;
 };
 
 const handleBulkAdjust = (stocks: Stock[]) => {
   bulkSelectedStocks.value = stocks;
-  bulkActionType.value = 'adjust';
+  bulkActionType.value = "adjust";
   showBulkDialog.value = true;
 };
 
@@ -294,12 +297,14 @@ const handleBulkConfirm = async (quantity: number, reason?: string) => {
 
   for (const stock of bulkSelectedStocks.value) {
     try {
-      if (bulkActionType.value === 'reserve') {
+      if (bulkActionType.value === "reserve") {
         await store.reserveStock({
           sku: stock.sku,
           locationId: stock.locationId,
           quantity: quantity.toString(),
-          orderId: `BULK-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          orderId: `BULK-${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2, 7)}`,
         });
       } else {
         // For adjust, calculate new quantity
@@ -308,8 +313,8 @@ const handleBulkConfirm = async (quantity: number, reason?: string) => {
         await store.adjustStock({
           stockId: stock.id,
           newQuantity: newQty.toString(),
-          reason: reason || 'Bulk adjustment',
-          performedBy: 'User',
+          reason: reason || "Bulk adjustment",
+          performedBy: "User",
         });
       }
       successCount++;
@@ -323,12 +328,15 @@ const handleBulkConfirm = async (quantity: number, reason?: string) => {
 
   // Show result
   if (failCount === 0) {
-    const msg = bulkActionType.value === 'reserve'
-      ? t('bulk.successReserve', { count: successCount })
-      : t('bulk.successAdjust', { count: successCount });
+    const msg =
+      bulkActionType.value === "reserve"
+        ? t("bulk.successReserve", { count: successCount })
+        : t("bulk.successAdjust", { count: successCount });
     toast.success(msg);
   } else {
-    toast.warning(t('bulk.errorPartial', { success: successCount, failed: failCount }));
+    toast.warning(
+      t("bulk.errorPartial", { success: successCount, failed: failCount })
+    );
   }
 
   // Clear selection and refresh
@@ -368,8 +376,8 @@ const handlePageSizeChange = async (size: number) => {
       </div>
     </header>
 
-    <!-- Error Banner (hide when any dialog is open) -->
-    <div
+    <!-- Error Banner with retry functionality -->
+    <CommonErrorBanner
       v-if="
         error &&
         !showReceiveDialog &&
@@ -380,12 +388,13 @@ const handlePageSizeChange = async (size: number) => {
         !showWithdrawDialog &&
         !showQuickSaleDialog
       "
-      class="error-banner"
-    >
-
-      <span>{{ error }}</span>
-      <button class="error-banner__close" @click="store.clearError()">✕</button>
-    </div>
+      :message="error"
+      :title="t('error.loadFailed')"
+      retryable
+      dismissible
+      @retry="store.fetchStocksPaged()"
+      @dismiss="store.clearError()"
+    />
 
     <!-- Stock List -->
     <InventoryStockList
@@ -403,7 +412,6 @@ const handlePageSizeChange = async (size: number) => {
       @bulk-reserve="handleBulkReserve"
       @bulk-adjust="handleBulkAdjust"
     />
-
 
     <!-- Pagination -->
     <CommonPagination
