@@ -101,7 +101,20 @@
     "statusOut": "Out of Stock",
     "adjustQuantity": "Adjust Quantity",
     "adjustQuantityHint": "+/- value to add or subtract from current quantity",
-    "reasonPlaceholder": "Enter reason for adjustment"
+    "reasonPlaceholder": "Enter reason for adjustment",
+    "quantityToReserve": "Quantity to Reserve",
+    "orderId": "Order ID",
+    "orderIdHint": "Reference order for this reservation",
+    "maximum": "Maximum",
+    "available": "Available",
+    "reserved": "Reserved",
+    "skuHint": "3-20 characters, alphanumeric and hyphens",
+    "unit": "Unit",
+    "saving": "Saving...",
+    "reserving": "Reserving...",
+    "orderFulfilledHint": "Order being fulfilled",
+    "reasonHint": "Minimum 10 characters for audit purposes",
+    "adjustReasonPlaceholder": "e.g., Inventory count adjustment, Damaged goods, Expiration..."
   },
   "movementTypes": {
     "RECEIPT": "Receipt",

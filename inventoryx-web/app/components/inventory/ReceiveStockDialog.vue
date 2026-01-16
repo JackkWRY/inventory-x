@@ -16,6 +16,9 @@ import type { ReceiveStockCommand } from "~/types/inventory";
  * />
  */
 
+// i18n
+const { t } = useI18n()
+
 // Props
 interface Props {
   /** Whether dialog is open */
@@ -136,7 +139,7 @@ onUnmounted(() => {
         >
           <!-- Header -->
           <div class="dialog__header">
-            <h2 id="dialog-title" class="dialog__title">Receive Stock</h2>
+            <h2 id="dialog-title" class="dialog__title">{{ t('inventory.receiveStock') }}</h2>
             <button
               class="dialog__close"
               @click="emit('close')"
@@ -156,7 +159,7 @@ onUnmounted(() => {
             <!-- SKU -->
             <div class="form-group">
               <label for="sku" class="form-label">
-                SKU <span class="required">*</span>
+                {{ t('inventory.sku') }} <span class="required">*</span>
               </label>
               <input
                 id="sku"
@@ -169,15 +172,13 @@ onUnmounted(() => {
                 minlength="3"
                 maxlength="20"
               />
-              <span class="form-hint"
-                >3-20 characters, alphanumeric and hyphens</span
-              >
+              <span class="form-hint">{{ t('inventory.skuHint') }}</span>
             </div>
 
             <!-- Location -->
             <div class="form-group">
               <label for="location" class="form-label">
-                Location <span class="required">*</span>
+                {{ t('inventory.location') }} <span class="required">*</span>
               </label>
               <input
                 id="location"
@@ -194,7 +195,7 @@ onUnmounted(() => {
             <div class="form-row">
               <div class="form-group">
                 <label for="quantity" class="form-label">
-                  Quantity <span class="required">*</span>
+                  {{ t('inventory.quantity') }} <span class="required">*</span>
                 </label>
                 <input
                   id="quantity"
@@ -210,7 +211,7 @@ onUnmounted(() => {
               </div>
               <div class="form-group">
                 <label for="unit" class="form-label">
-                  Unit <span class="required">*</span>
+                  {{ t('inventory.unit') }} <span class="required">*</span>
                 </label>
                 <select
                   id="unit"
@@ -232,12 +233,12 @@ onUnmounted(() => {
 
             <!-- Reason -->
             <div class="form-group">
-              <label for="reason" class="form-label">Reason</label>
+              <label for="reason" class="form-label">{{ t('inventory.reason') }}</label>
               <textarea
                 id="reason"
                 v-model="form.reason"
                 class="form-input form-textarea"
-                placeholder="e.g., Supplier delivery, Initial stock"
+                :placeholder="t('inventory.reasonPlaceholder')"
                 :disabled="loading"
                 rows="2"
               ></textarea>
@@ -246,7 +247,7 @@ onUnmounted(() => {
             <!-- Performed By -->
             <div class="form-group">
               <label for="performedBy" class="form-label">
-                Performed By <span class="required">*</span>
+                {{ t('inventory.performedBy') }} <span class="required">*</span>
               </label>
               <input
                 id="performedBy"
@@ -268,7 +269,7 @@ onUnmounted(() => {
               :disabled="loading"
               @click="emit('close')"
             >
-              Cancel
+              {{ t('common.cancel') }}
             </button>
             <button
               type="submit"
@@ -277,7 +278,7 @@ onUnmounted(() => {
               @click="handleSubmit"
             >
               <span v-if="loading" class="spinner"></span>
-              {{ loading ? "Saving..." : "Receive Stock" }}
+              {{ loading ? t('inventory.saving') : t('inventory.receiveStock') }}
             </button>
           </div>
         </div>

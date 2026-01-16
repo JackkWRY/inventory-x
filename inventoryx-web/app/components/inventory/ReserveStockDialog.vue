@@ -17,6 +17,9 @@ import type { Stock, ReserveStockCommand } from '~/types/inventory'
  * />
  */
 
+// i18n
+const { t } = useI18n()
+
 // Props
 interface Props {
   /** Whether dialog is open */
@@ -131,7 +134,7 @@ onUnmounted(() => {
         <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
           <!-- Header -->
           <div class="dialog__header">
-            <h2 id="dialog-title" class="dialog__title">Reserve Stock</h2>
+            <h2 id="dialog-title" class="dialog__title">{{ t('inventory.reserveStock') }}</h2>
             <button class="dialog__close" @click="emit('close')" aria-label="Close dialog">
               ✕
             </button>
@@ -145,21 +148,21 @@ onUnmounted(() => {
           <!-- Stock Info -->
           <div v-if="stock" class="stock-info">
             <div class="stock-info__row">
-              <span class="stock-info__label">SKU</span>
+              <span class="stock-info__label">{{ t('inventory.sku') }}</span>
               <span class="stock-info__value stock-info__value--sku">{{ stock.sku }}</span>
             </div>
             <div class="stock-info__row">
-              <span class="stock-info__label">Location</span>
+              <span class="stock-info__label">{{ t('inventory.location') }}</span>
               <span class="stock-info__value">{{ stock.locationId }}</span>
             </div>
             <div class="stock-info__row">
-              <span class="stock-info__label">Available</span>
+              <span class="stock-info__label">{{ t('inventory.available') }}</span>
               <span class="stock-info__value stock-info__value--available">
                 {{ formatQuantity(stock.availableQuantity) }} {{ stock.unitOfMeasure }}
               </span>
             </div>
             <div class="stock-info__row">
-              <span class="stock-info__label">Reserved</span>
+              <span class="stock-info__label">{{ t('inventory.reserved') }}</span>
               <span class="stock-info__value stock-info__value--reserved">
                 {{ formatQuantity(stock.reservedQuantity) }} {{ stock.unitOfMeasure }}
               </span>
@@ -171,7 +174,7 @@ onUnmounted(() => {
             <!-- Quantity -->
             <div class="form-group">
               <label for="quantity" class="form-label">
-                Quantity to Reserve <span class="required">*</span>
+                {{ t('inventory.quantityToReserve') }} <span class="required">*</span>
               </label>
               <input
                 id="quantity"
@@ -187,13 +190,13 @@ onUnmounted(() => {
                 required
               />
               <span v-if="quantityError" class="form-error">{{ quantityError }}</span>
-              <span v-else class="form-hint">Maximum: {{ formatQuantity(String(availableQuantity)) }}</span>
+              <span v-else class="form-hint">{{ t('inventory.maximum') }}: {{ formatQuantity(String(availableQuantity)) }}</span>
             </div>
 
             <!-- Order ID -->
             <div class="form-group">
               <label for="orderId" class="form-label">
-                Order ID <span class="required">*</span>
+                {{ t('inventory.orderId') }} <span class="required">*</span>
               </label>
               <input
                 id="orderId"
@@ -204,7 +207,7 @@ onUnmounted(() => {
                 :disabled="loading"
                 required
               />
-              <span class="form-hint">Reference order for this reservation</span>
+              <span class="form-hint">{{ t('inventory.orderIdHint') }}</span>
             </div>
           </form>
 
@@ -216,7 +219,7 @@ onUnmounted(() => {
               :disabled="loading"
               @click="emit('close')"
             >
-              Cancel
+              {{ t('common.cancel') }}
             </button>
             <button
               type="submit"
@@ -225,7 +228,7 @@ onUnmounted(() => {
               @click="handleSubmit"
             >
               <span v-if="loading" class="spinner"></span>
-              {{ loading ? 'Reserving...' : 'Reserve Stock' }}
+              {{ loading ? t('inventory.reserving') : t('inventory.reserveStock') }}
             </button>
           </div>
         </div>

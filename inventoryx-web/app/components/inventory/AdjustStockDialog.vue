@@ -158,7 +158,7 @@ onUnmounted(() => {
               <span class="stock-info__value">{{ stock.locationId }}</span>
             </div>
             <div class="stock-info__row">
-              <span class="stock-info__label">Current {{ t('inventory.availableQuantity') }}</span>
+              <span class="stock-info__label">{{ t('inventory.currentAvailable') }}</span>
               <span class="stock-info__value stock-info__value--available">
                 {{ formatQuantity(stock.availableQuantity) }} {{ stock.unitOfMeasure }}
               </span>
@@ -167,10 +167,9 @@ onUnmounted(() => {
 
           <!-- Form -->
           <form class="dialog__body" @submit.prevent="handleSubmit">
-            <!-- New Quantity -->
             <div class="form-group">
               <label for="adjust-quantity" class="form-label">
-                New {{ t('inventory.quantity') }} <span class="required">*</span>
+                {{ t('inventory.newQuantity') }} <span class="required">*</span>
               </label>
               <input
                 id="adjust-quantity"
@@ -185,7 +184,7 @@ onUnmounted(() => {
               />
               <span v-if="quantityError" class="form-error">{{ quantityError }}</span>
               <span v-else class="form-hint" :class="{ 'form-hint--positive': quantityDifference > 0, 'form-hint--negative': quantityDifference < 0 }">
-                Difference: {{ formatDifference(quantityDifference) }}
+                {{ t('inventory.difference') }}: {{ formatDifference(quantityDifference) }}
               </span>
             </div>
 
@@ -199,11 +198,11 @@ onUnmounted(() => {
                 v-model="form.reason"
                 class="form-textarea"
                 rows="3"
-                placeholder="e.g., Inventory count adjustment, Damaged goods, Expiration..."
+                :placeholder="t('inventory.adjustReasonPlaceholder')"
                 :disabled="loading"
                 required
               ></textarea>
-              <span class="form-hint">Minimum 10 characters for audit purposes</span>
+              <span class="form-hint">{{ t('inventory.reasonHint') }}</span>
             </div>
 
             <!-- Performed By -->

@@ -172,13 +172,13 @@ onUnmounted(() => {
                 required
               />
               <span v-if="quantityError" class="form-error">{{ quantityError }}</span>
-              <span v-else class="form-hint">Maximum: {{ formatQuantity(String(reservedQuantity)) }}</span>
+              <span v-else class="form-hint">{{ t('inventory.maximum') }}: {{ formatQuantity(String(reservedQuantity)) }}</span>
             </div>
 
             <!-- Order ID -->
             <div class="form-group">
               <label for="release-orderId" class="form-label">
-                Order ID <span class="required">*</span>
+                {{ t('inventory.orderId') }} <span class="required">*</span>
               </label>
               <input
                 id="release-orderId"
@@ -189,7 +189,7 @@ onUnmounted(() => {
                 :disabled="loading"
                 required
               />
-              <span class="form-hint">Original order reference</span>
+              <span class="form-hint">{{ t('inventory.orderReference') }}</span>
             </div>
           </form>
 

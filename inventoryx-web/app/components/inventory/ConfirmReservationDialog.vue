@@ -133,7 +133,7 @@ onUnmounted(() => {
 
           <!-- Warning -->
           <div class="dialog__warning">
-            ⚠️ This will permanently deduct stock. This action cannot be undone.
+            {{ t('inventory.confirmWarning') }}
           </div>
 
           <!-- Error -->
@@ -177,13 +177,13 @@ onUnmounted(() => {
                 required
               />
               <span v-if="quantityError" class="form-error">{{ quantityError }}</span>
-              <span v-else class="form-hint">Maximum: {{ formatQuantity(String(reservedQuantity)) }}</span>
+              <span v-else class="form-hint">{{ t('inventory.maximum') }}: {{ formatQuantity(String(reservedQuantity)) }}</span>
             </div>
 
             <!-- Order ID -->
             <div class="form-group">
               <label for="confirm-orderId" class="form-label">
-                Order ID <span class="required">*</span>
+                {{ t('inventory.orderId') }} <span class="required">*</span>
               </label>
               <input
                 id="confirm-orderId"
@@ -194,7 +194,7 @@ onUnmounted(() => {
                 :disabled="loading"
                 required
               />
-              <span class="form-hint">Order being fulfilled</span>
+              <span class="form-hint">{{ t('inventory.orderFulfilledHint') }}</span>
             </div>
           </form>
 

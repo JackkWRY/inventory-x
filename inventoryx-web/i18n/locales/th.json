@@ -101,7 +101,20 @@
     "statusOut": "หมด",
     "adjustQuantity": "จำนวนที่ปรับ",
     "adjustQuantityHint": "+/- ค่าที่ต้องการเพิ่มหรือลดจากจำนวนปัจจุบัน",
-    "reasonPlaceholder": "ระบุเหตุผลในการปรับปรุง"
+    "reasonPlaceholder": "ระบุเหตุผลในการปรับปรุง",
+    "quantityToReserve": "จำนวนที่ต้องการจอง",
+    "orderId": "หมายเลขคำสั่งซื้อ",
+    "orderIdHint": "อ้างอิงคำสั่งซื้อสำหรับการจองนี้",
+    "maximum": "สูงสุด",
+    "available": "พร้อมใช้",
+    "reserved": "ถูกจอง",
+    "skuHint": "3-20 ตัวอักษร ใช้ได้เฉพาะตัวอักษร ตัวเลข และขีดกลาง",
+    "unit": "หน่วย",
+    "saving": "กำลังบันทึก...",
+    "reserving": "กำลังจอง...",
+    "orderFulfilledHint": "คำสั่งซื้อที่กำลังจัดส่ง",
+    "reasonHint": "ขั้นต่ำ 10 ตัวอักษรเพื่อการตรวจสอบ",
+    "adjustReasonPlaceholder": "เช่น ตรวจนับสต็อก, สินค้าเสียหาย, หมดอายุ..."
   },
   "movementTypes": {
     "RECEIPT": "การรับเข้า",
