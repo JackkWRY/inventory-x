@@ -37,6 +37,10 @@ const emit = defineEmits<{
   receive: [];
   /** Triggered when user clicks reserve button for a stock */
   reserve: [stock: Stock];
+  /** Triggered when user clicks withdraw button for a stock */
+  withdraw: [stock: Stock];
+  /** Triggered when user clicks quick sale button for a stock */
+  quickSale: [stock: Stock];
   /** Triggered when user clicks release button for a stock */
   release: [stock: Stock];
   /** Triggered when user clicks confirm button for a stock */
@@ -321,17 +325,38 @@ defineExpose({
           <td>{{ stock.unitOfMeasure }}</td>
           <td class="text-center">
             <div class="action-buttons">
+              <!-- Primary Actions: เบิก > จอง > ขาย -->
+              <button
+                class="btn btn--small btn--secondary"
+                :disabled="parseFloat(stock.availableQuantity) <= 0"
+                @click="emit('withdraw', stock)"
+                :title="t('inventory.withdrawStock')"
+              >
+                📦 {{ t("inventory.withdrawStock") }}
+              </button>
               <button
                 class="btn btn--small btn--secondary"
                 :disabled="parseFloat(stock.availableQuantity) <= 0"
                 @click="emit('reserve', stock)"
+                :title="t('inventory.reserveStock')"
               >
-                {{ t("inventory.reserveStock") }}
+                🔒 {{ t("inventory.reserveStock") }}
               </button>
+              <button
+                class="btn btn--small btn--secondary"
+                :disabled="parseFloat(stock.availableQuantity) <= 0"
+                @click="emit('quickSale', stock)"
+                :title="t('inventory.quickSale')"
+              >
+                💰 {{ t("inventory.quickSale") }}
+              </button>
+
+              <!-- Secondary Actions -->
               <button
                 class="btn btn--small btn--warning"
                 :disabled="parseFloat(stock.reservedQuantity) <= 0"
                 @click="emit('release', stock)"
+                :title="t('inventory.releaseReservation')"
               >
                 {{ t("inventory.releaseReservation") }}
               </button>
@@ -339,16 +364,19 @@ defineExpose({
                 class="btn btn--small btn--danger"
                 :disabled="parseFloat(stock.reservedQuantity) <= 0"
                 @click="emit('confirm', stock)"
+                :title="t('inventory.confirmReservation')"
               >
                 {{ t("inventory.confirmReservation") }}
               </button>
               <button
                 class="btn btn--small btn--ghost"
                 @click="emit('adjust', stock)"
+                :title="t('inventory.adjustStock')"
               >
                 {{ t("inventory.adjustStock") }}
               </button>
             </div>
+
           </td>
         </tr>
       </tbody>

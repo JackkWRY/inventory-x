@@ -1,8 +1,15 @@
 <script setup lang="ts">
-import type { Stock, StockMovement, ReserveStockCommand, AdjustStockCommand, WithdrawStockCommand, QuickSaleCommand } from '~/types/inventory'
-import { useInventoryStore } from '~/stores/inventory'
-import { useInventoryApi } from '~/composables/api/useInventoryApi'
-import { useToastStore } from '~/stores/toast'
+import type {
+  Stock,
+  StockMovement,
+  ReserveStockCommand,
+  AdjustStockCommand,
+  WithdrawStockCommand,
+  QuickSaleCommand,
+} from "~/types/inventory";
+import { useInventoryStore } from "~/stores/inventory";
+import { useInventoryApi } from "~/composables/api/useInventoryApi";
+import { useToastStore } from "~/stores/toast";
 
 /**
  * Stock Detail Page
@@ -17,195 +24,198 @@ import { useToastStore } from '~/stores/toast'
 
 // Page Meta
 definePageMeta({
-  title: 'Stock Details'
-})
+  title: "Stock Details",
+});
 
 // i18n
-const { t } = useI18n()
+const { t } = useI18n();
 
 // Route
-const route = useRoute()
-const stockId = computed(() => route.params.id as string)
+const route = useRoute();
+const stockId = computed(() => route.params.id as string);
 
 // Stores
-const inventoryStore = useInventoryStore()
-const toast = useToastStore()
+const inventoryStore = useInventoryStore();
+const toast = useToastStore();
 
 // State
-const stock = ref<Stock | null>(null)
-const movements = ref<StockMovement[]>([])
-const loading = ref(true)
-const error = ref<string | null>(null)
+const stock = ref<Stock | null>(null);
+const movements = ref<StockMovement[]>([]);
+const loading = ref(true);
+const error = ref<string | null>(null);
 
 // Dialog states
-const showReserveDialog = ref(false)
-const showAdjustDialog = ref(false)
-const showWithdrawDialog = ref(false)
-const showQuickSaleDialog = ref(false)
+const showReserveDialog = ref(false);
+const showAdjustDialog = ref(false);
+const showWithdrawDialog = ref(false);
+const showQuickSaleDialog = ref(false);
 
 // Fetch stock on mount
 onMounted(async () => {
-  await fetchStockDetails()
-})
+  await fetchStockDetails();
+});
 
 // Watch for route changes
 watch(stockId, async () => {
-  await fetchStockDetails()
-})
+  await fetchStockDetails();
+});
 
 /**
  * Fetch stock details and movements
  */
 async function fetchStockDetails() {
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
 
   try {
     // Fetch stock details
-    await inventoryStore.fetchStockById(stockId.value)
-    stock.value = inventoryStore.selectedStock
+    await inventoryStore.fetchStockById(stockId.value);
+    stock.value = inventoryStore.selectedStock;
 
     // Fetch real movements from backend API
-    const api = useInventoryApi()
+    const api = useInventoryApi();
     try {
-      movements.value = await api.getStockMovements(stockId.value)
+      movements.value = await api.getStockMovements(stockId.value);
     } catch {
       // If movements API fails, use empty array (no movements yet)
-      movements.value = []
+      movements.value = [];
     }
   } catch (e) {
-    error.value = e instanceof Error ? e.message : t('messages.loadError')
+    error.value = e instanceof Error ? e.message : t("messages.loadError");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 // Helpers
 const formatQuantity = (value: string): string => {
-  const num = parseFloat(value || '0')
-  return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-}
+  const num = parseFloat(value || "0");
+  return num.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
 
 const formatDate = (isoDate: string): string => {
-  const date = new Date(isoDate)
-  return date.toLocaleString()
-}
+  const date = new Date(isoDate);
+  return date.toLocaleString();
+};
 
-const getMovementIcon = (type: StockMovement['movementType']): string => {
+const getMovementIcon = (type: StockMovement["movementType"]): string => {
   const icons: Record<string, string> = {
-    RECEIPT: '📥',
-    RESERVATION: '🔒',
-    RELEASE: '🔓',
-    CONFIRMATION: '✅',
-    SALE: '💰',
-    TRANSFER: '🔄',
-    ADJUSTMENT: '📝',
-    WITHDRAWAL: '📦'
-  }
-  return icons[type] || '📋'
-}
+    RECEIPT: "📥",
+    RESERVATION: "🔒",
+    RELEASE: "🔓",
+    CONFIRMATION: "✅",
+    SALE: "💰",
+    TRANSFER: "🔄",
+    ADJUSTMENT: "📝",
+    WITHDRAWAL: "📦",
+  };
+  return icons[type] || "📋";
+};
 
-const getMovementColor = (type: StockMovement['movementType']): string => {
+const getMovementColor = (type: StockMovement["movementType"]): string => {
   const colors: Record<string, string> = {
-    RECEIPT: 'movement--receipt',
-    RESERVATION: 'movement--reservation',
-    RELEASE: 'movement--release',
-    CONFIRMATION: 'movement--confirmation',
-    SALE: 'movement--sale',
-    TRANSFER: 'movement--transfer',
-    ADJUSTMENT: 'movement--adjustment',
-    WITHDRAWAL: 'movement--withdrawal'
-  }
-  return colors[type] || ''
-}
+    RECEIPT: "movement--receipt",
+    RESERVATION: "movement--reservation",
+    RELEASE: "movement--release",
+    CONFIRMATION: "movement--confirmation",
+    SALE: "movement--sale",
+    TRANSFER: "movement--transfer",
+    ADJUSTMENT: "movement--adjustment",
+    WITHDRAWAL: "movement--withdrawal",
+  };
+  return colors[type] || "";
+};
 
 const isPositiveMovement = (quantity: string): boolean => {
-  return parseFloat(quantity) > 0
-}
+  return parseFloat(quantity) > 0;
+};
 
 // Reserve Dialog Handlers
 const handleOpenReserveDialog = () => {
-  inventoryStore.clearError()
-  showReserveDialog.value = true
-}
+  inventoryStore.clearError();
+  showReserveDialog.value = true;
+};
 
 const handleCloseReserveDialog = () => {
-  showReserveDialog.value = false
-}
+  showReserveDialog.value = false;
+};
 
 const handleReserveSubmit = async (command: ReserveStockCommand) => {
   try {
-    await inventoryStore.reserveStock(command)
-    showReserveDialog.value = false
-    toast.success(t('toast.stockReserved'))
-    await fetchStockDetails()
+    await inventoryStore.reserveStock(command);
+    showReserveDialog.value = false;
+    toast.success(t("toast.stockReserved"));
+    await fetchStockDetails();
   } catch {
-    toast.error(t('toast.operationFailed'))
+    toast.error(t("toast.operationFailed"));
   }
-}
+};
 
 // Adjust Dialog Handlers
 const handleOpenAdjustDialog = () => {
-  inventoryStore.clearError()
-  showAdjustDialog.value = true
-}
+  inventoryStore.clearError();
+  showAdjustDialog.value = true;
+};
 
 const handleCloseAdjustDialog = () => {
-  showAdjustDialog.value = false
-}
+  showAdjustDialog.value = false;
+};
 
 const handleAdjustSubmit = async (command: AdjustStockCommand) => {
   try {
-    await inventoryStore.adjustStock(command)
-    showAdjustDialog.value = false
-    toast.success(t('toast.stockAdjusted'))
-    await fetchStockDetails()
+    await inventoryStore.adjustStock(command);
+    showAdjustDialog.value = false;
+    toast.success(t("toast.stockAdjusted"));
+    await fetchStockDetails();
   } catch {
-    toast.error(t('toast.operationFailed'))
+    toast.error(t("toast.operationFailed"));
   }
-}
+};
 
 // Withdraw Dialog Handlers
 const handleOpenWithdrawDialog = () => {
-  inventoryStore.clearError()
-  showWithdrawDialog.value = true
-}
+  inventoryStore.clearError();
+  showWithdrawDialog.value = true;
+};
 
 const handleCloseWithdrawDialog = () => {
-  showWithdrawDialog.value = false
-}
+  showWithdrawDialog.value = false;
+};
 
 const handleWithdrawSubmit = async (command: WithdrawStockCommand) => {
   try {
-    await inventoryStore.withdrawStock(command)
-    showWithdrawDialog.value = false
-    toast.success(t('toast.stockWithdrawn'))
-    await fetchStockDetails()
+    await inventoryStore.withdrawStock(command);
+    showWithdrawDialog.value = false;
+    toast.success(t("toast.stockWithdrawn"));
+    await fetchStockDetails();
   } catch {
-    toast.error(t('toast.operationFailed'))
+    toast.error(t("toast.operationFailed"));
   }
-}
+};
 
-// Quick Sale Dialog Handlers  
+// Quick Sale Dialog Handlers
 const handleOpenQuickSaleDialog = () => {
-  inventoryStore.clearError()
-  showQuickSaleDialog.value = true
-}
+  inventoryStore.clearError();
+  showQuickSaleDialog.value = true;
+};
 
 const handleCloseQuickSaleDialog = () => {
-  showQuickSaleDialog.value = false
-}
+  showQuickSaleDialog.value = false;
+};
 
 const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
   try {
-    await inventoryStore.quickSale(command)
-    showQuickSaleDialog.value = false
-    toast.success(t('toast.stockSold'))
-    await fetchStockDetails()
+    await inventoryStore.quickSale(command);
+    showQuickSaleDialog.value = false;
+    toast.success(t("toast.stockSold"));
+    await fetchStockDetails();
   } catch {
-    toast.error(t('toast.operationFailed'))
+    toast.error(t("toast.operationFailed"));
   }
-}
+};
 </script>
 
 <template>
@@ -214,17 +224,20 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
     <header class="page-header">
       <div class="page-header__nav">
         <NuxtLink to="/inventory" class="back-link">
-          ← {{ t('common.back') }}
+          ← {{ t("common.back") }}
         </NuxtLink>
-        <CommonLanguageSwitcher />
+        <div class="page-header__controls">
+          <CommonThemeToggle />
+          <CommonLanguageSwitcher />
+        </div>
       </div>
-      <h1 class="page-header__title">{{ t('inventory.stockDetails') }}</h1>
+      <h1 class="page-header__title">{{ t("inventory.stockDetails") }}</h1>
     </header>
 
     <!-- Loading State -->
     <div v-if="loading" class="loading-state">
       <span class="spinner"></span>
-      {{ t('common.loading') }}
+      {{ t("common.loading") }}
     </div>
 
     <!-- Error State -->
@@ -232,7 +245,7 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
       <span class="error-icon">⚠️</span>
       <p>{{ error }}</p>
       <button class="btn btn--primary" @click="fetchStockDetails">
-        {{ t('common.submit') }}
+        {{ t("common.submit") }}
       </button>
     </div>
 
@@ -248,16 +261,28 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
         <div class="stock-card__body">
           <div class="quantity-grid">
             <div class="quantity-item quantity-item--available">
-              <span class="quantity-item__label">{{ t('inventory.availableQuantity') }}</span>
-              <span class="quantity-item__value">{{ formatQuantity(stock.availableQuantity) }}</span>
+              <span class="quantity-item__label">{{
+                t("inventory.availableQuantity")
+              }}</span>
+              <span class="quantity-item__value">{{
+                formatQuantity(stock.availableQuantity)
+              }}</span>
             </div>
             <div class="quantity-item quantity-item--reserved">
-              <span class="quantity-item__label">{{ t('inventory.reservedQuantity') }}</span>
-              <span class="quantity-item__value">{{ formatQuantity(stock.reservedQuantity) }}</span>
+              <span class="quantity-item__label">{{
+                t("inventory.reservedQuantity")
+              }}</span>
+              <span class="quantity-item__value">{{
+                formatQuantity(stock.reservedQuantity)
+              }}</span>
             </div>
             <div class="quantity-item">
-              <span class="quantity-item__label">{{ t('inventory.unitOfMeasure') }}</span>
-              <span class="quantity-item__value">{{ stock.unitOfMeasure }}</span>
+              <span class="quantity-item__label">{{
+                t("inventory.unitOfMeasure")
+              }}</span>
+              <span class="quantity-item__value">{{
+                stock.unitOfMeasure
+              }}</span>
             </div>
           </div>
         </div>
@@ -266,26 +291,26 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
           <button
             class="btn btn--secondary"
             :disabled="parseFloat(stock.availableQuantity) <= 0"
-            @click="handleOpenReserveDialog"
+            @click="handleOpenWithdrawDialog"
           >
-            🔒 {{ t('inventory.reserveStock') }}
+            📦 {{ t("inventory.withdrawStock") }}
           </button>
           <button
             class="btn btn--secondary"
             :disabled="parseFloat(stock.availableQuantity) <= 0"
-            @click="handleOpenWithdrawDialog"
+            @click="handleOpenReserveDialog"
           >
-            📦 {{ t('inventory.withdrawStock') }}
+            🔒 {{ t("inventory.reserveStock") }}
           </button>
           <button
             class="btn btn--secondary"
             :disabled="parseFloat(stock.availableQuantity) <= 0"
             @click="handleOpenQuickSaleDialog"
           >
-            💰 {{ t('inventory.quickSale') }}
+            💰 {{ t("inventory.quickSale") }}
           </button>
           <button class="btn btn--ghost" @click="handleOpenAdjustDialog">
-            📝 {{ t('inventory.adjustStock') }}
+            📝 {{ t("inventory.adjustStock") }}
           </button>
         </div>
       </div>
@@ -299,10 +324,12 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
 
       <!-- Movement History -->
       <div class="movements-section">
-        <h2 class="movements-section__title">{{ t('inventory.movementHistory') }}</h2>
+        <h2 class="movements-section__title">
+          {{ t("inventory.movementHistory") }}
+        </h2>
 
         <div v-if="movements.length === 0" class="movements-empty">
-          {{ t('messages.noData') }}
+          {{ t("messages.noData") }}
         </div>
 
         <div v-else class="movements-timeline">
@@ -322,7 +349,10 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
                 </span>
                 <span
                   class="movement-item__quantity"
-                  :class="{ 'positive': isPositiveMovement(movement.quantity), 'negative': !isPositiveMovement(movement.quantity) }"
+                  :class="{
+                    positive: isPositiveMovement(movement.quantity),
+                    negative: !isPositiveMovement(movement.quantity),
+                  }"
                 >
                   {{ movement.quantity }}
                 </span>
@@ -331,12 +361,18 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
                 <span v-if="movement.reason" class="movement-item__reason">
                   {{ movement.reason }}
                 </span>
-                <span v-if="movement.referenceId" class="movement-item__reference">
+                <span
+                  v-if="movement.referenceId"
+                  class="movement-item__reference"
+                >
                   Ref: {{ movement.referenceId }}
                 </span>
               </div>
               <div class="movement-item__footer">
-                <span v-if="movement.performedBy" class="movement-item__performer">
+                <span
+                  v-if="movement.performedBy"
+                  class="movement-item__performer"
+                >
                   👤 {{ movement.performedBy }}
                 </span>
                 <span class="movement-item__date">
@@ -391,7 +427,6 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
   </div>
 </template>
 
-
 <style scoped>
 .stock-detail-page {
   max-width: 800px;
@@ -409,6 +444,12 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+}
+
+.page-header__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .back-link {
@@ -455,7 +496,9 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error-icon {
@@ -488,7 +531,7 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
 }
 
 .stock-card__sku {
-  font-family: 'SF Mono', 'Consolas', monospace;
+  font-family: "SF Mono", "Consolas", monospace;
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -530,7 +573,7 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
   display: block;
   font-size: 1.5rem;
   font-weight: 600;
-  font-family: 'SF Mono', 'Consolas', monospace;
+  font-family: "SF Mono", "Consolas", monospace;
   color: var(--color-text-primary);
 }
 
@@ -660,7 +703,7 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
 }
 
 .movement-item__quantity {
-  font-family: 'SF Mono', 'Consolas', monospace;
+  font-family: "SF Mono", "Consolas", monospace;
   font-weight: 600;
 }
 

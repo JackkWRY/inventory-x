@@ -6,6 +6,8 @@ import type {
   ReleaseReservationCommand,
   ConfirmReservationCommand,
   AdjustStockCommand,
+  WithdrawStockCommand,
+  QuickSaleCommand,
 } from "~/types/inventory";
 import { useInventoryStore } from "~/stores/inventory";
 import { useToastStore } from "~/stores/toast";
@@ -35,6 +37,8 @@ const showReserveDialog = ref(false);
 const showReleaseDialog = ref(false);
 const showConfirmDialog = ref(false);
 const showAdjustDialog = ref(false);
+const showWithdrawDialog = ref(false);
+const showQuickSaleDialog = ref(false);
 const selectedStock = ref<Stock | null>(null);
 
 // Confirmation modal states
@@ -222,6 +226,54 @@ const handleViewStock = (stock: Stock) => {
   navigateTo(`/inventory/${stock.id}`);
 };
 
+// Withdraw Stock handlers
+const handleOpenWithdrawDialog = (stock: Stock) => {
+  store.clearError();
+  selectedStock.value = stock;
+  showWithdrawDialog.value = true;
+};
+
+const handleCloseWithdrawDialog = () => {
+  showWithdrawDialog.value = false;
+  selectedStock.value = null;
+};
+
+const handleWithdrawSubmit = async (command: WithdrawStockCommand) => {
+  try {
+    await store.withdrawStock(command);
+    showWithdrawDialog.value = false;
+    selectedStock.value = null;
+    toast.success(t("toast.stockWithdrawn"));
+    await store.fetchStocksPaged();
+  } catch {
+    toast.error(t("toast.operationFailed"));
+  }
+};
+
+// Quick Sale handlers
+const handleOpenQuickSaleDialog = (stock: Stock) => {
+  store.clearError();
+  selectedStock.value = stock;
+  showQuickSaleDialog.value = true;
+};
+
+const handleCloseQuickSaleDialog = () => {
+  showQuickSaleDialog.value = false;
+  selectedStock.value = null;
+};
+
+const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
+  try {
+    await store.quickSale(command);
+    showQuickSaleDialog.value = false;
+    selectedStock.value = null;
+    toast.success(t("toast.stockSold"));
+    await store.fetchStocksPaged();
+  } catch {
+    toast.error(t("toast.operationFailed"));
+  }
+};
+
 // Bulk action handlers
 const handleBulkReserve = (stocks: Stock[]) => {
   bulkSelectedStocks.value = stocks;
@@ -324,10 +376,13 @@ const handlePageSizeChange = async (size: number) => {
         !showReserveDialog &&
         !showReleaseDialog &&
         !showConfirmDialog &&
-        !showAdjustDialog
+        !showAdjustDialog &&
+        !showWithdrawDialog &&
+        !showQuickSaleDialog
       "
       class="error-banner"
     >
+
       <span>{{ error }}</span>
       <button class="error-banner__close" @click="store.clearError()">✕</button>
     </div>
@@ -338,7 +393,9 @@ const handlePageSizeChange = async (size: number) => {
       :stocks="stocks"
       :loading="loading"
       @receive="handleOpenReceiveDialog"
+      @withdraw="handleOpenWithdrawDialog"
       @reserve="handleOpenReserveDialog"
+      @quick-sale="handleOpenQuickSaleDialog"
       @release="handleOpenReleaseDialog"
       @confirm="handleOpenConfirmDialog"
       @adjust="handleOpenAdjustDialog"
@@ -346,6 +403,7 @@ const handlePageSizeChange = async (size: number) => {
       @bulk-reserve="handleBulkReserve"
       @bulk-adjust="handleBulkAdjust"
     />
+
 
     <!-- Pagination -->
     <CommonPagination
@@ -406,6 +464,26 @@ const handlePageSizeChange = async (size: number) => {
       :error="error"
       @submit="handleAdjustSubmit"
       @close="handleCloseAdjustDialog"
+    />
+
+    <!-- Withdraw Stock Dialog -->
+    <InventoryWithdrawStockDialog
+      :open="showWithdrawDialog"
+      :stock="selectedStock"
+      :loading="loading"
+      :error="error"
+      @submit="handleWithdrawSubmit"
+      @close="handleCloseWithdrawDialog"
+    />
+
+    <!-- Quick Sale Dialog -->
+    <InventoryQuickSaleDialog
+      :open="showQuickSaleDialog"
+      :stock="selectedStock"
+      :loading="loading"
+      :error="error"
+      @submit="handleQuickSaleSubmit"
+      @close="handleCloseQuickSaleDialog"
     />
 
     <!-- Adjust Stock Confirmation Modal -->
