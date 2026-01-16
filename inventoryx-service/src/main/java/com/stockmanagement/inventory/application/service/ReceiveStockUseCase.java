@@ -7,6 +7,7 @@ import com.stockmanagement.inventory.application.mapper.StockMapper;
 import com.stockmanagement.inventory.domain.model.Stock;
 import com.stockmanagement.inventory.domain.model.valueobject.*;
 import com.stockmanagement.inventory.domain.repository.StockRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author InventoryX Development Team
  * @since 2026-01-12
  */
+@Slf4j
 @Service
 @Transactional
 public class ReceiveStockUseCase {
@@ -50,6 +52,9 @@ public class ReceiveStockUseCase {
      * @return Stock response with updated quantities
      */
     public StockResponse execute(ReceiveStockCommand command) {
+        log.info("Receiving stock: SKU={}, location={}, quantity={}",
+                command.sku(), command.locationId(), command.quantity());
+
         // 1. Convert DTO to Value Objects
         ProductSKU sku = ProductSKU.of(command.sku());
         LocationId locationId = LocationId.of(command.locationId());
@@ -59,17 +64,25 @@ public class ReceiveStockUseCase {
         // 2. Find or create Stock aggregate
         Stock stock = stockRepository
                 .findBySkuAndLocation(sku, locationId)
-                .orElseGet(() -> Stock.create(sku, locationId, unitOfMeasure));
+                .orElseGet(() -> {
+                    log.debug("Creating new stock for SKU={} at location={}",
+                            command.sku(), command.locationId());
+                    return Stock.create(sku, locationId, unitOfMeasure);
+                });
 
         // 3. Execute domain logic
         stock.receiveStock(quantity, command.reason(), command.performedBy());
 
         // 4. Save aggregate
         Stock savedStock = stockRepository.save(stock);
+        log.debug("Stock saved: id={}", savedStock.getId());
 
         // 5. Publish events
         eventPublisher.publish(savedStock.getDomainEvents());
         savedStock.clearDomainEvents();
+
+        log.info("Stock received successfully: id={}, newAvailable={}",
+                savedStock.getId(), savedStock.getAvailableQuantity());
 
         // 6. Return DTO
         return stockMapper.toResponse(savedStock);

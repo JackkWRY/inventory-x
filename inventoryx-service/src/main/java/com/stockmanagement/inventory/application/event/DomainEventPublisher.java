@@ -1,5 +1,6 @@
 package com.stockmanagement.inventory.application.event;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +25,7 @@ import java.util.List;
  * @author InventoryX Development Team
  * @since 2026-01-12
  */
+@Slf4j
 @Component
 public class DomainEventPublisher {
 
@@ -38,6 +40,14 @@ public class DomainEventPublisher {
      * Events can be consumed by @EventListener methods.
      */
     public void publish(List<Object> events) {
-        events.forEach(eventPublisher::publishEvent);
+        if (events.isEmpty()) {
+            return;
+        }
+
+        log.debug("Publishing {} domain event(s)", events.size());
+        events.forEach(event -> {
+            log.debug("Publishing event: {}", event.getClass().getSimpleName());
+            eventPublisher.publishEvent(event);
+        });
     }
 }

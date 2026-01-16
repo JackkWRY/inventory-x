@@ -8,6 +8,7 @@ import com.stockmanagement.inventory.domain.exception.StockNotFoundException;
 import com.stockmanagement.inventory.domain.model.Stock;
 import com.stockmanagement.inventory.domain.model.valueobject.*;
 import com.stockmanagement.inventory.domain.repository.StockRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author InventoryX Development Team
  * @since 2026-01-12
  */
+@Slf4j
 @Service
 @Transactional
 public class ConfirmReservationUseCase {
@@ -50,13 +52,18 @@ public class ConfirmReservationUseCase {
      * @throws StockNotFoundException if stock not found
      */
     public StockResponse execute(ConfirmReservationCommand command) {
+        log.info("Confirming reservation: stockId={}, quantity={}, orderId={}",
+                command.stockId(), command.quantity(), command.orderId());
+
         // 1. Find stock
         StockId stockId = StockId.of(command.stockId());
         Quantity quantity = Quantity.of(command.quantity());
 
         Stock stock = stockRepository.findById(stockId)
-                .orElseThrow(() -> new StockNotFoundException(
-                        "Stock not found: " + command.stockId()));
+                .orElseThrow(() -> {
+                    log.warn("Stock not found: {}", command.stockId());
+                    return new StockNotFoundException("Stock not found: " + command.stockId());
+                });
 
         // 2. Execute domain logic
         stock.confirmReservation(quantity, command.orderId());
@@ -65,6 +72,9 @@ public class ConfirmReservationUseCase {
         Stock savedStock = stockRepository.save(stock);
         eventPublisher.publish(savedStock.getDomainEvents());
         savedStock.clearDomainEvents();
+
+        log.info("Reservation confirmed (sale complete): id={}, orderId={}, reserved={}",
+                savedStock.getId(), command.orderId(), savedStock.getReservedQuantity());
 
         return stockMapper.toResponse(savedStock);
     }

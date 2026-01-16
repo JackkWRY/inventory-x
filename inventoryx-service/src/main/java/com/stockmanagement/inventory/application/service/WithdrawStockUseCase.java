@@ -8,6 +8,7 @@ import com.stockmanagement.inventory.domain.exception.StockNotFoundException;
 import com.stockmanagement.inventory.domain.model.Stock;
 import com.stockmanagement.inventory.domain.model.valueobject.*;
 import com.stockmanagement.inventory.domain.repository.StockRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author InventoryX Development Team
  * @since 2026-01-16
  */
+@Slf4j
 @Service
 @Transactional
 public class WithdrawStockUseCase {
@@ -52,11 +54,16 @@ public class WithdrawStockUseCase {
      * @throws StockNotFoundException if stock not found
      */
     public StockResponse execute(WithdrawStockCommand command) {
+        log.info("Withdrawing stock: stockId={}, quantity={}, department={}",
+                command.stockId(), command.quantity(), command.department());
+
         // 1. Find stock by ID
         StockId stockId = StockId.of(command.stockId());
         Stock stock = stockRepository.findById(stockId)
-                .orElseThrow(() -> new StockNotFoundException(
-                        "Stock not found: " + command.stockId()));
+                .orElseThrow(() -> {
+                    log.warn("Stock not found: {}", command.stockId());
+                    return new StockNotFoundException("Stock not found: " + command.stockId());
+                });
 
         // 2. Convert quantity to Value Object
         Quantity quantity = Quantity.of(command.quantity());
@@ -71,6 +78,9 @@ public class WithdrawStockUseCase {
         // 5. Publish events
         eventPublisher.publish(savedStock.getDomainEvents());
         savedStock.clearDomainEvents();
+
+        log.info("Stock withdrawn successfully: id={}, remainingAvailable={}",
+                savedStock.getId(), savedStock.getAvailableQuantity());
 
         // 6. Return DTO
         return stockMapper.toResponse(savedStock);

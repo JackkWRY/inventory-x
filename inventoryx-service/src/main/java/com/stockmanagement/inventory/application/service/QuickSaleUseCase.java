@@ -8,6 +8,7 @@ import com.stockmanagement.inventory.domain.exception.StockNotFoundException;
 import com.stockmanagement.inventory.domain.model.Stock;
 import com.stockmanagement.inventory.domain.model.valueobject.*;
 import com.stockmanagement.inventory.domain.repository.StockRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author InventoryX Development Team
  * @since 2026-01-16
  */
+@Slf4j
 @Service
 @Transactional
 public class QuickSaleUseCase {
@@ -56,11 +58,16 @@ public class QuickSaleUseCase {
      * @throws StockNotFoundException if stock not found
      */
     public StockResponse execute(QuickSaleCommand command) {
+        log.info("Processing quick sale: stockId={}, quantity={}, orderId={}",
+                command.stockId(), command.quantity(), command.orderId());
+
         // 1. Find stock by ID
         StockId stockId = StockId.of(command.stockId());
         Stock stock = stockRepository.findById(stockId)
-                .orElseThrow(() -> new StockNotFoundException(
-                        "Stock not found: " + command.stockId()));
+                .orElseThrow(() -> {
+                    log.warn("Stock not found: {}", command.stockId());
+                    return new StockNotFoundException("Stock not found: " + command.stockId());
+                });
 
         // 2. Convert quantity to Value Object
         Quantity quantity = Quantity.of(command.quantity());
@@ -74,6 +81,9 @@ public class QuickSaleUseCase {
         // 5. Publish events
         eventPublisher.publish(savedStock.getDomainEvents());
         savedStock.clearDomainEvents();
+
+        log.info("Quick sale completed: id={}, orderId={}, newAvailable={}",
+                savedStock.getId(), command.orderId(), savedStock.getAvailableQuantity());
 
         // 6. Return DTO
         return stockMapper.toResponse(savedStock);

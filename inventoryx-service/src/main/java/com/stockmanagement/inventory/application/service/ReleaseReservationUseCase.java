@@ -8,6 +8,7 @@ import com.stockmanagement.inventory.domain.exception.StockNotFoundException;
 import com.stockmanagement.inventory.domain.model.Stock;
 import com.stockmanagement.inventory.domain.model.valueobject.*;
 import com.stockmanagement.inventory.domain.repository.StockRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author InventoryX Development Team
  * @since 2026-01-12
  */
+@Slf4j
 @Service
 @Transactional
 public class ReleaseReservationUseCase {
@@ -49,13 +51,18 @@ public class ReleaseReservationUseCase {
      * @throws StockNotFoundException if stock not found
      */
     public StockResponse execute(ReleaseReservationCommand command) {
+        log.info("Releasing reservation: stockId={}, quantity={}, orderId={}",
+                command.stockId(), command.quantity(), command.orderId());
+
         // 1. Find stock
         StockId stockId = StockId.of(command.stockId());
         Quantity quantity = Quantity.of(command.quantity());
 
         Stock stock = stockRepository.findById(stockId)
-                .orElseThrow(() -> new StockNotFoundException(
-                        "Stock not found: " + command.stockId()));
+                .orElseThrow(() -> {
+                    log.warn("Stock not found: {}", command.stockId());
+                    return new StockNotFoundException("Stock not found: " + command.stockId());
+                });
 
         // 2. Execute domain logic
         stock.releaseReservation(quantity, command.orderId());
@@ -64,6 +71,9 @@ public class ReleaseReservationUseCase {
         Stock savedStock = stockRepository.save(stock);
         eventPublisher.publish(savedStock.getDomainEvents());
         savedStock.clearDomainEvents();
+
+        log.info("Reservation released: id={}, available={}, reserved={}",
+                savedStock.getId(), savedStock.getAvailableQuantity(), savedStock.getReservedQuantity());
 
         return stockMapper.toResponse(savedStock);
     }

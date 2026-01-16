@@ -4,6 +4,7 @@ import com.stockmanagement.inventory.application.dto.response.StockMovementRespo
 import com.stockmanagement.inventory.application.mapper.StockMovementMapper;
 import com.stockmanagement.inventory.infrastructure.persistence.entity.StockMovementEntity;
 import com.stockmanagement.inventory.infrastructure.persistence.repository.JpaStockMovementRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.util.List;
  * @author InventoryX Development Team
  * @since 2026-01-15
  */
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 public class StockMovementQueryService {
@@ -45,8 +47,10 @@ public class StockMovementQueryService {
      * @return List of movements (newest first)
      */
     public List<StockMovementResponse> getMovementsByStockId(String stockId) {
+        log.debug("Fetching movements for stockId: {}", stockId);
         List<StockMovementEntity> movements = movementRepository
                 .findByStock_IdOrderByPerformedAtDesc(stockId);
+        log.debug("Found {} movements for stockId: {}", movements.size(), stockId);
         return mapper.toResponseList(movements);
     }
 }

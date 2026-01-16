@@ -8,6 +8,7 @@ import com.stockmanagement.inventory.domain.exception.StockNotFoundException;
 import com.stockmanagement.inventory.domain.model.Stock;
 import com.stockmanagement.inventory.domain.model.valueobject.*;
 import com.stockmanagement.inventory.domain.repository.StockRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author InventoryX Development Team
  * @since 2026-01-12
  */
+@Slf4j
 @Service
 @Transactional
 public class AdjustStockUseCase {
@@ -49,13 +51,21 @@ public class AdjustStockUseCase {
      * @throws StockNotFoundException if stock not found
      */
     public StockResponse execute(AdjustStockCommand command) {
+        log.info("Adjusting stock: stockId={}, newQuantity={}, reason={}",
+                command.stockId(), command.newQuantity(), command.reason());
+
         // 1. Find stock
         StockId stockId = StockId.of(command.stockId());
         Quantity newQuantity = Quantity.of(command.newQuantity());
 
         Stock stock = stockRepository.findById(stockId)
-                .orElseThrow(() -> new StockNotFoundException(
-                        "Stock not found: " + command.stockId()));
+                .orElseThrow(() -> {
+                    log.warn("Stock not found: {}", command.stockId());
+                    return new StockNotFoundException("Stock not found: " + command.stockId());
+                });
+
+        log.debug("Current stock: available={}, reserved={}",
+                stock.getAvailableQuantity(), stock.getReservedQuantity());
 
         // 2. Execute domain logic
         stock.adjustStock(newQuantity, command.reason(), command.performedBy());
@@ -64,6 +74,9 @@ public class AdjustStockUseCase {
         Stock savedStock = stockRepository.save(stock);
         eventPublisher.publish(savedStock.getDomainEvents());
         savedStock.clearDomainEvents();
+
+        log.info("Stock adjusted successfully: id={}, newAvailable={}",
+                savedStock.getId(), savedStock.getAvailableQuantity());
 
         return stockMapper.toResponse(savedStock);
     }
