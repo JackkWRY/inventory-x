@@ -324,59 +324,86 @@ defineExpose({
           </td>
           <td>{{ stock.unitOfMeasure }}</td>
           <td class="text-center">
-            <div class="action-buttons">
-              <!-- Primary Actions: เบิก > จอง > ขาย -->
+            <div class="action-group">
+              <!-- Primary Actions: แสดงปุ่มหลัก 3 ปุ่มโดยตรง -->
               <button
-                class="btn btn--small btn--secondary"
+                class="action-btn action-btn--primary"
                 :disabled="parseFloat(stock.availableQuantity) <= 0"
                 @click="emit('withdraw', stock)"
                 :title="t('inventory.withdrawStock')"
               >
-                📦 {{ t("inventory.withdrawStock") }}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                {{ t("inventory.withdrawStock") }}
               </button>
+
               <button
-                class="btn btn--small btn--secondary"
-                :disabled="parseFloat(stock.availableQuantity) <= 0"
-                @click="emit('reserve', stock)"
-                :title="t('inventory.reserveStock')"
-              >
-                🔒 {{ t("inventory.reserveStock") }}
-              </button>
-              <button
-                class="btn btn--small btn--secondary"
+                class="action-btn action-btn--success"
                 :disabled="parseFloat(stock.availableQuantity) <= 0"
                 @click="emit('quickSale', stock)"
                 :title="t('inventory.quickSale')"
               >
-                💰 {{ t("inventory.quickSale") }}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                {{ t("inventory.quickSale") }}
               </button>
 
-              <!-- Secondary Actions -->
               <button
-                class="btn btn--small btn--warning"
-                :disabled="parseFloat(stock.reservedQuantity) <= 0"
-                @click="emit('release', stock)"
-                :title="t('inventory.releaseReservation')"
+                class="action-btn action-btn--warning"
+                :disabled="parseFloat(stock.availableQuantity) <= 0"
+                @click="emit('reserve', stock)"
+                :title="t('inventory.reserveStock')"
               >
-                {{ t("inventory.releaseReservation") }}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                {{ t("inventory.reserveStock") }}
               </button>
-              <button
-                class="btn btn--small btn--danger"
-                :disabled="parseFloat(stock.reservedQuantity) <= 0"
-                @click="emit('confirm', stock)"
-                :title="t('inventory.confirmReservation')"
-              >
-                {{ t("inventory.confirmReservation") }}
-              </button>
-              <button
-                class="btn btn--small btn--ghost"
-                @click="emit('adjust', stock)"
-                :title="t('inventory.adjustStock')"
-              >
-                {{ t("inventory.adjustStock") }}
-              </button>
+
+              <!-- More Actions Dropdown -->
+              <CommonActionDropdown>
+                <CommonActionDropdownItem
+                  :disabled="parseFloat(stock.reservedQuantity) <= 0"
+                  @click="emit('release', stock)"
+                >
+                  <template #icon>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                    </svg>
+                  </template>
+                  {{ t("inventory.releaseReservation") }}
+                </CommonActionDropdownItem>
+
+                <CommonActionDropdownItem
+                  :disabled="parseFloat(stock.reservedQuantity) <= 0"
+                  @click="emit('confirm', stock)"
+                >
+                  <template #icon>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </template>
+                  {{ t("inventory.confirmReservation") }}
+                </CommonActionDropdownItem>
+
+                <div class="dropdown-divider"></div>
+
+                <CommonActionDropdownItem @click="emit('adjust', stock)">
+                  <template #icon>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </template>
+                  {{ t("inventory.adjustStock") }}
+                </CommonActionDropdownItem>
+              </CommonActionDropdown>
             </div>
-
           </td>
         </tr>
       </tbody>
@@ -695,5 +722,72 @@ defineExpose({
 
 .bulk-action-bar .btn--ghost:hover {
   background: rgba(255, 255, 255, 0.1);
+}
+
+/* Dropdown Divider */
+.dropdown-divider {
+  height: 1px;
+  margin: 6px 0;
+  background: var(--color-border);
+}
+
+/* Action Group - 3 buttons + dropdown */
+.action-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Action Button Base */
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.action-btn svg {
+  flex-shrink: 0;
+}
+
+/* Button Variants */
+.action-btn--primary {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.action-btn--primary:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.action-btn--success {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.action-btn--success:hover:not(:disabled) {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.action-btn--warning {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.action-btn--warning:hover:not(:disabled) {
+  background: rgba(245, 158, 11, 0.2);
 }
 </style>

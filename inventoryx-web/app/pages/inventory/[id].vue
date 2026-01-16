@@ -468,7 +468,7 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
 .page-header__title {
   font-size: 1.75rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text-primary);
   margin: 0;
 }
 
