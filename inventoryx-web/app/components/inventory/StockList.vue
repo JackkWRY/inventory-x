@@ -232,11 +232,8 @@ defineExpose({
       </div>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="loading" class="stock-list__loading">
-      <span class="spinner"></span>
-      {{ t("common.loading") }}
-    </div>
+    <!-- Loading State with Skeleton -->
+    <CommonTableSkeleton v-if="loading" :rows="5" :columns="6" show-header />
 
     <!-- Empty State -->
     <div v-else-if="filteredStocks.length === 0" class="stock-list__empty">
