@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Stock, StockMovement, ReserveStockCommand, AdjustStockCommand } from '~/types/inventory'
+import type { Stock, StockMovement, ReserveStockCommand, AdjustStockCommand, WithdrawStockCommand, QuickSaleCommand } from '~/types/inventory'
 import { useInventoryStore } from '~/stores/inventory'
 import { useInventoryApi } from '~/composables/api/useInventoryApi'
 import { useToastStore } from '~/stores/toast'
@@ -40,6 +40,8 @@ const error = ref<string | null>(null)
 // Dialog states
 const showReserveDialog = ref(false)
 const showAdjustDialog = ref(false)
+const showWithdrawDialog = ref(false)
+const showQuickSaleDialog = ref(false)
 
 // Fetch stock on mount
 onMounted(async () => {
@@ -97,7 +99,8 @@ const getMovementIcon = (type: StockMovement['movementType']): string => {
     CONFIRMATION: '✅',
     SALE: '💰',
     TRANSFER: '🔄',
-    ADJUSTMENT: '📝'
+    ADJUSTMENT: '📝',
+    WITHDRAWAL: '📦'
   }
   return icons[type] || '📋'
 }
@@ -110,7 +113,8 @@ const getMovementColor = (type: StockMovement['movementType']): string => {
     CONFIRMATION: 'movement--confirmation',
     SALE: 'movement--sale',
     TRANSFER: 'movement--transfer',
-    ADJUSTMENT: 'movement--adjustment'
+    ADJUSTMENT: 'movement--adjustment',
+    WITHDRAWAL: 'movement--withdrawal'
   }
   return colors[type] || ''
 }
@@ -155,6 +159,48 @@ const handleAdjustSubmit = async (command: AdjustStockCommand) => {
     await inventoryStore.adjustStock(command)
     showAdjustDialog.value = false
     toast.success(t('toast.stockAdjusted'))
+    await fetchStockDetails()
+  } catch {
+    toast.error(t('toast.operationFailed'))
+  }
+}
+
+// Withdraw Dialog Handlers
+const handleOpenWithdrawDialog = () => {
+  inventoryStore.clearError()
+  showWithdrawDialog.value = true
+}
+
+const handleCloseWithdrawDialog = () => {
+  showWithdrawDialog.value = false
+}
+
+const handleWithdrawSubmit = async (command: WithdrawStockCommand) => {
+  try {
+    await inventoryStore.withdrawStock(command)
+    showWithdrawDialog.value = false
+    toast.success(t('toast.stockWithdrawn'))
+    await fetchStockDetails()
+  } catch {
+    toast.error(t('toast.operationFailed'))
+  }
+}
+
+// Quick Sale Dialog Handlers  
+const handleOpenQuickSaleDialog = () => {
+  inventoryStore.clearError()
+  showQuickSaleDialog.value = true
+}
+
+const handleCloseQuickSaleDialog = () => {
+  showQuickSaleDialog.value = false
+}
+
+const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
+  try {
+    await inventoryStore.quickSale(command)
+    showQuickSaleDialog.value = false
+    toast.success(t('toast.stockSold'))
     await fetchStockDetails()
   } catch {
     toast.error(t('toast.operationFailed'))
@@ -223,6 +269,20 @@ const handleAdjustSubmit = async (command: AdjustStockCommand) => {
             @click="handleOpenReserveDialog"
           >
             🔒 {{ t('inventory.reserveStock') }}
+          </button>
+          <button
+            class="btn btn--secondary"
+            :disabled="parseFloat(stock.availableQuantity) <= 0"
+            @click="handleOpenWithdrawDialog"
+          >
+            📦 {{ t('inventory.withdrawStock') }}
+          </button>
+          <button
+            class="btn btn--secondary"
+            :disabled="parseFloat(stock.availableQuantity) <= 0"
+            @click="handleOpenQuickSaleDialog"
+          >
+            💰 {{ t('inventory.quickSale') }}
           </button>
           <button class="btn btn--ghost" @click="handleOpenAdjustDialog">
             📝 {{ t('inventory.adjustStock') }}
@@ -308,8 +368,29 @@ const handleAdjustSubmit = async (command: AdjustStockCommand) => {
       @submit="handleAdjustSubmit"
       @close="handleCloseAdjustDialog"
     />
+
+    <!-- Withdraw Stock Dialog -->
+    <InventoryWithdrawStockDialog
+      :open="showWithdrawDialog"
+      :stock="stock"
+      :loading="inventoryStore.loading"
+      :error="inventoryStore.error"
+      @submit="handleWithdrawSubmit"
+      @close="handleCloseWithdrawDialog"
+    />
+
+    <!-- Quick Sale Dialog -->
+    <InventoryQuickSaleDialog
+      :open="showQuickSaleDialog"
+      :stock="stock"
+      :loading="inventoryStore.loading"
+      :error="inventoryStore.error"
+      @submit="handleQuickSaleSubmit"
+      @close="handleCloseQuickSaleDialog"
+    />
   </div>
 </template>
+
 
 <style scoped>
 .stock-detail-page {

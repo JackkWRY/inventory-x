@@ -6,6 +6,8 @@ import type {
   ReleaseReservationCommand,
   ConfirmReservationCommand,
   AdjustStockCommand,
+  WithdrawStockCommand,
+  QuickSaleCommand,
   PaginationParams,
   PagedStockResponse
 } from '~/types/inventory'
@@ -339,6 +341,58 @@ export const useInventoryStore = defineStore('inventory', {
       } catch (e: unknown) {
         this.error = e instanceof Error ? e.message : 'Failed to adjust stock'
         console.error('[InventoryStore] adjustStock error:', e)
+        throw e
+      } finally {
+        this.loading = false
+      }
+    },
+
+    /**
+     * Withdraw stock for internal use
+     * @param command - Withdraw stock command
+     * @returns Promise<Stock> - The updated stock
+     */
+    async withdrawStock(command: WithdrawStockCommand): Promise<Stock | null> {
+      this.loading = true
+      this.error = null
+
+      try {
+        const api = useInventoryApi()
+        const result = await api.withdrawStock(command)
+
+        // Refresh stocks after successful operation
+        await this.fetchStocks()
+
+        return result
+      } catch (e: unknown) {
+        this.error = e instanceof Error ? e.message : 'Failed to withdraw stock'
+        console.error('[InventoryStore] withdrawStock error:', e)
+        throw e
+      } finally {
+        this.loading = false
+      }
+    },
+
+    /**
+     * Quick sale for POS/Walk-in
+     * @param command - Quick sale command
+     * @returns Promise<Stock> - The updated stock
+     */
+    async quickSale(command: QuickSaleCommand): Promise<Stock | null> {
+      this.loading = true
+      this.error = null
+
+      try {
+        const api = useInventoryApi()
+        const result = await api.quickSale(command)
+
+        // Refresh stocks after successful operation
+        await this.fetchStocks()
+
+        return result
+      } catch (e: unknown) {
+        this.error = e instanceof Error ? e.message : 'Failed to complete sale'
+        console.error('[InventoryStore] quickSale error:', e)
         throw e
       } finally {
         this.loading = false

@@ -37,6 +37,8 @@ public class StockController {
     private final ReleaseReservationUseCase releaseReservationUseCase;
     private final ConfirmReservationUseCase confirmReservationUseCase;
     private final AdjustStockUseCase adjustStockUseCase;
+    private final WithdrawStockUseCase withdrawStockUseCase;
+    private final QuickSaleUseCase quickSaleUseCase;
     private final QueryStockUseCase queryStockUseCase;
     private final QueryStockMovementUseCase queryStockMovementUseCase;
 
@@ -46,6 +48,8 @@ public class StockController {
             ReleaseReservationUseCase releaseReservationUseCase,
             ConfirmReservationUseCase confirmReservationUseCase,
             AdjustStockUseCase adjustStockUseCase,
+            WithdrawStockUseCase withdrawStockUseCase,
+            QuickSaleUseCase quickSaleUseCase,
             QueryStockUseCase queryStockUseCase,
             QueryStockMovementUseCase queryStockMovementUseCase) {
         this.receiveStockUseCase = receiveStockUseCase;
@@ -53,6 +57,8 @@ public class StockController {
         this.releaseReservationUseCase = releaseReservationUseCase;
         this.confirmReservationUseCase = confirmReservationUseCase;
         this.adjustStockUseCase = adjustStockUseCase;
+        this.withdrawStockUseCase = withdrawStockUseCase;
+        this.quickSaleUseCase = quickSaleUseCase;
         this.queryStockUseCase = queryStockUseCase;
         this.queryStockMovementUseCase = queryStockMovementUseCase;
     }
@@ -139,6 +145,40 @@ public class StockController {
     public ResponseEntity<StockResponse> adjustStock(
             @RequestBody AdjustStockCommand command) {
         StockResponse response = adjustStockUseCase.execute(command);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Withdraw stock for internal use.
+     * 
+     * POST /api/v1/stocks/withdraw
+     * 
+     * USE CASE: Department requisition, material consumption
+     * 
+     * @param command Withdraw stock command
+     * @return Stock response with updated quantities
+     */
+    @PostMapping("/withdraw")
+    public ResponseEntity<StockResponse> withdrawStock(
+            @RequestBody WithdrawStockCommand command) {
+        StockResponse response = withdrawStockUseCase.execute(command);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Quick sale for POS/Walk-in.
+     * 
+     * POST /api/v1/stocks/sale
+     * 
+     * USE CASE: Point of Sale, retail counter, immediate sales
+     * 
+     * @param command Quick sale command
+     * @return Stock response with updated quantities
+     */
+    @PostMapping("/sale")
+    public ResponseEntity<StockResponse> quickSale(
+            @RequestBody QuickSaleCommand command) {
+        StockResponse response = quickSaleUseCase.execute(command);
         return ResponseEntity.ok(response);
     }
 

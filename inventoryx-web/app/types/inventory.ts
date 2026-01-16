@@ -92,6 +92,29 @@ export interface AdjustStockCommand {
   performedBy: string
 }
 
+/**
+ * Command to withdraw stock for internal use
+ * USE CASE: Department requisition, material consumption
+ */
+export interface WithdrawStockCommand {
+  stockId: string
+  quantity: string
+  department: string
+  reason: string
+  performedBy: string
+}
+
+/**
+ * Command for quick sale (POS/Walk-in)
+ * USE CASE: Point of Sale, retail counter
+ */
+export interface QuickSaleCommand {
+  stockId: string
+  quantity: string
+  orderId: string
+  performedBy: string
+}
+
 // ============================================
 // Pagination Types
 // ============================================

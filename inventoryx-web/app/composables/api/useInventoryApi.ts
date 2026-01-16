@@ -6,6 +6,8 @@ import type {
   ReleaseReservationCommand,
   ConfirmReservationCommand,
   AdjustStockCommand,
+  WithdrawStockCommand,
+  QuickSaleCommand,
   PagedStockResponse,
   PaginationParams
 } from '~/types/inventory'
@@ -134,6 +136,30 @@ export const useInventoryApi = () => {
      */
     async adjustStock(command: AdjustStockCommand): Promise<Stock> {
       return await $fetch<Stock>(`${baseUrl}/stocks/adjust`, {
+        method: 'POST',
+        body: command
+      })
+    },
+
+    /**
+     * Withdraw stock for internal use
+     * @param command - Withdraw stock command
+     * @returns Promise<Stock> - Updated stock after withdrawal
+     */
+    async withdrawStock(command: WithdrawStockCommand): Promise<Stock> {
+      return await $fetch<Stock>(`${baseUrl}/stocks/withdraw`, {
+        method: 'POST',
+        body: command
+      })
+    },
+
+    /**
+     * Quick sale for POS/Walk-in
+     * @param command - Quick sale command
+     * @returns Promise<Stock> - Updated stock after sale
+     */
+    async quickSale(command: QuickSaleCommand): Promise<Stock> {
+      return await $fetch<Stock>(`${baseUrl}/stocks/sale`, {
         method: 'POST',
         body: command
       })

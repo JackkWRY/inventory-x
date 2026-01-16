@@ -285,4 +285,70 @@ public class Stock {
     private void registerEvent(Object event) {
         this.domainEvents.add(event);
     }
+
+    // ========================================================================
+    // DIRECT DEDUCTION METHODS (NO RESERVATION)
+    // ========================================================================
+
+    /**
+     * Withdraws stock for internal use.
+     * 
+     * USE CASE: Department requisition, material consumption, internal usage
+     * BUSINESS RULE: Cannot withdraw more than available
+     * SIDE EFFECTS: Decreases availableQuantity immediately
+     * 
+     * @param quantity    Amount to withdraw
+     * @param department  Requesting department
+     * @param reason      Reason for withdrawal (audit trail)
+     * @param performedBy Who withdrew the stock
+     * @throws IllegalArgumentException if insufficient stock
+     */
+    public void withdraw(Quantity quantity, String department, String reason, String performedBy) {
+        if (quantity == null || !quantity.isPositive()) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
+
+        if (!this.availableQuantity.isGreaterThanOrEqual(quantity)) {
+            throw new IllegalArgumentException(
+                    String.format("Insufficient stock for withdrawal. Available: %s, Requested: %s",
+                            availableQuantity, quantity));
+        }
+
+        this.availableQuantity = this.availableQuantity.subtract(quantity);
+        this.updatedAt = Instant.now();
+
+        registerEvent(new StockWithdrawnEvent(id, sku, locationId, quantity,
+                department, reason, performedBy, Instant.now()));
+    }
+
+    /**
+     * Sells stock directly (POS/Walk-in).
+     * 
+     * USE CASE: Point of Sale, retail counter, immediate sales
+     * BUSINESS RULE: Combines reserve + confirm for efficiency
+     * SIDE EFFECTS: Decreases availableQuantity immediately (stock leaves
+     * inventory)
+     * 
+     * @param quantity    Amount to sell
+     * @param orderId     POS receipt/invoice number
+     * @param performedBy Who made the sale
+     * @throws IllegalArgumentException if insufficient stock
+     */
+    public void quickSale(Quantity quantity, String orderId, String performedBy) {
+        if (quantity == null || !quantity.isPositive()) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
+
+        if (!this.availableQuantity.isGreaterThanOrEqual(quantity)) {
+            throw new IllegalArgumentException(
+                    String.format("Insufficient stock for sale. Available: %s, Requested: %s",
+                            availableQuantity, quantity));
+        }
+
+        this.availableQuantity = this.availableQuantity.subtract(quantity);
+        this.updatedAt = Instant.now();
+
+        registerEvent(new StockSoldEvent(id, sku, locationId, quantity,
+                orderId, performedBy, Instant.now()));
+    }
 }

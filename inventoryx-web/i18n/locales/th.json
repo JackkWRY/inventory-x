@@ -114,7 +114,15 @@
     "reserving": "กำลังจอง...",
     "orderFulfilledHint": "คำสั่งซื้อที่กำลังจัดส่ง",
     "reasonHint": "ขั้นต่ำ 10 ตัวอักษรเพื่อการตรวจสอบ",
-    "adjustReasonPlaceholder": "เช่น ตรวจนับสต็อก, สินค้าเสียหาย, หมดอายุ..."
+    "adjustReasonPlaceholder": "เช่น ตรวจนับสต็อก, สินค้าเสียหาย, หมดอายุ...",
+    "withdrawStock": "เบิกสินค้า",
+    "quickSale": "ขายหน้าร้าน",
+    "completeSale": "ยืนยันการขาย",
+    "department": "แผนก",
+    "departmentPlaceholder": "เช่น ครัว, ฝ่ายผลิต, ซ่อมบำรุง...",
+    "withdrawReasonPlaceholder": "เช่น เบิกวัตถุดิบ, ใช้ในการซ่อม...",
+    "receiptId": "เลขใบเสร็จ",
+    "receiptIdPlaceholder": "เช่น POS-001, INV-2024-001..."
   },
   "movementTypes": {
     "RECEIPT": "การรับเข้า",
@@ -122,9 +130,11 @@
     "RELEASE": "การปลดปล่อย",
     "CONFIRMATION": "การยืนยัน",
     "SALE": "การขาย",
+    "WITHDRAWAL": "การเบิก",
     "TRANSFER": "การโอนย้าย",
     "ADJUSTMENT": "การปรับปรุง"
   },
+
   "products": {
     "title": "แคตตาล็อกสินค้า",
     "subtitle": "จัดการสินค้าและรหัส SKU",
@@ -237,7 +247,10 @@
     "stockReleased": "ปลดปล่อยการจองสำเร็จแล้ว",
     "stockConfirmed": "ยืนยันการจองสำเร็จแล้ว",
     "stockAdjusted": "ปรับปรุงสต็อกสำเร็จแล้ว",
+    "stockWithdrawn": "เบิกสินค้าสำเร็จแล้ว",
+    "stockSold": "ขายสินค้าสำเร็จแล้ว",
     "operationFailed": "ดำเนินการไม่สำเร็จ",
+
     "networkError": "เกิดข้อผิดพลาดเครือข่าย กรุณาลองใหม่อีกครั้ง",
     "unexpectedError": "เกิดข้อผิดพลาดที่ไม่คาดคิด"
   },

@@ -114,7 +114,15 @@
     "reserving": "Reserving...",
     "orderFulfilledHint": "Order being fulfilled",
     "reasonHint": "Minimum 10 characters for audit purposes",
-    "adjustReasonPlaceholder": "e.g., Inventory count adjustment, Damaged goods, Expiration..."
+    "adjustReasonPlaceholder": "e.g., Inventory count adjustment, Damaged goods, Expiration...",
+    "withdrawStock": "Withdraw Stock",
+    "quickSale": "Quick Sale",
+    "completeSale": "Complete Sale",
+    "department": "Department",
+    "departmentPlaceholder": "e.g., Kitchen, Production, Maintenance...",
+    "withdrawReasonPlaceholder": "e.g., Material requisition, Repair use...",
+    "receiptId": "Receipt ID",
+    "receiptIdPlaceholder": "e.g., POS-001, INV-2024-001..."
   },
   "movementTypes": {
     "RECEIPT": "Receipt",
@@ -122,9 +130,11 @@
     "RELEASE": "Release",
     "CONFIRMATION": "Confirmation",
     "SALE": "Sale",
+    "WITHDRAWAL": "Withdrawal",
     "TRANSFER": "Transfer",
     "ADJUSTMENT": "Adjustment"
   },
+
   "products": {
     "title": "Product Catalog",
     "subtitle": "Manage products and SKUs",
@@ -237,7 +247,10 @@
     "stockReleased": "Reservation released successfully",
     "stockConfirmed": "Reservation confirmed successfully",
     "stockAdjusted": "Stock adjusted successfully",
+    "stockWithdrawn": "Stock withdrawn successfully",
+    "stockSold": "Sale completed successfully",
     "operationFailed": "Operation failed",
+
     "networkError": "Network error. Please try again.",
     "unexpectedError": "An unexpected error occurred"
   },
