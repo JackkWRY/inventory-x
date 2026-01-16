@@ -3,7 +3,7 @@
  * ActionDropdown Component
  *
  * Reusable dropdown menu for consolidating multiple action buttons.
- * Uses teleport to prevent z-index issues.
+ * Uses Teleport to render at body level, preventing overflow cutoff.
  *
  * BEST PRACTICE: Single responsibility - handles dropdown UI only
  *
@@ -17,10 +17,39 @@
 // State
 const isOpen = ref(false);
 const triggerRef = ref<HTMLElement | null>(null);
+const menuStyle = ref({ top: '0px', left: '0px' });
 
 // Toggle dropdown
 const toggle = () => {
+  if (!isOpen.value) {
+    updatePosition();
+  }
   isOpen.value = !isOpen.value;
+};
+
+// Update menu position based on trigger location
+const updatePosition = () => {
+  if (!triggerRef.value) return;
+  
+  const rect = triggerRef.value.getBoundingClientRect();
+  const viewportHeight = window.innerHeight;
+  const menuHeight = 180; // Approximate menu height
+  const menuWidth = 180;
+  
+  // Check if should show above
+  const spaceBelow = viewportHeight - rect.bottom;
+  const showAbove = spaceBelow < menuHeight;
+  
+  // Calculate position
+  const top = showAbove 
+    ? rect.top - menuHeight - 4 + window.scrollY
+    : rect.bottom + 4 + window.scrollY;
+  const left = rect.right - menuWidth + window.scrollX;
+  
+  menuStyle.value = {
+    top: `${top}px`,
+    left: `${Math.max(8, left)}px`
+  };
 };
 
 // Close dropdown
@@ -30,7 +59,11 @@ const close = () => {
 
 // Close on click outside
 const handleClickOutside = (event: MouseEvent) => {
-  if (triggerRef.value && !triggerRef.value.contains(event.target as Node)) {
+  const target = event.target as Node;
+  if (triggerRef.value && !triggerRef.value.contains(target)) {
+    // Check if click is inside menu (teleported)
+    const menu = document.querySelector('.action-dropdown__menu--teleported');
+    if (menu && menu.contains(target)) return;
     close();
   }
 };
@@ -42,15 +75,26 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 };
 
+// Handle scroll/resize - close dropdown
+const handleScrollResize = () => {
+  if (isOpen.value) {
+    close();
+  }
+};
+
 // Setup event listeners
 onMounted(() => {
   document.addEventListener("click", handleClickOutside);
   document.addEventListener("keydown", handleKeydown);
+  window.addEventListener("scroll", handleScrollResize, true);
+  window.addEventListener("resize", handleScrollResize);
 });
 
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
   document.removeEventListener("keydown", handleKeydown);
+  window.removeEventListener("scroll", handleScrollResize, true);
+  window.removeEventListener("resize", handleScrollResize);
 });
 
 // Expose close for child items
@@ -80,12 +124,19 @@ provide("closeDropdown", close);
       </svg>
     </button>
 
-    <!-- Dropdown Menu -->
-    <Transition name="dropdown">
-      <div v-if="isOpen" class="action-dropdown__menu">
-        <slot></slot>
-      </div>
-    </Transition>
+    <!-- Dropdown Menu - Teleported to body for proper positioning -->
+    <Teleport to="body">
+      <Transition name="dropdown">
+        <div
+          v-if="isOpen"
+          class="action-dropdown__menu action-dropdown__menu--teleported"
+          :style="menuStyle"
+          @click.stop
+        >
+          <slot></slot>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -119,19 +170,19 @@ provide("closeDropdown", close);
   background: var(--color-surface-hover);
   color: var(--color-primary);
 }
+</style>
 
-.action-dropdown__menu {
+<style>
+/* Global styles for teleported menu */
+.action-dropdown__menu--teleported {
   position: absolute;
-  top: 100%;
-  right: 0;
-  z-index: 100;
+  z-index: 9999;
   min-width: 180px;
-  margin-top: 4px;
   padding: 6px;
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
+  background: var(--color-card, #1e1e3f);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
   border-radius: 12px;
-  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 /* Animation */
@@ -143,6 +194,8 @@ provide("closeDropdown", close);
 .dropdown-enter-from,
 .dropdown-leave-to {
   opacity: 0;
-  transform: translateY(-8px) scale(0.95);
+  transform: scale(0.95);
 }
 </style>
+
+
