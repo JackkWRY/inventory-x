@@ -624,22 +624,28 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
 
 /* Settings Panel */
 .settings-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 1rem 1.5rem;
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .settings-panel__row {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 0.75rem;
+  margin: 0;
 }
 
 .settings-panel__label {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--color-text-primary);
+  white-space: nowrap;
 }
 
 .settings-panel__input {
@@ -661,8 +667,8 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
 
 .settings-panel__actions {
   display: flex;
-  justify-content: flex-end;
   gap: 0.5rem;
+  margin: 0;
 }
 
 .btn--small {
