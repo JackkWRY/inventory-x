@@ -223,7 +223,7 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
     <!-- Header -->
     <header class="page-header">
       <div class="page-header__nav">
-        <NuxtLink to="/inventory" class="back-link">
+        <NuxtLink to="/inventory" class="btn btn--ghost">
           ← {{ t("common.back") }}
         </NuxtLink>
         <div class="page-header__controls">
@@ -452,19 +452,6 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
   gap: 0.75rem;
 }
 
-.back-link {
-  color: #1a73e8;
-  text-decoration: none;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.back-link:hover {
-  text-decoration: underline;
-}
-
 .page-header__title {
   font-size: 1.75rem;
   font-weight: 600;
@@ -595,8 +582,8 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
 
 /* Buttons */
 .btn {
-  padding: 0.625rem 1.25rem;
-  font-size: 0.9375rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
   font-weight: 500;
   border-radius: 6px;
   cursor: pointer;
@@ -605,6 +592,7 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
   align-items: center;
   gap: 0.5rem;
   border: none;
+  text-decoration: none;
 }
 
 .btn:disabled {
@@ -633,11 +621,12 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
 
 .btn--ghost {
   background: transparent;
-  color: var(--color-primary);
+  color: var(--color-text-secondary);
 }
 
 .btn--ghost:hover:not(:disabled) {
   background: var(--color-surface-hover);
+  color: var(--color-text-primary);
 }
 
 /* Movement History */

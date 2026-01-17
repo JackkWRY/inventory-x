@@ -777,10 +777,10 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
 
 /* Buttons */
 .btn {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
   font-weight: 500;
-  border-radius: 8px;
+  border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
   display: inline-flex;
@@ -811,6 +811,16 @@ const handleReceiveSubmit = async (command: ReceiveStockCommand) => {
 .btn--lg {
   padding: 1rem 1.5rem;
   font-size: 1rem;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+}
+
+.btn--ghost:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
 }
 
 /* Responsive */
