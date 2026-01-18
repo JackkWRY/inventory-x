@@ -98,6 +98,34 @@ public class GlobalExceptionHandler {
         }
 
         /**
+         * Handles UserNotFoundException, RoleNotFoundException.
+         * Returns 404 NOT FOUND.
+         */
+        @ExceptionHandler({ UserNotFoundException.class, RoleNotFoundException.class })
+        public ResponseEntity<ErrorResponse> handleResourceNotFound(RuntimeException ex) {
+                log.warn("Resource not found: {}", ex.getMessage());
+                ErrorResponse error = new ErrorResponse(
+                                "NOT_FOUND",
+                                ex.getMessage(),
+                                Instant.now());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+
+        /**
+         * Handles UserAlreadyExistsException.
+         * Returns 409 CONFLICT.
+         */
+        @ExceptionHandler(UserAlreadyExistsException.class)
+        public ResponseEntity<ErrorResponse> handleUserAlreadyExists(UserAlreadyExistsException ex) {
+                log.warn("User already exists: {}", ex.getMessage());
+                ErrorResponse error = new ErrorResponse(
+                                "USER_ALREADY_EXISTS",
+                                ex.getMessage(),
+                                Instant.now());
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+        }
+
+        /**
          * Handles Authentication errors.
          * Returns 401 UNAUTHORIZED.
          */

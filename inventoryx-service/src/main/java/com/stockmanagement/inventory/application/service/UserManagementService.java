@@ -9,6 +9,9 @@ import com.stockmanagement.inventory.domain.model.User;
 import com.stockmanagement.inventory.domain.model.valueobject.*;
 import com.stockmanagement.inventory.domain.repository.RoleRepository;
 import com.stockmanagement.inventory.domain.repository.UserRepository;
+import com.stockmanagement.inventory.domain.exception.UserNotFoundException;
+import com.stockmanagement.inventory.domain.exception.RoleNotFoundException;
+import com.stockmanagement.inventory.domain.exception.UserAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,14 +33,14 @@ public class UserManagementService {
     @Auditable(action = "REGISTER_USER", resource = "USER")
     public void registerUser(RegisterUserCommand command) {
         if (userRepository.existsByUsername(new Username(command.username()))) {
-            throw new IllegalArgumentException("Username is already taken");
+            throw new UserAlreadyExistsException("Username is already taken");
         }
         if (userRepository.existsByEmail(command.email())) {
-            throw new IllegalArgumentException("Email is already in use");
+            throw new UserAlreadyExistsException("Email is already in use");
         }
 
         Role role = roleRepository.findByName(command.roleName())
-                .orElseThrow(() -> new IllegalArgumentException("Role not found: " + command.roleName()));
+                .orElseThrow(() -> new RoleNotFoundException("Role not found: " + command.roleName()));
 
         User newUser = new User(
                 new UserId(UUID.randomUUID()),
@@ -62,7 +65,7 @@ public class UserManagementService {
     @Auditable(action = "UPDATE_USER", resource = "USER")
     public void updateUser(UUID userId, UpdateUserCommand command) {
         User user = userRepository.findById(new UserId(userId))
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         // Update fields
         user.updateProfile(command.firstName(), command.lastName(), new Email(command.email()));
@@ -70,7 +73,7 @@ public class UserManagementService {
         // Update Role if provided
         if (command.roleName() != null && !command.roleName().isBlank()) {
             Role role = roleRepository.findByName(command.roleName())
-                    .orElseThrow(() -> new IllegalArgumentException("Role not found: " + command.roleName()));
+                    .orElseThrow(() -> new RoleNotFoundException("Role not found: " + command.roleName()));
 
             // Clear existing and add new (assuming single role for now for simplicity, or
             // add logic to manage set)
@@ -85,7 +88,7 @@ public class UserManagementService {
     @Auditable(action = "TOGGLE_USER_STATUS", resource = "USER")
     public void toggleUserStatus(UUID userId) {
         User user = userRepository.findById(new UserId(userId))
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         if (user.isActive()) {
             user.deactivate();
