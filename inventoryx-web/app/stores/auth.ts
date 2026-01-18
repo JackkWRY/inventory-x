@@ -14,6 +14,10 @@ export const useAuthStore = defineStore("auth", () => {
     default: () => null,
     maxAge: 60 * 60 * 24 * 7,
   }); // 7 days
+  const roleCookie = useCookie<string[] | null>("auth_roles", {
+    default: () => null,
+    maxAge: 60 * 60 * 24 * 7,
+  }); // 7 days
   const isAuthenticated = computed(() => !!token.value);
   const router = useRouter();
 
@@ -53,12 +57,14 @@ export const useAuthStore = defineStore("auth", () => {
     user.value = authData;
     token.value = authData.accessToken;
     refreshToken.value = authData.refreshToken;
+    roleCookie.value = authData.roles;
   }
 
   function logout() {
     user.value = null;
     token.value = null;
     refreshToken.value = null;
+    roleCookie.value = null;
     router.push("/login");
   }
 
@@ -100,6 +106,7 @@ export const useAuthStore = defineStore("auth", () => {
     isAuthenticated,
     login,
     logout,
-    refresh
+    refresh,
+    hasRole: (role: string) => roleCookie.value?.includes(role) || false,
   };
 });

@@ -6,7 +6,7 @@ import UserDialog from "~/components/UserDialog.vue";
 
 definePageMeta({
   title: "User Management",
-  middleware: ["auth"],
+  middleware: ["auth", "admin"],
 });
 
 const userStore = useUserStore();
