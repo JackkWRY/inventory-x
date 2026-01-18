@@ -204,6 +204,37 @@
     "address": "Address",
     "tier": "Tier"
   },
+  "users": {
+    "title": "User Management",
+    "subtitle": "Manage system access and user roles",
+    "username": "Username",
+    "name": "Name",
+    "role": "Role",
+    "status": "Status",
+    "createUser": "Create User",
+    "editUser": "Edit User",
+    "updateUser": "Update User",
+    "usernameImmutable": "Username cannot be changed.",
+    "active": "Active",
+    "createdAt": "Created At",
+    "actions": "Actions",
+    "inactive": "Inactive",
+    "disable": "Disable",
+    "enable": "Enable",
+    "confirmToggleTitle": "Confirm Status Change",
+    "confirmToggleMessage": "Are you sure you want to change this user's status?",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "password": "Password",
+    "isAdmin": "Is Admin",
+    "roles": {
+      "ADMIN": "Admin",
+      "MANAGER": "Manager",
+      "STAFF": "Staff",
+      "USER": "User"
+    }
+  },
   "validation": {
     "required": "This field is required",
     "invalidEmail": "Invalid email address",

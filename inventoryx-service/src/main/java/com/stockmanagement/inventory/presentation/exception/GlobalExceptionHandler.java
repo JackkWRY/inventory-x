@@ -98,6 +98,21 @@ public class GlobalExceptionHandler {
         }
 
         /**
+         * Handles Authentication errors.
+         * Returns 401 UNAUTHORIZED.
+         */
+        @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+        public ResponseEntity<ErrorResponse> handleAuthenticationException(
+                        org.springframework.security.core.AuthenticationException ex) {
+                log.warn("Authentication failed: {}", ex.getMessage());
+                ErrorResponse error = new ErrorResponse(
+                                "UNAUTHORIZED",
+                                ex.getMessage(),
+                                Instant.now());
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        }
+
+        /**
          * Handles all other exceptions.
          * Returns 500 INTERNAL SERVER ERROR.
          */
