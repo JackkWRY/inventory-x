@@ -28,7 +28,8 @@
     "view": "View",
     "download": "Download",
     "upload": "Upload",
-    "clearFilter": "Clear"
+    "clearFilter": "Clear",
+    "unit": "Unit"
   },
   "navigation": {
     "home": "Home",

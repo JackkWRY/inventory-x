@@ -28,7 +28,8 @@
     "view": "ดู",
     "download": "ดาวน์โหลด",
     "upload": "อัพโหลด",
-    "clearFilter": "ล้าง"
+    "clearFilter": "ล้าง",
+    "unit": "หน่วย"
   },
   "navigation": {
     "home": "หน้าแรก",
