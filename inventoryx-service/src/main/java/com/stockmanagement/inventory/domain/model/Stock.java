@@ -32,6 +32,7 @@ public class Stock {
 
     // Identity & Business Attributes
     private final StockId id;
+    private final String productId;
     private final ProductSKU sku;
     private final LocationId locationId;
     private Quantity availableQuantity;
@@ -53,11 +54,12 @@ public class Stock {
     /**
      * Private constructor - use factory methods instead.
      */
-    private Stock(StockId id, ProductSKU sku, LocationId locationId,
+    private Stock(StockId id, String productId, ProductSKU sku, LocationId locationId,
             Quantity availableQuantity, Quantity reservedQuantity,
             UnitOfMeasure unitOfMeasure, Long version,
             Instant createdAt, Instant updatedAt) {
         this.id = id;
+        this.productId = productId;
         this.sku = sku;
         this.locationId = locationId;
         this.availableQuantity = availableQuantity;
@@ -72,9 +74,9 @@ public class Stock {
      * Creates new Stock with zero quantities.
      * Used when first receiving a product at a location.
      */
-    public static Stock create(ProductSKU sku, LocationId locationId, UnitOfMeasure unitOfMeasure) {
+    public static Stock create(String productId, ProductSKU sku, LocationId locationId, UnitOfMeasure unitOfMeasure) {
         Instant now = Instant.now();
-        return new Stock(StockId.generate(), sku, locationId,
+        return new Stock(StockId.generate(), productId, sku, locationId,
                 Quantity.zero(), Quantity.zero(), unitOfMeasure,
                 null, now, now); // version = null for new entities
     }
@@ -83,11 +85,11 @@ public class Stock {
      * Reconstitutes Stock from persistence.
      * Used by Infrastructure layer to rebuild aggregate from database.
      */
-    public static Stock reconstitute(StockId id, ProductSKU sku, LocationId locationId,
+    public static Stock reconstitute(StockId id, String productId, ProductSKU sku, LocationId locationId,
             Quantity availableQuantity, Quantity reservedQuantity,
             UnitOfMeasure unitOfMeasure, Long version,
             Instant createdAt, Instant updatedAt) {
-        return new Stock(id, sku, locationId, availableQuantity, reservedQuantity,
+        return new Stock(id, productId, sku, locationId, availableQuantity, reservedQuantity,
                 unitOfMeasure, version, createdAt, updatedAt);
     }
 
@@ -97,6 +99,10 @@ public class Stock {
 
     public StockId getId() {
         return id;
+    }
+
+    public String getProductId() {
+        return productId;
     }
 
     public ProductSKU getSku() {

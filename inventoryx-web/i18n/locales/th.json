@@ -29,7 +29,8 @@
     "download": "ดาวน์โหลด",
     "upload": "อัพโหลด",
     "clearFilter": "ล้าง",
-    "unit": "หน่วย"
+    "unit": "หน่วย",
+    "noData": "ไม่มีข้อมูล"
   },
   "navigation": {
     "home": "หน้าแรก",
@@ -296,6 +297,19 @@
   "theme": {
     "switchLight": "เปลี่ยนเป็นโหมดสว่าง",
     "switchDark": "เปลี่ยนเป็นโหมดมืด"
+  },
+  "locations": {
+    "title": "จัดการสถานที่",
+    "subtitle": "จัดการสถานที่และสถานะ",
+    "name": "ชื่อสถานที่",
+    "type": "ประเภท",
+    "address": "ที่อยู่",
+    "description": "คำอธิบาย",
+    "status": "สถานะ",
+    "create": "สร้างสถานที่",
+    "edit": "แก้ไขสถานที่",
+    "namePlaceholder": "เช่น คลัง A, ร้าน B...",
+    "searchPlaceholder": "ค้นหาสถานที่..."
   },
   "bulk": {
     "selectAll": "เลือกทั้งหมด",

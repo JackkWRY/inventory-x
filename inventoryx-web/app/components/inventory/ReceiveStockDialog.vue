@@ -1,19 +1,14 @@
 <script setup lang="ts">
 import type { ReceiveStockCommand } from "~/types/inventory";
+import { useLocationStore } from "~/stores/location";
+import { useProductStore } from "~/stores/product";
+import type { Product } from "~/types/product";
 
 /**
  * ReceiveStockDialog Component
  *
  * Modal dialog for receiving stock into warehouse.
  * Includes form validation and submission handling.
- *
- * @example
- * <ReceiveStockDialog
- *   :open="isOpen"
- *   :loading="isLoading"
- *   @submit="handleSubmit"
- *   @close="handleClose"
- * />
  */
 
 // i18n
@@ -21,11 +16,8 @@ const { t } = useI18n()
 
 // Props
 interface Props {
-  /** Whether dialog is open */
   open: boolean;
-  /** Loading state during submission */
   loading?: boolean;
-  /** Error message to display */
   error?: string | null;
 }
 
@@ -36,11 +28,13 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Emits
 const emit = defineEmits<{
-  /** Triggered when form is submitted */
   submit: [command: ReceiveStockCommand];
-  /** Triggered when dialog should close */
   close: [];
 }>();
+
+// Stores
+const locationStore = useLocationStore();
+const productStore = useProductStore();
 
 // Form state
 const form = reactive({
@@ -51,6 +45,64 @@ const form = reactive({
   reason: "",
   performedBy: "",
 });
+
+// Product Search State
+const productSearch = reactive({
+  query: "",
+  results: [] as Product[],
+  showResults: false,
+  loading: false
+});
+
+// Watch SKU changes to update search query if needed, or handle selection clearing
+watch(() => form.sku, (newVal) => {
+    if (!newVal) {
+        productSearch.query = "";
+    }
+});
+
+// Debounce search
+let searchTimeout: NodeJS.Timeout;
+const handleSearchInput = async (event: Event) => {
+    const query = (event.target as HTMLInputElement).value;
+    productSearch.query = query;
+    form.sku = query; // Allow manual entry
+    
+    if (searchTimeout) clearTimeout(searchTimeout);
+    
+    if (query.length < 2) {
+        productSearch.results = [];
+        productSearch.showResults = false;
+        return;
+    }
+
+    productSearch.loading = true;
+    productSearch.showResults = true;
+    
+    searchTimeout = setTimeout(async () => {
+        try {
+            productSearch.results = await productStore.searchProducts(query);
+        } finally {
+            productSearch.loading = false;
+        }
+    }, 300);
+};
+
+const selectProduct = (product: Product) => {
+    form.sku = product.sku;
+    productSearch.query = `${product.sku} - ${product.name}`;
+    productSearch.showResults = false;
+    
+    // Auto-select unit if available
+    if (product.unitOfMeasure) {
+        // Simple mapping or direct assignment if formats match
+        // Assuming product UOM matches enum for now or defaulting
+        const uom = product.unitOfMeasure.toUpperCase();
+        if (unitOptions.some(o => o.value === uom)) {
+            form.unitOfMeasure = uom;
+        }
+    }
+};
 
 // Unit options
 const unitOptions = [
@@ -78,7 +130,7 @@ const handleSubmit = () => {
   if (!isValid.value) return;
 
   const command: ReceiveStockCommand = {
-    sku: form.sku.trim().toUpperCase(),
+    sku: form.sku.trim().toUpperCase(), // Ensure only SKU is sent, even if query has name
     locationId: form.locationId.trim(),
     quantity: form.quantity,
     unitOfMeasure: form.unitOfMeasure,
@@ -89,17 +141,38 @@ const handleSubmit = () => {
   emit("submit", command);
 };
 
+// Initial Data Fetch
+onMounted(async () => {
+    await locationStore.fetchActiveLocations();
+    document.addEventListener("keydown", handleKeydown);
+    // Click outside to close search results
+    document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (!target.closest('.search-container')) {
+            productSearch.showResults = false;
+        }
+    });
+});
+
+onUnmounted(() => {
+  document.removeEventListener("keydown", handleKeydown);
+});
+
 // Reset form when dialog opens
 watch(
   () => props.open,
   (isOpen) => {
     if (isOpen) {
       form.sku = "";
+      productSearch.query = "";
+      productSearch.results = [];
       form.locationId = "";
       form.quantity = "";
       form.unitOfMeasure = "PIECE";
       form.reason = "";
       form.performedBy = "";
+      // Refresh locations to be safe
+      locationStore.fetchActiveLocations(); 
     }
   }
 );
@@ -114,17 +187,13 @@ const handleBackdropClick = (event: MouseEvent) => {
 // Handle escape key
 const handleKeydown = (event: KeyboardEvent) => {
   if (event.key === "Escape" && props.open) {
-    emit("close");
+    if (productSearch.showResults) {
+        productSearch.showResults = false;
+    } else {
+        emit("close");
+    }
   }
 };
-
-onMounted(() => {
-  document.addEventListener("keydown", handleKeydown);
-});
-
-onUnmounted(() => {
-  document.removeEventListener("keydown", handleKeydown);
-});
 </script>
 
 <template>
@@ -156,39 +225,64 @@ onUnmounted(() => {
 
           <!-- Form -->
           <form class="dialog__body" @submit.prevent="handleSubmit">
-            <!-- SKU -->
-            <div class="form-group">
+            <!-- SKU (Searchable) -->
+            <div class="form-group search-container">
               <label for="sku" class="form-label">
                 {{ t('inventory.sku') }} <span class="required">*</span>
               </label>
-              <input
-                id="sku"
-                v-model="form.sku"
-                type="text"
-                class="form-input"
-                placeholder="e.g., PROD-001"
-                :disabled="loading"
-                required
-                minlength="3"
-                maxlength="20"
-              />
-              <span class="form-hint">{{ t('inventory.skuHint') }}</span>
+              <div class="relative">
+                  <input
+                    id="sku"
+                    type="text"
+                    class="form-input"
+                    :value="productSearch.query"
+                    @input="handleSearchInput"
+                    @focus="productSearch.showResults = true"
+                    placeholder="Search Product by SKU or Name..."
+                    :disabled="loading"
+                    required
+                    autocomplete="off"
+                  />
+                  <!-- Search Results Dropdown -->
+                  <div v-if="productSearch.showResults && (productSearch.results.length > 0 || productSearch.loading)" class="search-results">
+                      <div v-if="productSearch.loading" class="search-item loading">Loading...</div>
+                      <div 
+                        v-else 
+                        v-for="product in productSearch.results" 
+                        :key="product.id" 
+                        class="search-item"
+                        @click="selectProduct(product)"
+                      >
+                          <div class="font-medium">{{ product.sku }}</div>
+                          <div class="text-sm text-muted">{{ product.name }}</div>
+                      </div>
+                  </div>
+              </div>
+              <span class="form-hint" v-if="!isValid && form.sku.length > 0 && form.sku.length < 3">
+                  {{ t('inventory.skuHint') }}
+              </span>
             </div>
 
-            <!-- Location -->
+            <!-- Location (Select) -->
             <div class="form-group">
               <label for="location" class="form-label">
                 {{ t('inventory.location') }} <span class="required">*</span>
               </label>
-              <input
+              <select
                 id="location"
                 v-model="form.locationId"
-                type="text"
                 class="form-input"
-                placeholder="e.g., WH-A-01"
                 :disabled="loading"
                 required
-              />
+              >
+                  <option value="" disabled>Select Location</option>
+                  <option v-for="loc in locationStore.activeLocations" :key="loc.id" :value="loc.id">
+                      {{ loc.name }} ({{ loc.type }})
+                  </option>
+              </select>
+              <div v-if="locationStore.activeLocations.length === 0" class="text-sm text-warning mt-1">
+                  No active locations found. Please create one first.
+              </div>
             </div>
 
             <!-- Quantity and Unit -->
@@ -496,5 +590,60 @@ onUnmounted(() => {
 .fade-enter-from .dialog,
 .fade-leave-to .dialog {
   transform: scale(0.95);
+}
+
+.relative {
+  position: relative;
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+  margin-top: 4px;
+}
+
+.search-item {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.search-item:last-child {
+  border-bottom: none;
+}
+
+.search-item:hover {
+  background-color: #f9fafb;
+}
+
+.search-item.loading {
+  color: #6b7280;
+  font-style: italic;
+  cursor: default;
+}
+
+.text-sm {
+  font-size: 0.75rem;
+}
+
+.text-muted {
+  color: #6b7280;
+}
+
+.text-warning {
+    color: #d97706;
+}
+
+.font-medium {
+    font-weight: 500;
 }
 </style>

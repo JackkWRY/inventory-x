@@ -29,7 +29,8 @@
     "download": "Download",
     "upload": "Upload",
     "clearFilter": "Clear",
-    "unit": "Unit"
+    "unit": "Unit",
+    "noData": "No data available"
   },
   "navigation": {
     "home": "Home",
@@ -296,6 +297,19 @@
   "theme": {
     "switchLight": "Switch to light mode",
     "switchDark": "Switch to dark mode"
+  },
+  "locations": {
+    "title": "Location Management",
+    "subtitle": "Manage warehouse locations and status",
+    "name": "Name",
+    "type": "Type",
+    "address": "Address",
+    "description": "Description",
+    "status": "Status",
+    "create": "Create Location",
+    "edit": "Edit Location",
+    "namePlaceholder": "e.g., Warehouse A, Store B...",
+    "searchPlaceholder": "Search locations..."
   },
   "bulk": {
     "selectAll": "Select all",

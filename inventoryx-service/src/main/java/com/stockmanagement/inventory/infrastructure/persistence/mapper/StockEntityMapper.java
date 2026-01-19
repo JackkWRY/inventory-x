@@ -39,6 +39,7 @@ public class StockEntityMapper {
         StockEntity entity = new StockEntity();
 
         entity.setId(stock.getId().value());
+        entity.setProductId(stock.getProductId());
         entity.setSku(stock.getSku().value());
         entity.setLocationId(stock.getLocationId().value());
         entity.setAvailableQuantity(stock.getAvailableQuantity().value());
@@ -67,6 +68,7 @@ public class StockEntityMapper {
 
         return Stock.reconstitute(
                 StockId.of(entity.getId()),
+                entity.getProductId(),
                 ProductSKU.of(entity.getSku()),
                 LocationId.of(entity.getLocationId()),
                 Quantity.of(entity.getAvailableQuantity().toString()),

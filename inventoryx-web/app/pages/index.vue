@@ -95,8 +95,8 @@ definePageMeta({
         </div>
       </NuxtLink>
 
-      <!-- Warehouses Card -->
-      <NuxtLink to="/warehouses" class="nav-card nav-card--warehouses">
+      <!-- Locations Card -->
+      <NuxtLink to="/locations" class="nav-card nav-card--warehouses">
         <div class="nav-card__icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -112,8 +112,8 @@ definePageMeta({
           </svg>
         </div>
         <div class="nav-card__content">
-          <h2 class="nav-card__title">{{ $t("navigation.warehouses") }}</h2>
-          <p class="nav-card__description">{{ $t("warehouses.subtitle") }}</p>
+          <h2 class="nav-card__title">{{ $t("locations.title") }}</h2>
+          <p class="nav-card__description">{{ $t("locations.subtitle") }}</p>
         </div>
       </NuxtLink>
     </nav>

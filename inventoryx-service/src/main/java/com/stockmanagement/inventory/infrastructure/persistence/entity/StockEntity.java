@@ -40,6 +40,9 @@ public class StockEntity {
     @Column(name = "location_id", length = 36, nullable = false)
     private String locationId;
 
+    @Column(name = "product_id", length = 36)
+    private String productId;
+
     @Column(name = "available_quantity", precision = 19, scale = 4, nullable = false)
     private BigDecimal availableQuantity;
 
@@ -102,6 +105,14 @@ public class StockEntity {
 
     public void setLocationId(String locationId) {
         this.locationId = locationId;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public BigDecimal getAvailableQuantity() {

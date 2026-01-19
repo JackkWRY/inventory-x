@@ -74,6 +74,23 @@ export const useProductStore = defineStore('product', () => {
         }
     }
 
+    async function searchProducts(query: string): Promise<Product[]> {
+        const { $api } = useNuxtApp();
+        try {
+            const response = await $api.get<ProductPageResponse>('/products', { 
+                params: { 
+                    search: query, 
+                    size: 20, 
+                    sort: 'name,asc' 
+                } 
+            });
+            return response.data.content;
+        } catch (err) {
+            console.error("Failed to search products", err);
+            return [];
+        }
+    }
+
     return {
         products,
         selectedProduct,
@@ -83,6 +100,7 @@ export const useProductStore = defineStore('product', () => {
         fetchProducts,
         createProduct,
         updateProduct,
-        getProduct
+        getProduct,
+        searchProducts
     };
 });

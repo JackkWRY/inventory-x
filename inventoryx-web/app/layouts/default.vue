@@ -3,7 +3,9 @@
     <header class="navbar">
       <div class="container navbar-content">
         <div class="navbar-brand">
-          <h3 style="margin: 0; color: var(--color-primary);">InventoryX</h3>
+          <NuxtLink to="/" style="text-decoration: none; color: inherit;">
+            <h3 style="margin: 0; color: var(--color-primary);">InventoryX</h3>
+          </NuxtLink>
         </div>
         
         <div class="navbar-menu" v-if="authStore.isAuthenticated">
