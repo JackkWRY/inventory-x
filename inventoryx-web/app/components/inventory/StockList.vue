@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Stock } from "~/types/inventory";
+import InventoryStockMovementHistory from "./StockMovementHistory.vue"; // Explicit import
 
 /**
  * StockList Component
@@ -25,6 +26,8 @@ interface Props {
   stocks: Stock[];
   /** Loading state */
   loading?: boolean;
+  /** Map of Location ID to Location Name */
+  locationMap?: Record<string, string>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -173,6 +176,17 @@ const handleBulkAdjust = () => {
   }
 };
 
+// History Dialog State
+const historyOpen = ref(false);
+const historyStockId = ref("");
+const historyStockSku = ref("");
+
+const handleViewHistory = (stock: Stock) => {
+  historyStockId.value = stock.id;
+  historyStockSku.value = stock.sku;
+  historyOpen.value = true;
+};
+
 // Expose methods for parent components
 defineExpose({
   focusSearch,
@@ -308,7 +322,7 @@ defineExpose({
               {{ stock.sku }}
             </NuxtLink>
           </td>
-          <td>{{ stock.locationId }}</td>
+          <td>{{ locationMap?.[stock.locationId] || stock.locationId }}</td>
           <td class="text-right">
             <span class="quantity available">{{
               formatQuantity(stock.availableQuantity)
@@ -329,8 +343,18 @@ defineExpose({
                 @click="emit('withdraw', stock)"
                 :title="t('inventory.withdrawStock')"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                  <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  width="16"
+                  height="16"
+                >
+                  <path
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                  />
                 </svg>
                 {{ t("inventory.withdrawStock") }}
               </button>
@@ -341,9 +365,19 @@ defineExpose({
                 @click="emit('quickSale', stock)"
                 :title="t('inventory.quickSale')"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  width="16"
+                  height="16"
+                >
                   <line x1="12" y1="1" x2="12" y2="23"></line>
-                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  <path
+                    d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+                  ></path>
                 </svg>
                 {{ t("inventory.quickSale") }}
               </button>
@@ -354,8 +388,23 @@ defineExpose({
                 @click="emit('reserve', stock)"
                 :title="t('inventory.reserveStock')"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  width="16"
+                  height="16"
+                >
+                  <rect
+                    x="3"
+                    y="11"
+                    width="18"
+                    height="11"
+                    rx="2"
+                    ry="2"
+                  ></rect>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
                 {{ t("inventory.reserveStock") }}
@@ -368,8 +417,21 @@ defineExpose({
                   @click="emit('release', stock)"
                 >
                   <template #icon>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <rect
+                        x="3"
+                        y="11"
+                        width="18"
+                        height="11"
+                        rx="2"
+                        ry="2"
+                      ></rect>
                       <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
                     </svg>
                   </template>
@@ -381,7 +443,13 @@ defineExpose({
                   @click="emit('confirm', stock)"
                 >
                   <template #icon>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                   </template>
@@ -392,12 +460,41 @@ defineExpose({
 
                 <CommonActionDropdownItem @click="emit('adjust', stock)">
                   <template #icon>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                      ></path>
+                      <path
+                        d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                      ></path>
                     </svg>
                   </template>
                   {{ t("inventory.adjustStock") }}
+                </CommonActionDropdownItem>
+
+                <div class="dropdown-divider"></div>
+
+                <CommonActionDropdownItem @click="handleViewHistory(stock)">
+                  <template #icon>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      ></path>
+                    </svg>
+                  </template>
+                  {{ t("inventory.movementHistory") }}
                 </CommonActionDropdownItem>
               </CommonActionDropdown>
             </div>
@@ -413,6 +510,14 @@ defineExpose({
         {{ t("inventory.stocks") }}</span
       >
     </div>
+
+    <!-- History Dialog -->
+    <InventoryStockMovementHistory
+      :open="historyOpen"
+      :stock-id="historyStockId"
+      :stock-sku="historyStockSku"
+      @close="historyOpen = false"
+    />
   </div>
 </template>
 
@@ -462,7 +567,9 @@ defineExpose({
   border-radius: 4px;
   font-size: 0.875rem;
   min-width: 180px;
-  transition: border-color 0.2s, background-color 0.3s;
+  transition:
+    border-color 0.2s,
+    background-color 0.3s;
   background: var(--color-surface);
   color: var(--color-text-primary);
 }

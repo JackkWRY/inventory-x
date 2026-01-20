@@ -33,12 +33,15 @@ public class StockRepositoryImpl implements StockRepository {
 
     private final JpaStockRepository jpaRepository;
     private final StockEntityMapper mapper;
+    private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     public StockRepositoryImpl(
             JpaStockRepository jpaRepository,
-            StockEntityMapper mapper) {
+            StockEntityMapper mapper,
+            org.springframework.context.ApplicationEventPublisher eventPublisher) {
         this.jpaRepository = jpaRepository;
         this.mapper = mapper;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -57,7 +60,11 @@ public class StockRepositoryImpl implements StockRepository {
             savedEntity = jpaRepository.save(entity);
         }
 
-        // 3. Convert back to domain
+        // 3. Publish Domain Events
+        stock.getDomainEvents().forEach(eventPublisher::publishEvent);
+        stock.clearDomainEvents();
+
+        // 4. Convert back to domain
         return mapper.toDomain(savedEntity);
     }
 

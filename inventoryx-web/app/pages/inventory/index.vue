@@ -10,6 +10,7 @@ import type {
   QuickSaleCommand,
 } from "~/types/inventory";
 import { useInventoryStore } from "~/stores/inventory";
+import { useLocationStore } from "~/stores/location";
 import { useToastStore } from "~/stores/toast";
 
 /**
@@ -29,6 +30,7 @@ const { t } = useI18n();
 
 // Stores
 const store = useInventoryStore();
+const locationStore = useLocationStore();
 const toast = useToastStore();
 
 // Modal states
@@ -71,9 +73,20 @@ const loading = computed(() => store.loading);
 const error = computed(() => store.error);
 const pagination = computed(() => store.pagination);
 
+const locationMap = computed(() => {
+  const map: Record<string, string> = {};
+  locationStore.locations.forEach((loc) => {
+    map[loc.id] = loc.name;
+  });
+  return map;
+});
+
 // Fetch stocks on mount (with pagination)
 onMounted(async () => {
-  await store.fetchStocksPaged();
+  await Promise.all([
+    store.fetchStocksPaged(),
+    locationStore.fetchLocations(), // Fetch all locations for mapping
+  ]);
 });
 
 // Event handlers
@@ -335,7 +348,7 @@ const handleBulkConfirm = async (quantity: number, reason?: string) => {
     toast.success(msg);
   } else {
     toast.warning(
-      t("bulk.errorPartial", { success: successCount, failed: failCount })
+      t("bulk.errorPartial", { success: successCount, failed: failCount }),
     );
   }
 
@@ -401,6 +414,7 @@ const handlePageSizeChange = async (size: number) => {
       ref="stockListRef"
       :stocks="stocks"
       :loading="loading"
+      :location-map="locationMap"
       @receive="handleOpenReceiveDialog"
       @withdraw="handleOpenWithdrawDialog"
       @reserve="handleOpenReserveDialog"
