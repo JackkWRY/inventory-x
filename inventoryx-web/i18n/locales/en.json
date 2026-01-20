@@ -35,8 +35,10 @@
   "navigation": {
     "home": "Home",
     "dashboard": "Dashboard",
-    "inventory": "Inventory",
+    "welcome": "Welcome to InventoryX",
     "products": "Products",
+    "inventory": "Inventory",
+    "users": "Users",
     "warehouses": "Warehouses",
     "orders": "Orders",
     "customers": "Customers",

@@ -60,4 +60,23 @@ public interface JpaStockRepository extends JpaRepository<StockEntity, String> {
      * SELECT COUNT(*) > 0 FROM stocks WHERE sku = ? AND location_id = ?
      */
     boolean existsBySkuAndLocationId(String sku, String locationId);
+
+    /**
+     * Counts stocks with available quantity less than threshold.
+     */
+    long countByAvailableQuantityLessThan(java.math.BigDecimal threshold);
+
+    /**
+     * Calculates total value of all stock (availableQuantity * product.price).
+     * Uses Native Query because StockEntity has no direct ManyToOne to
+     * ProductEntity,
+     * only sku/productId reference.
+     * 
+     * Formula: SUM(stock.available_quantity * product.price)
+     */
+    @org.springframework.data.jpa.repository.Query(value = "SELECT COALESCE(SUM(s.available_quantity * p.price_amount), 0) "
+            +
+            "FROM inventory.stocks s " +
+            "JOIN inventory.products p ON s.sku = p.sku", nativeQuery = true)
+    java.math.BigDecimal calculateTotalStockValue();
 }

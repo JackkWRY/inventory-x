@@ -9,6 +9,12 @@
         </div>
         
         <div class="navbar-menu" v-if="authStore.isAuthenticated">
+          <NuxtLink to="/dashboard" class="nav-link">{{ t('navigation.dashboard') }}</NuxtLink>
+          <NuxtLink to="/products" class="nav-link">{{ t('navigation.products') }}</NuxtLink>
+          <NuxtLink to="/inventory" class="nav-link">{{ t('navigation.inventory') }}</NuxtLink>
+          <NuxtLink to="/locations" class="nav-link">{{ t('navigation.warehouses') }}</NuxtLink>
+          <NuxtLink to="/users" class="nav-link" v-if="authStore.hasRole('ADMIN')">{{ t('navigation.users') }}</NuxtLink>
+          
           <span class="user-info mr-md">
             {{ authStore.user?.firstName }} {{ authStore.user?.lastName }}
             <span class="badge" v-if="authStore.user?.roles?.length">
@@ -38,6 +44,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth';
 
+const { t } = useI18n();
 const authStore = useAuthStore();
 const router = useRouter();
 
@@ -90,5 +97,25 @@ function handleLogout() {
 
 .mr-md {
   margin-right: var(--spacing-md);
+}
+
+.nav-link {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  color: var(--color-primary);
+  background: var(--color-surface-hover);
+}
+
+.router-link-active {
+  color: var(--color-primary);
+  background: var(--color-surface-selected); /* Need to define or use hover */
+  font-weight: 600;
 }
 </style>

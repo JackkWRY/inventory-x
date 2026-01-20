@@ -35,10 +35,10 @@
   "navigation": {
     "home": "หน้าแรก",
     "dashboard": "แดชบอร์ด",
-    "inventory": "สินค้าคงคลัง",
-    "products": "สินค้า",
-    "warehouses": "คลังสินค้า",
-    "orders": "คำสั่งซื้อ",
+    "welcome": "ยินดีต้อนรับสู่ InventoryX",
+    "products": "จัดการสินค้า",
+    "inventory": "คลังสินค้า",
+    "users": "ผู้ใช้งาน",
     "customers": "ลูกค้า",
     "reports": "รายงาน",
     "settings": "ตั้งค่า"

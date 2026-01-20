@@ -42,4 +42,9 @@ public interface JpaStockMovementRepository extends JpaRepository<StockMovementE
      * @return List of movements
      */
     List<StockMovementEntity> findByStock_Id(String stockId);
+
+    /**
+     * Finds top 10 most recent movements across all stocks.
+     */
+    List<StockMovementEntity> findTop10ByOrderByPerformedAtDesc();
 }
