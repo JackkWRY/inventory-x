@@ -100,8 +100,6 @@ const handlePageSizeChange = (size: number) => {
       </div>
 
       <div class="page-header__actions">
-        <CommonThemeToggle />
-        <CommonLanguageSwitcher />
         <NuxtLink to="/" class="btn btn--ghost">
           ← {{ t("common.back") }}
         </NuxtLink>

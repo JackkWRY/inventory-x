@@ -222,16 +222,14 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
   <div class="stock-detail-page">
     <!-- Header -->
     <header class="page-header">
-      <div class="page-header__nav">
+      <div class="page-header__content">
+        <h1 class="page-header__title">{{ t("inventory.stockDetails") }}</h1>
+      </div>
+      <div class="page-header__actions">
         <NuxtLink to="/inventory" class="btn btn--ghost">
           ← {{ t("common.back") }}
         </NuxtLink>
-        <div class="page-header__controls">
-          <CommonThemeToggle />
-          <CommonLanguageSwitcher />
-        </div>
       </div>
-      <h1 class="page-header__title">{{ t("inventory.stockDetails") }}</h1>
     </header>
 
     <!-- Loading State -->
@@ -436,20 +434,20 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
 
 /* Header */
 .page-header {
-  margin-bottom: 2rem;
-}
-
-.page-header__nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
-.page-header__controls {
+.page-header__content {
+  flex: 1;
+}
+
+.page-header__actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .page-header__title {

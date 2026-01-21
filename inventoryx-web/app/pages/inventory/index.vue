@@ -381,8 +381,6 @@ const handlePageSizeChange = async (size: number) => {
         <p class="page-header__subtitle">{{ t("inventory.subtitle") }}</p>
       </div>
       <div class="page-header__actions">
-        <CommonThemeToggle />
-        <CommonLanguageSwitcher />
         <NuxtLink to="/" class="btn btn--ghost">
           ← {{ t("common.back") }}
         </NuxtLink>

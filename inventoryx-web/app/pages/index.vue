@@ -12,12 +12,8 @@ definePageMeta({
 
 <template>
   <div class="home">
-    <!-- Header with Controls -->
+    <!-- Header -->
     <header class="home__header">
-      <div class="home__controls">
-        <CommonThemeToggle />
-        <CommonLanguageSwitcher />
-      </div>
       <h1 class="home__title">{{ $t("common.appName") }}</h1>
       <p class="home__subtitle">{{ $t("common.welcome") }}</p>
     </header>
@@ -233,38 +229,38 @@ definePageMeta({
 
 /* Dashboard - Blue */
 .nav-card--dashboard .nav-card__icon {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
+  background: var(--color-info-light);
+  color: var(--color-info);
 }
 .nav-card--dashboard:hover {
-  border-color: #3b82f6;
+  border-color: var(--color-info);
 }
 
 /* Inventory - Green */
 .nav-card--inventory .nav-card__icon {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
+  background: var(--color-success-light);
+  color: var(--color-success);
 }
 .nav-card--inventory:hover {
-  border-color: #10b981;
+  border-color: var(--color-success);
 }
 
 /* Products - Purple */
 .nav-card--products .nav-card__icon {
-  background: rgba(139, 92, 246, 0.1);
-  color: #8b5cf6;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
 }
 .nav-card--products:hover {
-  border-color: #8b5cf6;
+  border-color: var(--color-primary);
 }
 
 /* Warehouses - Orange */
 .nav-card--warehouses .nav-card__icon {
-  background: rgba(245, 158, 11, 0.1);
-  color: #f59e0b;
+  background: var(--color-warning-light);
+  color: var(--color-warning);
 }
 .nav-card--warehouses:hover {
-  border-color: #f59e0b;
+  border-color: var(--color-warning);
 }
 
 /* ===== Responsive: Mobile ===== */

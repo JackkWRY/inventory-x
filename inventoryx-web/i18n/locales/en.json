@@ -30,7 +30,9 @@
     "upload": "Upload",
     "clearFilter": "Clear",
     "unit": "Unit",
-    "noData": "No data available"
+    "noData": "No data available",
+    "logout": "Logout",
+    "refresh": "Refresh"
   },
   "navigation": {
     "home": "Home",
@@ -48,6 +50,10 @@
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Overview of your inventory status",
+    "totalValue": "Total Stock Value",
+    "totalItems": "Total Products",
+    "totalLocations": "Total Locations",
+    "recentActivity": "Recent Activity",
     "totalSKUs": "Total SKUs",
     "totalAvailable": "Available Qty",
     "totalReserved": "Reserved Qty",

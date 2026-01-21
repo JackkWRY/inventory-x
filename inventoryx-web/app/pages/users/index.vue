@@ -131,9 +131,7 @@ const formatDate = (dateArr: string | number[]) => {
         <p class="page-header__subtitle">{{ t("users.subtitle") }}</p>
       </div>
       <div class="page-header__actions">
-        <CommonThemeToggle />
-        <CommonLanguageSwitcher />
-        <NuxtLink to="/dashboard" class="btn btn--ghost">
+        <NuxtLink to="/" class="btn btn--ghost">
           ← {{ t("common.back") }}
         </NuxtLink>
       </div>

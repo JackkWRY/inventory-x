@@ -30,15 +30,18 @@
     "upload": "อัพโหลด",
     "clearFilter": "ล้าง",
     "unit": "หน่วย",
-    "noData": "ไม่มีข้อมูล"
+    "noData": "ไม่มีข้อมูล",
+    "logout": "ออกจากระบบ",
+    "refresh": "รีเฟรช"
   },
   "navigation": {
     "home": "หน้าแรก",
     "dashboard": "แดชบอร์ด",
     "welcome": "ยินดีต้อนรับสู่ InventoryX",
-    "products": "จัดการสินค้า",
-    "inventory": "คลังสินค้า",
+    "products": "สินค้า",
+    "inventory": "สต็อก",
     "users": "ผู้ใช้งาน",
+    "warehouses": "สถานที่",
     "customers": "ลูกค้า",
     "reports": "รายงาน",
     "settings": "ตั้งค่า"
@@ -46,6 +49,10 @@
   "dashboard": {
     "title": "แดชบอร์ด",
     "subtitle": "ภาพรวมสถานะสินค้าคงคลัง",
+    "totalValue": "มูลค่าสต็อกรวม",
+    "totalItems": "จำนวนสินค้า",
+    "totalLocations": "จำนวนสถานที่",
+    "recentActivity": "กิจกรรมล่าสุด",
     "totalSKUs": "จำนวน SKU ทั้งหมด",
     "totalAvailable": "จำนวนที่พร้อมใช้",
     "totalReserved": "จำนวนที่ถูกจอง",

@@ -4,36 +4,17 @@
  *
  * Reusable confirmation modal for destructive actions.
  * Shows a warning message and requires user confirmation before proceeding.
- *
- * @example
- * <ConfirmDialog
- *   :show="showConfirm"
- *   :title="t('confirm.adjustStock')"
- *   :message="t('confirm.adjustWarning')"
- *   type="warning"
- *   @confirm="handleConfirm"
- *   @cancel="showConfirm = false"
- * />
  */
 
-// i18n
 const { t } = useI18n()
 
-// Props
 interface Props {
-  /** Whether to show the dialog */
   show: boolean
-  /** Dialog title */
   title: string
-  /** Confirmation message */
   message: string
-  /** Dialog type: 'warning' | 'danger' | 'info' */
   type?: 'warning' | 'danger' | 'info'
-  /** Confirm button text (optional, defaults to common.confirm) */
   confirmText?: string
-  /** Cancel button text (optional, defaults to common.cancel) */
   cancelText?: string
-  /** Whether confirm action is in progress */
   loading?: boolean
 }
 
@@ -42,39 +23,32 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false
 })
 
-// Emits
 const emit = defineEmits<{
-  /** Triggered when user confirms */
   confirm: []
-  /** Triggered when user cancels */
   cancel: []
 }>()
 
-// Computed icon based on type
-const icon = computed(() => {
+const iconSvg = computed(() => {
   const icons = {
-    warning: '⚠️',
-    danger: '🚨',
-    info: 'ℹ️'
+    warning: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+    danger: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`,
+    info: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`
   }
   return icons[props.type]
 })
 
-// Handle backdrop click (close on outside click)
 const handleBackdropClick = (e: MouseEvent) => {
   if ((e.target as HTMLElement).classList.contains('confirm-backdrop')) {
     emit('cancel')
   }
 }
 
-// Handle keyboard escape
 const handleKeydown = (e: KeyboardEvent) => {
   if (e.key === 'Escape' && props.show) {
     emit('cancel')
   }
 }
 
-// Add/remove keyboard listener
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
 })
@@ -94,7 +68,7 @@ onUnmounted(() => {
       >
         <div class="confirm-dialog" :class="`confirm-dialog--${type}`">
           <!-- Icon -->
-          <div class="confirm-dialog__icon">{{ icon }}</div>
+          <div class="confirm-dialog__icon" :class="`icon--${type}`" v-html="iconSvg"></div>
 
           <!-- Title -->
           <h3 class="confirm-dialog__title">{{ title }}</h3>
@@ -137,6 +111,7 @@ onUnmounted(() => {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,47 +121,68 @@ onUnmounted(() => {
 
 /* Dialog */
 .confirm-dialog {
-  background: white;
-  border-radius: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
   padding: 2rem;
   width: 100%;
   max-width: 400px;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-xl);
 }
 
 .confirm-dialog--warning {
-  border-top: 4px solid #f59e0b;
+  border-top: 4px solid var(--color-warning);
 }
 
 .confirm-dialog--danger {
-  border-top: 4px solid #ef4444;
+  border-top: 4px solid var(--color-danger);
 }
 
 .confirm-dialog--info {
-  border-top: 4px solid #3b82f6;
+  border-top: 4px solid var(--color-info);
 }
 
 /* Icon */
 .confirm-dialog__icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+}
+
+.icon--warning {
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.icon--danger {
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+.icon--info {
+  background: var(--color-info-light);
+  color: var(--color-info);
 }
 
 /* Title */
 .confirm-dialog__title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text-primary);
   margin: 0 0 0.75rem;
 }
 
 /* Message */
 .confirm-dialog__message {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-text-secondary);
   margin: 0 0 1.5rem;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 /* Actions */
@@ -201,13 +197,18 @@ onUnmounted(() => {
   padding: 0.625rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 500;
-  border-radius: 8px;
-  border: none;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.2s;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .btn:disabled {
@@ -216,16 +217,17 @@ onUnmounted(() => {
 }
 
 .btn--secondary {
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
 }
 
 .btn--secondary:hover:not(:disabled) {
-  background: #e5e7eb;
+  background: var(--color-surface-hover);
 }
 
 .btn--warning {
-  background: #f59e0b;
+  background: var(--color-warning);
   color: white;
 }
 
@@ -234,7 +236,7 @@ onUnmounted(() => {
 }
 
 .btn--danger {
-  background: #ef4444;
+  background: var(--color-danger);
   color: white;
 }
 
@@ -243,12 +245,12 @@ onUnmounted(() => {
 }
 
 .btn--primary {
-  background: #3b82f6;
+  background: var(--color-primary);
   color: white;
 }
 
 .btn--primary:hover:not(:disabled) {
-  background: #2563eb;
+  background: var(--color-primary-hover);
 }
 
 /* Spinner */
@@ -285,5 +287,21 @@ onUnmounted(() => {
 .confirm-fade-enter-from .confirm-dialog,
 .confirm-fade-leave-to .confirm-dialog {
   transform: scale(0.95);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .confirm-dialog {
+    padding: 1.5rem;
+  }
+  
+  .confirm-dialog__actions {
+    flex-direction: column-reverse;
+  }
+  
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style>

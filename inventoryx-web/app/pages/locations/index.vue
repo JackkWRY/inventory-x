@@ -65,8 +65,6 @@ const handleSearch = (query: string) => {
         <p class="page-header__subtitle">{{ t("locations.subtitle") }}</p>
       </div>
       <div class="page-header__actions">
-        <CommonThemeToggle />
-        <CommonLanguageSwitcher />
         <NuxtLink to="/" class="btn btn--ghost">
           ← {{ t("common.back") }}
         </NuxtLink>
