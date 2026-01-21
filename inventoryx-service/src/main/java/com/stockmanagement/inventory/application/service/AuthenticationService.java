@@ -39,12 +39,10 @@ public class AuthenticationService {
                                                                                          // success
 
             user.loginSuccess();
-            userRepository.save(user); // Update last login stats
+            userRepository.save(user);
 
             String accessToken = jwtTokenProvider.generateToken(user);
             String refreshToken = jwtTokenProvider.generateRefreshToken(user);
-
-            // TODO: Persist refresh token in DB for rotation/revocation support
 
             return AuthResponse.builder()
                     .accessToken(accessToken)

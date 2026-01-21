@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
-import type { LoginCommand, AuthResponse } from '../types/auth';
+import type { LoginCommand, AuthResponse } from "../types/auth";
 import axios from "axios";
 
 export const useAuthStore = defineStore("auth", () => {
@@ -70,33 +70,17 @@ export const useAuthStore = defineStore("auth", () => {
 
   async function refresh() {
     try {
-        if (!refreshToken.value) {
-            throw new Error("No refresh token available");
-        }
-        const response = await api.post<AuthResponse>("/auth/refresh", { refreshToken: refreshToken.value });
-        setSession(response.data);
-        return true;
+      if (!refreshToken.value) {
+        throw new Error("No refresh token available");
+      }
+      const response = await api.post<AuthResponse>("/auth/refresh", {
+        refreshToken: refreshToken.value,
+      });
+      setSession(response.data);
+      return true;
     } catch (error) {
-        logout();
-        return false;
-    }
-  }
-
-  // Hydrate user on app start if token exists
-  // (In a real app, we might call /me endpoint to validate token and get fresh user details)
-  async function initAuth() {
-    if (token.value && !user.value) {
-      // Decoded token or fetch user profile
-      // For now, if we lack a /me endpoint that returns full user info, we might rely on token claims
-      // or just set auth to true.
-      // Since our backend login returns the user details, we lose them on refresh if we don't store them.
-      // Storing user details in cookie is not secure/size limited.
-      // BEST PRACTICE: Fetch user from API using token.
-      // I don't see a /me endpoint in my implemented backend controller yet.
-      // I should probably add one or simple rely on token existence + basic decode for now.
-      // Or assume session is valid. The LoginUseCase returns the full details.
-      // I will implement a simplified check: if token exists, we are authenticated.
-      // Ideally I should decode JWT to get username/roles.
+      logout();
+      return false;
     }
   }
 

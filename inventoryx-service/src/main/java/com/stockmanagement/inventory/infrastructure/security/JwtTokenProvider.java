@@ -82,26 +82,7 @@ public class JwtTokenProvider {
     }
 
     private Key getSignInKey() {
-        // Ensure secret is Base64 encoded or simple bytes?
-        // Standard practice for HMAC-SHA is to use bytes.
-        // If string is simple, use getBytes. If Base64, decode.
-        // Assuming simple string for dev defaults, but safe decoding handles both
-        // often.
-        // For robustness, let's treat it as Base64 if possible or raw bytes.
-        // Using Decoders.BASE64.decode(jwtSecret) expects Base64.
-        // For default value, I should ensure it's Base64 or use
-        // Keys.hmacShaKeyFor(secret.getBytes())
-        // I will use `hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret))` but user must
-        // provide Base64.
-        // To be safe for the default dev key, I'll assume valid Base64 OR use raw
-        // bytes.
-        // Let's stick to standard practice: Secret should be Base64 encoded.
-        // I will update the default value in the code to be a valid valid Base64 for
-        // the long string,
-        // or just use Keys.hmacShaKeyFor(jwtSecret.getBytes()) for simplicity in this
-        // demo.
-        // Using getBytes is safer for arbitrary strings.
+        // Use UTF-8 bytes for HMAC-SHA key generation
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-        // Note: I will need to update application.yml with a valid Base64 secret soon.
     }
 }
