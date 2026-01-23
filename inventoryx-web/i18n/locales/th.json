@@ -303,7 +303,11 @@
   },
   "theme": {
     "switchLight": "เปลี่ยนเป็นโหมดสว่าง",
-    "switchDark": "เปลี่ยนเป็นโหมดมืด"
+    "switchDark": "เปลี่ยนเป็นโหมดมืด",
+    "darkMode": "โหมดมืด"
+  },
+  "settings": {
+    "language": "ภาษา"
   },
   "locations": {
     "title": "จัดการสถานที่",

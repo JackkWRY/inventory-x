@@ -32,34 +32,7 @@
           
           <div class="navbar-divider"></div>
           
-          <div class="user-section">
-            <span class="user-info">
-              <span class="user-name">
-                {{ authStore.user?.firstName }} {{ authStore.user?.lastName }}
-              </span>
-              <span class="user-badge" v-if="authStore.user?.roles?.length">
-                {{ authStore.user.roles[0] }}
-              </span>
-            </span>
-            
-            <div class="navbar-divider"></div>
-            
-            <button @click="handleLogout" class="btn-logout">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                <polyline points="16 17 21 12 16 7"></polyline>
-                <line x1="21" y1="12" x2="9" y2="12"></line>
-              </svg>
-              <span>{{ t('common.logout') }}</span>
-            </button>
-            
-            <div class="navbar-divider"></div>
-            
-            <div class="navbar-toggles">
-              <CommonThemeToggle />
-              <CommonLanguageSwitcher />
-            </div>
-          </div>
+          <CommonUserAvatarDropdown />
         </nav>
         
         <div v-else class="navbar-auth">
@@ -87,10 +60,6 @@ import { useAuthStore } from '~/stores/auth';
 
 const { t } = useI18n();
 const authStore = useAuthStore();
-
-function handleLogout() {
-  authStore.logout();
-}
 </script>
 
 <style scoped>
@@ -181,71 +150,6 @@ function handleLogout() {
   margin: 0 0.75rem;
 }
 
-/* User Section */
-.user-section {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Navbar Toggles */
-.navbar-toggles {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.user-name {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-primary);
-}
-
-.user-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.125rem 0.5rem;
-  font-size: 0.625rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-  border-radius: var(--radius-full);
-}
-
-/* Logout Button */
-.btn-logout {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.5rem 0.875rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  background: transparent;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.btn-logout:hover {
-  color: var(--color-danger);
-  border-color: var(--color-danger);
-  background: var(--color-danger-light);
-}
-
-.btn-logout svg {
-  flex-shrink: 0;
-}
-
 /* Auth Buttons */
 .navbar-auth {
   display: flex;
@@ -322,17 +226,6 @@ function handleLogout() {
     margin: 0 0.5rem;
   }
   
-  .user-name {
-    display: none;
-  }
-  
-  .btn-logout span {
-    display: none;
-  }
-  
-  .btn-logout {
-    padding: 0.5rem;
-  }
 }
 
 @media (max-width: 640px) {
@@ -344,8 +237,5 @@ function handleLogout() {
     display: none;
   }
   
-  .user-badge {
-    display: none;
-  }
 }
 </style>

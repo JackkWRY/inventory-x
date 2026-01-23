@@ -304,7 +304,11 @@
   },
   "theme": {
     "switchLight": "Switch to light mode",
-    "switchDark": "Switch to dark mode"
+    "switchDark": "Switch to dark mode",
+    "darkMode": "Dark Mode"
+  },
+  "settings": {
+    "language": "Language"
   },
   "locations": {
     "title": "Location Management",

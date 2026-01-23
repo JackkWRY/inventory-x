@@ -18,7 +18,31 @@ export const useAuthStore = defineStore("auth", () => {
     default: () => null,
     maxAge: 60 * 60 * 24 * 7,
   }); // 7 days
+  const firstNameCookie = useCookie<string | null>("auth_firstName", {
+    default: () => null,
+    maxAge: 60 * 60 * 24 * 7,
+  }); // 7 days
+  const lastNameCookie = useCookie<string | null>("auth_lastName", {
+    default: () => null,
+    maxAge: 60 * 60 * 24 * 7,
+  }); // 7 days
   const isAuthenticated = computed(() => !!token.value);
+  
+  // Computed user data that falls back to cookies
+  const userData = computed(() => {
+    if (user.value) {
+      return {
+        firstName: user.value.firstName,
+        lastName: user.value.lastName,
+        roles: user.value.roles,
+      };
+    }
+    return {
+      firstName: firstNameCookie.value || '',
+      lastName: lastNameCookie.value || '',
+      roles: roleCookie.value || [],
+    };
+  });
   const router = useRouter();
 
   // Axios instance (ideally this should be imported from a plugin, but for circular deps avoidance, we might set it up there.
@@ -58,6 +82,8 @@ export const useAuthStore = defineStore("auth", () => {
     token.value = authData.accessToken;
     refreshToken.value = authData.refreshToken;
     roleCookie.value = authData.roles;
+    firstNameCookie.value = authData.firstName;
+    lastNameCookie.value = authData.lastName;
   }
 
   function logout() {
@@ -65,6 +91,8 @@ export const useAuthStore = defineStore("auth", () => {
     token.value = null;
     refreshToken.value = null;
     roleCookie.value = null;
+    firstNameCookie.value = null;
+    lastNameCookie.value = null;
     router.push("/login");
   }
 
@@ -86,6 +114,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   return {
     user,
+    userData,
     token,
     isAuthenticated,
     login,
