@@ -26,7 +26,7 @@ const getStatusBadgeClass = (status: LocationStatus) => {
     <!-- Header with Actions -->
     <div class="location-list__header">
       <div class="search-field">
-        <label for="search-location" class="search-label">{{ t("common.search") }}</label>
+        <label for="search-location" class="search-label">{{ t("common.search") }} <kbd class="kbd-hint">/</kbd></label>
         <div class="search-input-wrapper">
           <input
             id="search-location"
@@ -305,5 +305,22 @@ const getStatusBadgeClass = (status: LocationStatus) => {
   background: var(--color-surface-hover);
   color: var(--color-primary);
   border-color: var(--color-primary);
+}
+
+.kbd-hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.25rem;
+  font-family: monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text-secondary);
+  margin-left: 0.25rem;
 }
 </style>

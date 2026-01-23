@@ -151,23 +151,31 @@ const formatDate = (dateArr: string | number[]) => {
       </div>
     </header>
 
-    <!-- Actions -->
-    <div class="actions-bar">
-      <div class="search-container">
-        <input
-          type="text"
-          class="search-input"
-          :placeholder="t('users.searchPlaceholder')"
-          @input="handleSearch"
-        />
+    <!-- Table with Filter -->
+    <div class="list-container">
+      <!-- Header with Search -->
+      <div class="list-header">
+        <div class="list-search">
+          <div class="search-field">
+            <label for="search-user">{{ t('common.search') }} <kbd class="kbd-hint">/</kbd></label>
+            <input
+              id="search-user"
+              type="text"
+              class="input"
+              :placeholder="t('users.searchPlaceholder')"
+              @input="handleSearch"
+            />
+          </div>
+        </div>
+        <div class="list-actions">
+          <button class="btn btn--primary" @click="handleCreateUser">
+            + {{ t("users.createUser") }}
+          </button>
+        </div>
       </div>
-      <button class="btn btn--primary" @click="handleCreateUser">
-        + {{ t("users.createUser") }}
-      </button>
-    </div>
 
-    <!-- Table -->
-    <div class="table-container">
+      <!-- Table -->
+      <div class="table-wrapper">
       <div v-if="loading && !users.length" class="loading-state">
         {{ t("common.loading") }}
       </div>
@@ -228,6 +236,7 @@ const formatDate = (dateArr: string | number[]) => {
           </tr>
         </tbody>
       </table>
+      </div>
     </div>
 
     <!-- Pagination -->
@@ -301,42 +310,87 @@ const formatDate = (dateArr: string | number[]) => {
   flex-shrink: 0;
 }
 
-.actions-bar {
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-}
-
-.search-container {
-  flex: 1;
-  max-width: 400px;
-}
-
-.search-input {
-  width: 100%;
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  font-size: 0.875rem;
-  background: var(--color-card);
-  color: var(--color-text-primary);
-}
-
-.search-input::placeholder {
-  color: var(--color-text-secondary);
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #1a73e8;
-}
-
-.table-container {
+.list-container {
   background: var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: 8px;
+  overflow: hidden;
+  transition: var(--theme-transition);
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.list-search {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.search-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.search-field label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  min-width: 280px;
+  transition: border-color 0.2s, background-color 0.3s;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.input:focus {
+  outline: none;
+  border-color: #4285f4;
+}
+
+.list-actions {
+  flex-shrink: 0;
+}
+
+.kbd-hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.25rem;
+  font-family: monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text-secondary);
+  margin-left: 0.25rem;
+}
+
+.table-wrapper {
   overflow-x: auto;
 }
 
