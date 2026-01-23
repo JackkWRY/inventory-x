@@ -8,10 +8,10 @@ export const useUserStore = defineStore("users", () => {
     const loading = ref(false);
     const { getUsers, toggleStatus, createUser: apiCreateUser, updateUser: apiUpdateUser } = useUserApi();
 
-    async function fetchUsers(page: number, size: number) {
+    async function fetchUsers(page: number, size: number, search?: string) {
         loading.value = true;
         try {
-            const response = await getUsers(page, size);
+            const response = await getUsers(page, size, search);
             users.value = response.data.content;
             totalRecords.value = response.data.totalElements;
         } catch (error) {

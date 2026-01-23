@@ -18,4 +18,7 @@ public interface UserRepository {
     User save(User user);
 
     org.springframework.data.domain.Page<User> findAll(org.springframework.data.domain.Pageable pageable);
+
+    org.springframework.data.domain.Page<User> findAll(String search,
+            org.springframework.data.domain.Pageable pageable);
 }

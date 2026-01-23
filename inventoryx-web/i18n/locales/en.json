@@ -243,7 +243,8 @@
       "MANAGER": "Manager",
       "STAFF": "Staff",
       "USER": "User"
-    }
+    },
+    "searchPlaceholder": "Search by username, email, or name..."
   },
   "validation": {
     "required": "This field is required",

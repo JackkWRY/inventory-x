@@ -56,7 +56,11 @@ public class UserManagementService {
     }
 
     @Transactional(readOnly = true)
-    public Page<UserResponse> getUsersPaged(Pageable pageable) {
+    public Page<UserResponse> getUsersPaged(String search, Pageable pageable) {
+        if (search != null && !search.isBlank()) {
+            return userRepository.findAll(search.trim(), pageable)
+                    .map(this::mapToResponse);
+        }
         return userRepository.findAll(pageable)
                 .map(this::mapToResponse);
     }

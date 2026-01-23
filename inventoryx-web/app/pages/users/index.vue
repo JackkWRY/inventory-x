@@ -19,6 +19,20 @@ const { t } = useI18n();
 const currentPage = ref(0);
 const pageSize = ref(10);
 
+// Search state
+const searchQuery = ref("");
+let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const handleSearch = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (debounceTimeout) clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(() => {
+    searchQuery.value = target.value;
+    currentPage.value = 0;
+    fetchData();
+  }, 300);
+};
+
 // Dialog state
 const isDialogOpen = ref(false);
 const selectedUser = ref<User | null>(null);
@@ -38,7 +52,7 @@ onMounted(() => {
 });
 
 const fetchData = () => {
-  userStore.fetchUsers(currentPage.value, pageSize.value);
+  userStore.fetchUsers(currentPage.value, pageSize.value, searchQuery.value || undefined);
 };
 
 const totalPages = computed(() =>
@@ -139,6 +153,14 @@ const formatDate = (dateArr: string | number[]) => {
 
     <!-- Actions -->
     <div class="actions-bar">
+      <div class="search-container">
+        <input
+          type="text"
+          class="search-input"
+          :placeholder="t('users.searchPlaceholder')"
+          @input="handleSearch"
+        />
+      </div>
       <button class="btn btn--primary" @click="handleCreateUser">
         + {{ t("users.createUser") }}
       </button>
@@ -282,7 +304,33 @@ const formatDate = (dateArr: string | number[]) => {
 .actions-bar {
   margin-bottom: 1rem;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.search-container {
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  background: var(--color-card);
+  color: var(--color-text-primary);
+}
+
+.search-input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #1a73e8;
 }
 
 .table-container {

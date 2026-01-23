@@ -3,10 +3,14 @@ import type { User, CreateUserRequest, UpdateUserRequest } from "~/types/user";
 export const useUserApi = () => {
   const { $api } = useNuxtApp();
 
-  const getUsers = async (page = 0, size = 10) => {
+  const getUsers = async (page = 0, size = 10, search?: string) => {
     // Spring Data Page numbering starts at 0
-    return $api.get<{ content: User[], totalElements: number, totalPages: number }>(`/users`, {
-      params: { page, size, sort: 'createdAt,desc' }
+    return $api.get<{
+      content: User[];
+      totalElements: number;
+      totalPages: number;
+    }>(`/users`, {
+      params: { page, size, sort: "createdAt,desc", ...(search && { search }) },
     });
   };
 
@@ -26,6 +30,6 @@ export const useUserApi = () => {
     getUsers,
     createUser,
     updateUser,
-    toggleStatus
+    toggleStatus,
   };
 };

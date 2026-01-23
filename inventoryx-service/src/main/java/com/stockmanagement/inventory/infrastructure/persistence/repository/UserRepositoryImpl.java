@@ -52,4 +52,13 @@ public class UserRepositoryImpl implements UserRepository {
         return jpaUserRepository.findAll(pageable)
                 .map(mapper::toDomain);
     }
+
+    @Override
+    public org.springframework.data.domain.Page<User> findAll(String search,
+            org.springframework.data.domain.Pageable pageable) {
+        return jpaUserRepository
+                .findByUsernameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
+                        search, search, search, search, pageable)
+                .map(mapper::toDomain);
+    }
 }

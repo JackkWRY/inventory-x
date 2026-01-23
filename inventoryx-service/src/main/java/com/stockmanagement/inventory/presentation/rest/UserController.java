@@ -29,8 +29,9 @@ public class UserController {
     @org.springframework.web.bind.annotation.GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<org.springframework.data.domain.Page<com.stockmanagement.inventory.application.dto.response.UserResponse>> getUsers(
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String search,
             org.springframework.data.domain.Pageable pageable) {
-        return ResponseEntity.ok(userManagementService.getUsersPaged(pageable));
+        return ResponseEntity.ok(userManagementService.getUsersPaged(search, pageable));
     }
 
     @org.springframework.web.bind.annotation.PutMapping("/{id}")
