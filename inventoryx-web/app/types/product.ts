@@ -12,7 +12,7 @@ export interface Product {
   updatedAt: string;
 }
 
-export interface CreateProductRequest {
+export interface CreateProductCommand {
   sku: string;
   name: string;
   description?: string;
@@ -22,7 +22,7 @@ export interface CreateProductRequest {
   unitOfMeasure: string;
 }
 
-export interface UpdateProductRequest {
+export interface UpdateProductCommand {
   name: string;
   description?: string;
   category?: string;

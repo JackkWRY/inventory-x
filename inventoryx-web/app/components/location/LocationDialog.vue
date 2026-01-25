@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type Location, LocationType, LocationStatus, type CreateLocationRequest, type UpdateLocationRequest } from "~/types/location";
+import { type Location, LocationType, LocationStatus, type CreateLocationCommand, type UpdateLocationCommand } from "~/types/location";
 
 const props = defineProps<{
   open: boolean;
@@ -43,7 +43,7 @@ watch(
 
 const handleSubmit = () => {
     // For create
-    const payload: CreateLocationRequest | UpdateLocationRequest = {
+    const payload: CreateLocationCommand | UpdateLocationCommand = {
         name: form.name,
         type: form.type,
         description: form.description,

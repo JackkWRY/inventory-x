@@ -20,14 +20,14 @@ export enum LocationStatus {
   INACTIVE = "INACTIVE",
 }
 
-export interface CreateLocationRequest {
+export interface CreateLocationCommand {
   name: string;
   type: LocationType;
   description?: string;
   address?: string;
 }
 
-export interface UpdateLocationRequest {
+export interface UpdateLocationCommand {
   name: string;
   type?: LocationType;
   description?: string;

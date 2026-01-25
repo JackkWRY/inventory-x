@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { Product, CreateProductRequest, UpdateProductRequest, ProductPageResponse } from '~/types/product';
+import type { Product, CreateProductCommand, UpdateProductCommand, ProductPageResponse } from '~/types/product';
 
 export const useProductStore = defineStore('product', () => {
     // State
@@ -28,7 +28,7 @@ export const useProductStore = defineStore('product', () => {
         }
     }
 
-    async function createProduct(payload: CreateProductRequest) {
+    async function createProduct(payload: CreateProductCommand) {
         loading.value = true;
         error.value = null;
         const { $api } = useNuxtApp();
@@ -44,7 +44,7 @@ export const useProductStore = defineStore('product', () => {
         }
     }
 
-    async function updateProduct(id: string, payload: UpdateProductRequest) {
+    async function updateProduct(id: string, payload: UpdateProductCommand) {
         loading.value = true;
         error.value = null;
         const { $api } = useNuxtApp();

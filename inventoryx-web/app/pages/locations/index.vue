@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useLocationStore } from "~/stores/location";
-import type { Location, CreateLocationRequest, UpdateLocationRequest } from "~/types/location";
+import type { Location, CreateLocationCommand, UpdateLocationCommand } from "~/types/location";
 
 definePageMeta({
   title: "Location Management",
@@ -30,13 +30,13 @@ const handleEdit = (location: Location) => {
     showDialog.value = true;
 };
 
-const handleSubmit = async (payload: CreateLocationRequest | UpdateLocationRequest) => {
+const handleSubmit = async (payload: CreateLocationCommand | UpdateLocationCommand) => {
     try {
         if (selectedLocation.value) {
-            await locationStore.updateLocation(selectedLocation.value.id, payload as UpdateLocationRequest);
+            await locationStore.updateLocation(selectedLocation.value.id, payload as UpdateLocationCommand);
             /* i18n needed */
         } else {
-            await locationStore.createLocation(payload as CreateLocationRequest);
+            await locationStore.createLocation(payload as CreateLocationCommand);
         }
         showDialog.value = false;
     } catch (e) {

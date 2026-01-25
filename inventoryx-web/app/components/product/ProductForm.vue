@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CreateProductRequest, Product } from "~/types/product";
+import type { CreateProductCommand, Product } from "~/types/product";
 import { useForm } from "vee-validate";
 import * as yup from "yup";
 
@@ -34,7 +34,7 @@ const schema = computed(() => {
 
 // Form Logic
 const { values, errors, defineField, handleSubmit, resetForm, setValues } =
-  useForm<CreateProductRequest>({
+  useForm<CreateProductCommand>({
     validationSchema: schema,
     initialValues: {
       sku: "",
@@ -85,7 +85,7 @@ watch(
   },
 );
 
-const onSubmit = handleSubmit((values: CreateProductRequest) => {
+const onSubmit = handleSubmit((values: CreateProductCommand) => {
   emit("submit", values);
 });
 

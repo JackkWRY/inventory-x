@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Location, CreateLocationRequest, UpdateLocationRequest } from "~/types/location";
+import type { Location, CreateLocationCommand, UpdateLocationCommand } from "~/types/location";
 
 export const useLocationStore = defineStore("location", () => {
   const { $api } = useNuxtApp();
@@ -63,7 +63,7 @@ export const useLocationStore = defineStore("location", () => {
     }
   }
 
-  async function createLocation(location: CreateLocationRequest) {
+  async function createLocation(location: CreateLocationCommand) {
     loading.value = true;
     error.value = null;
     try {
@@ -77,7 +77,7 @@ export const useLocationStore = defineStore("location", () => {
     }
   }
 
-  async function updateLocation(id: string, location: UpdateLocationRequest) {
+  async function updateLocation(id: string, location: UpdateLocationCommand) {
     loading.value = true;
     error.value = null;
     try {

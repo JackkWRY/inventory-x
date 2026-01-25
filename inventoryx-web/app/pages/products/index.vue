@@ -2,7 +2,7 @@
 import { storeToRefs } from "pinia";
 import { useProductStore } from "~/stores/product";
 import { useAuthStore } from "~/stores/auth";
-import type { Product, CreateProductRequest } from "~/types/product";
+import type { Product, CreateProductCommand } from "~/types/product";
 import ProductList from "~/components/product/ProductList.vue";
 import ProductForm from "~/components/product/ProductForm.vue";
 
@@ -64,7 +64,7 @@ const handleEdit = (product: Product) => {
   isFormOpen.value = true;
 };
 
-const handleSubmit = async (values: CreateProductRequest) => {
+const handleSubmit = async (values: CreateProductCommand) => {
   try {
     if (isEditMode.value && selectedProduct.value) {
       await productStore.updateProduct(selectedProduct.value.id, values);

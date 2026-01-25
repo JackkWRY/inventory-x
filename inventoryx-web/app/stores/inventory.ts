@@ -8,8 +8,7 @@ import type {
   AdjustStockCommand,
   WithdrawStockCommand,
   QuickSaleCommand,
-  PaginationParams,
-  PagedStockResponse
+  PaginationParams
 } from '~/types/inventory'
 import { useInventoryApi } from '~/composables/api/useInventoryApi'
 
@@ -18,385 +17,292 @@ import { useInventoryApi } from '~/composables/api/useInventoryApi'
  *
  * Centralized state management for inventory operations.
  * Uses useInventoryApi composable for all Backend communication.
- *
- * @example
- * ```ts
- * const store = useInventoryStore()
- * await store.fetchStocks({ sku: 'PROD-001' })
- * console.log(store.stocks)
- * ```
  */
-export const useInventoryStore = defineStore('inventory', {
+export const useInventoryStore = defineStore('inventory', () => {
   // ============================================
   // State
   // ============================================
-  state: () => ({
-    /** List of all stocks */
-    stocks: [] as Stock[],
-    /** Currently selected stock for detail view */
-    selectedStock: null as Stock | null,
-    /** Loading state for async operations */
-    loading: false,
-    /** Error message from last failed operation */
-    error: null as string | null,
-    /** Pagination state */
-    pagination: {
-      currentPage: 0,
-      pageSize: 20,
-      totalElements: 0,
-      totalPages: 0,
-      isFirst: true,
-      isLast: true
-    }
-  }),
+  const stocks = ref<Stock[]>([])
+  const selectedStock = ref<Stock | null>(null)
+  const loading = ref(false)
+  const error = ref<string | null>(null)
+  const pagination = ref({
+    currentPage: 0,
+    pageSize: 20,
+    totalElements: 0,
+    totalPages: 0,
+    isFirst: true,
+    isLast: true
+  })
 
   // ============================================
   // Getters
   // ============================================
-  getters: {
-    /**
-     * Filter stocks by location
-     */
-    stocksByLocation: (state) => (locationId: string): Stock[] => {
-      return state.stocks.filter(s => s.locationId === locationId)
-    },
+  const stocksByLocation = computed(() => (locationId: string): Stock[] => {
+    return stocks.value.filter(s => s.locationId === locationId)
+  })
 
-    /**
-     * Filter stocks by SKU
-     */
-    stocksBySku: (state) => (sku: string): Stock[] => {
-      return state.stocks.filter(s => s.sku === sku)
-    },
+  const stocksBySku = computed(() => (sku: string): Stock[] => {
+    return stocks.value.filter(s => s.sku === sku)
+  })
 
-    /**
-     * Calculate total available quantity for a SKU across all locations
-     */
-    totalAvailableQuantity: (state) => (sku: string): number => {
-      return state.stocks
-        .filter(s => s.sku === sku)
-        .reduce((sum, s) => sum + parseFloat(s.availableQuantity || '0'), 0)
-    },
+  const totalAvailableQuantity = computed(() => (sku: string): number => {
+    return stocks.value
+      .filter(s => s.sku === sku)
+      .reduce((sum, s) => sum + parseFloat(s.availableQuantity || '0'), 0)
+  })
 
-    /**
-     * Calculate total reserved quantity for a SKU across all locations
-     */
-    totalReservedQuantity: (state) => (sku: string): number => {
-      return state.stocks
-        .filter(s => s.sku === sku)
-        .reduce((sum, s) => sum + parseFloat(s.reservedQuantity || '0'), 0)
-    },
+  const totalReservedQuantity = computed(() => (sku: string): number => {
+    return stocks.value
+      .filter(s => s.sku === sku)
+      .reduce((sum, s) => sum + parseFloat(s.reservedQuantity || '0'), 0)
+  })
 
-    /**
-     * Check if store is in loading state
-     */
-    isLoading: (state): boolean => state.loading,
-
-    /**
-     * Check if store has error
-     */
-    hasError: (state): boolean => state.error !== null
-  },
+  const isLoading = computed(() => loading.value)
+  const hasError = computed(() => error.value !== null)
 
   // ============================================
   // Actions
   // ============================================
-  actions: {
-    /**
-     * Clear current error
-     */
-    clearError() {
-      this.error = null
-    },
 
-    /**
-     * Clear selected stock
-     */
-    clearSelection() {
-      this.selectedStock = null
-    },
+  function clearError() {
+    error.value = null
+  }
 
-    /**
-     * Set selected stock
-     */
-    selectStock(stock: Stock | null) {
-      this.selectedStock = stock
-    },
+  function clearSelection() {
+    selectedStock.value = null
+  }
 
-    // --------------------------------------------
-    // Query Operations
-    // --------------------------------------------
+  function selectStock(stock: Stock | null) {
+    selectedStock.value = stock
+  }
 
-    /**
-     * Fetch all stocks with optional filters
-     * @param params - Optional filter parameters (sku, locationId)
-     */
-    async fetchStocks(params?: { sku?: string; locationId?: string }) {
-      this.loading = true
-      this.error = null
+  // --------------------------------------------
+  // Query Operations
+  // --------------------------------------------
 
-      try {
-        const api = useInventoryApi()
-        this.stocks = await api.getStocks(params)
-      } catch (e: unknown) {
-        this.error = e instanceof Error ? e.message : 'Failed to fetch stocks'
-        console.error('[InventoryStore] fetchStocks error:', e)
-      } finally {
-        this.loading = false
-      }
-    },
+  async function fetchStocks(params?: { sku?: string; locationId?: string }) {
+    loading.value = true
+    error.value = null
 
-    /**
-     * Fetch stocks with pagination (BEST PRACTICE)
-     * @param params - Pagination parameters (page, size)
-     */
-    async fetchStocksPaged(params?: PaginationParams) {
-      this.loading = true
-      this.error = null
-
-      try {
-        const api = useInventoryApi()
-        const response = await api.getStocksPaged({
-          page: params?.page ?? this.pagination.currentPage,
-          size: params?.size ?? this.pagination.pageSize
-        })
-
-        // Update stocks
-        this.stocks = response.content
-
-        // Update pagination state
-        this.pagination = {
-          currentPage: response.page,
-          pageSize: response.size,
-          totalElements: response.totalElements,
-          totalPages: response.totalPages,
-          isFirst: response.first,
-          isLast: response.last
-        }
-      } catch (e: unknown) {
-        this.error = e instanceof Error ? e.message : 'Failed to fetch stocks'
-        console.error('[InventoryStore] fetchStocksPaged error:', e)
-      } finally {
-        this.loading = false
-      }
-    },
-
-    /**
-     * Change page
-     */
-    async changePage(page: number) {
-      await this.fetchStocksPaged({ page, size: this.pagination.pageSize })
-    },
-
-    /**
-     * Change page size and reset to first page
-     */
-    async changePageSize(size: number) {
-      await this.fetchStocksPaged({ page: 0, size })
-    },
-
-    /**
-     * Fetch a single stock by ID
-     * @param id - Stock ID
-     */
-    async fetchStockById(id: string) {
-      this.loading = true
-      this.error = null
-
-      try {
-        const api = useInventoryApi()
-        this.selectedStock = await api.getStockById(id)
-      } catch (e: unknown) {
-        this.error = e instanceof Error ? e.message : 'Failed to fetch stock'
-        console.error('[InventoryStore] fetchStockById error:', e)
-      } finally {
-        this.loading = false
-      }
-    },
-
-    // --------------------------------------------
-    // Command Operations
-    // --------------------------------------------
-
-    /**
-     * Receive stock into warehouse
-     * @param command - Receive stock command
-     * @returns Promise<Stock> - The updated stock
-     */
-    async receiveStock(command: ReceiveStockCommand): Promise<Stock | null> {
-      this.loading = true
-      this.error = null
-
-      try {
-        const api = useInventoryApi()
-        const result = await api.receiveStock(command)
-
-        // Refresh stocks after successful operation
-        await this.fetchStocks()
-
-        return result
-      } catch (e: unknown) {
-        this.error = e instanceof Error ? e.message : 'Failed to receive stock'
-        console.error('[InventoryStore] receiveStock error:', e)
-        throw e
-      } finally {
-        this.loading = false
-      }
-    },
-
-    /**
-     * Reserve stock for an order
-     * @param command - Reserve stock command
-     * @returns Promise<Stock> - The updated stock
-     */
-    async reserveStock(command: ReserveStockCommand): Promise<Stock | null> {
-      this.loading = true
-      this.error = null
-
-      try {
-        const api = useInventoryApi()
-        const result = await api.reserveStock(command)
-
-        // Refresh stocks after successful operation
-        await this.fetchStocks()
-
-        return result
-      } catch (e: unknown) {
-        this.error = e instanceof Error ? e.message : 'Failed to reserve stock'
-        console.error('[InventoryStore] reserveStock error:', e)
-        throw e
-      } finally {
-        this.loading = false
-      }
-    },
-
-    /**
-     * Release a reservation (cancel order)
-     * @param command - Release reservation command
-     * @returns Promise<Stock> - The updated stock
-     */
-    async releaseReservation(command: ReleaseReservationCommand): Promise<Stock | null> {
-      this.loading = true
-      this.error = null
-
-      try {
-        const api = useInventoryApi()
-        const result = await api.releaseReservation(command)
-
-        // Refresh stocks after successful operation
-        await this.fetchStocks()
-
-        return result
-      } catch (e: unknown) {
-        this.error = e instanceof Error ? e.message : 'Failed to release reservation'
-        console.error('[InventoryStore] releaseReservation error:', e)
-        throw e
-      } finally {
-        this.loading = false
-      }
-    },
-
-    /**
-     * Confirm a reservation (complete sale)
-     * @param command - Confirm reservation command
-     * @returns Promise<Stock> - The updated stock
-     */
-    async confirmReservation(command: ConfirmReservationCommand): Promise<Stock | null> {
-      this.loading = true
-      this.error = null
-
-      try {
-        const api = useInventoryApi()
-        const result = await api.confirmReservation(command)
-
-        // Refresh stocks after successful operation
-        await this.fetchStocks()
-
-        return result
-      } catch (e: unknown) {
-        this.error = e instanceof Error ? e.message : 'Failed to confirm reservation'
-        console.error('[InventoryStore] confirmReservation error:', e)
-        throw e
-      } finally {
-        this.loading = false
-      }
-    },
-
-    /**
-     * Adjust stock quantity (manual correction)
-     * @param command - Adjust stock command
-     * @returns Promise<Stock> - The updated stock
-     */
-    async adjustStock(command: AdjustStockCommand): Promise<Stock | null> {
-      this.loading = true
-      this.error = null
-
-      try {
-        const api = useInventoryApi()
-        const result = await api.adjustStock(command)
-
-        // Refresh stocks after successful operation
-        await this.fetchStocks()
-
-        return result
-      } catch (e: unknown) {
-        this.error = e instanceof Error ? e.message : 'Failed to adjust stock'
-        console.error('[InventoryStore] adjustStock error:', e)
-        throw e
-      } finally {
-        this.loading = false
-      }
-    },
-
-    /**
-     * Withdraw stock for internal use
-     * @param command - Withdraw stock command
-     * @returns Promise<Stock> - The updated stock
-     */
-    async withdrawStock(command: WithdrawStockCommand): Promise<Stock | null> {
-      this.loading = true
-      this.error = null
-
-      try {
-        const api = useInventoryApi()
-        const result = await api.withdrawStock(command)
-
-        // Refresh stocks after successful operation
-        await this.fetchStocks()
-
-        return result
-      } catch (e: unknown) {
-        this.error = e instanceof Error ? e.message : 'Failed to withdraw stock'
-        console.error('[InventoryStore] withdrawStock error:', e)
-        throw e
-      } finally {
-        this.loading = false
-      }
-    },
-
-    /**
-     * Quick sale for POS/Walk-in
-     * @param command - Quick sale command
-     * @returns Promise<Stock> - The updated stock
-     */
-    async quickSale(command: QuickSaleCommand): Promise<Stock | null> {
-      this.loading = true
-      this.error = null
-
-      try {
-        const api = useInventoryApi()
-        const result = await api.quickSale(command)
-
-        // Refresh stocks after successful operation
-        await this.fetchStocks()
-
-        return result
-      } catch (e: unknown) {
-        this.error = e instanceof Error ? e.message : 'Failed to complete sale'
-        console.error('[InventoryStore] quickSale error:', e)
-        throw e
-      } finally {
-        this.loading = false
-      }
+    try {
+      const api = useInventoryApi()
+      stocks.value = await api.getStocks(params)
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to fetch stocks'
+      console.error('[InventoryStore] fetchStocks error:', e)
+    } finally {
+      loading.value = false
     }
+  }
+
+  async function fetchStocksPaged(params?: PaginationParams) {
+    loading.value = true
+    error.value = null
+
+    try {
+      const api = useInventoryApi()
+      const response = await api.getStocksPaged({
+        page: params?.page ?? pagination.value.currentPage,
+        size: params?.size ?? pagination.value.pageSize
+      })
+
+      stocks.value = response.content
+      pagination.value = {
+        currentPage: response.page,
+        pageSize: response.size,
+        totalElements: response.totalElements,
+        totalPages: response.totalPages,
+        isFirst: response.first,
+        isLast: response.last
+      }
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to fetch stocks'
+      console.error('[InventoryStore] fetchStocksPaged error:', e)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function changePage(page: number) {
+    await fetchStocksPaged({ page, size: pagination.value.pageSize })
+  }
+
+  async function changePageSize(size: number) {
+    await fetchStocksPaged({ page: 0, size })
+  }
+
+  async function fetchStockById(id: string) {
+    loading.value = true
+    error.value = null
+
+    try {
+      const api = useInventoryApi()
+      selectedStock.value = await api.getStockById(id)
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to fetch stock'
+      console.error('[InventoryStore] fetchStockById error:', e)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // --------------------------------------------
+  // Command Operations
+  // --------------------------------------------
+
+  async function receiveStock(command: ReceiveStockCommand): Promise<Stock | null> {
+    loading.value = true
+    error.value = null
+
+    try {
+      const api = useInventoryApi()
+      const result = await api.receiveStock(command)
+      await fetchStocks()
+      return result
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to receive stock'
+      console.error('[InventoryStore] receiveStock error:', e)
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function reserveStock(command: ReserveStockCommand): Promise<Stock | null> {
+    loading.value = true
+    error.value = null
+
+    try {
+      const api = useInventoryApi()
+      const result = await api.reserveStock(command)
+      await fetchStocks()
+      return result
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to reserve stock'
+      console.error('[InventoryStore] reserveStock error:', e)
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function releaseReservation(command: ReleaseReservationCommand): Promise<Stock | null> {
+    loading.value = true
+    error.value = null
+
+    try {
+      const api = useInventoryApi()
+      const result = await api.releaseReservation(command)
+      await fetchStocks()
+      return result
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to release reservation'
+      console.error('[InventoryStore] releaseReservation error:', e)
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function confirmReservation(command: ConfirmReservationCommand): Promise<Stock | null> {
+    loading.value = true
+    error.value = null
+
+    try {
+      const api = useInventoryApi()
+      const result = await api.confirmReservation(command)
+      await fetchStocks()
+      return result
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to confirm reservation'
+      console.error('[InventoryStore] confirmReservation error:', e)
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function adjustStock(command: AdjustStockCommand): Promise<Stock | null> {
+    loading.value = true
+    error.value = null
+
+    try {
+      const api = useInventoryApi()
+      const result = await api.adjustStock(command)
+      await fetchStocks()
+      return result
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to adjust stock'
+      console.error('[InventoryStore] adjustStock error:', e)
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function withdrawStock(command: WithdrawStockCommand): Promise<Stock | null> {
+    loading.value = true
+    error.value = null
+
+    try {
+      const api = useInventoryApi()
+      const result = await api.withdrawStock(command)
+      await fetchStocks()
+      return result
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to withdraw stock'
+      console.error('[InventoryStore] withdrawStock error:', e)
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function quickSale(command: QuickSaleCommand): Promise<Stock | null> {
+    loading.value = true
+    error.value = null
+
+    try {
+      const api = useInventoryApi()
+      const result = await api.quickSale(command)
+      await fetchStocks()
+      return result
+    } catch (e: unknown) {
+      error.value = e instanceof Error ? e.message : 'Failed to complete sale'
+      console.error('[InventoryStore] quickSale error:', e)
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  return {
+    stocks,
+    selectedStock,
+    loading,
+    error,
+    pagination,
+    stocksByLocation,
+    stocksBySku,
+    totalAvailableQuantity,
+    totalReservedQuantity,
+    isLoading,
+    hasError,
+    clearError,
+    clearSelection,
+    selectStock,
+    fetchStocks,
+    fetchStocksPaged,
+    changePage,
+    changePageSize,
+    fetchStockById,
+    receiveStock,
+    reserveStock,
+    releaseReservation,
+    confirmReservation,
+    adjustStock,
+    withdrawStock,
+    quickSale
   }
 })
