@@ -26,14 +26,28 @@ const getStatusBadgeClass = (status: LocationStatus) => {
     <!-- Header with Actions -->
     <div class="location-list__header">
       <div class="search-field">
-        <label for="search-location" class="search-label">{{ t("common.search") }} <kbd class="kbd-hint">/</kbd></label>
         <div class="search-input-wrapper">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="search-icon"
+          >
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
           <input
             id="search-location"
             v-model="searchQuery"
             type="text"
-            :placeholder="t('locations.searchPlaceholder') || 'Search locations...'"
-            class="input"
+            :placeholder="t('common.search') + '...'"
+            class="input with-icon"
             @input="handleSearch"
           />
           <button v-if="searchQuery" class="clear-btn" @click="searchQuery = ''; handleSearch()">✕</button>
@@ -127,23 +141,21 @@ const getStatusBadgeClass = (status: LocationStatus) => {
 .search-field {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
   flex: 1;
   max-width: 300px;
-}
-
-.search-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .search-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--color-text-secondary);
+  pointer-events: none;
 }
 
 .input {
@@ -155,7 +167,11 @@ const getStatusBadgeClass = (status: LocationStatus) => {
   transition: all 0.2s;
   background: var(--color-surface);
   color: var(--color-text-primary);
-  padding-right: 2rem;
+  padding-right: 2rem; 
+}
+
+.input.with-icon {
+  padding-left: 2.5rem;
 }
 
 .input:focus {

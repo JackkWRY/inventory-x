@@ -31,17 +31,31 @@ const formatCurrency = (amount: number, currency: string) => {
     <div class="product-list__header">
       <div class="product-list__search">
         <div class="search-field">
-          <label for="search-input"
-            >{{ t("common.search") }} <kbd class="kbd-hint">/</kbd></label
-          >
-          <input
-            id="search-input"
-            type="text"
-            :value="search"
-            :placeholder="t('common.search') + '...'"
-            class="input"
-            @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
-          />
+          <div class="search-input-wrapper">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="search-icon"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input
+              id="search-input"
+              type="text"
+              :value="search"
+              :placeholder="t('common.search') + '...'"
+              class="input with-icon"
+              @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
+            />
+          </div>
         </div>
       </div>
       <div class="product-list__actions">
@@ -140,15 +154,19 @@ const formatCurrency = (amount: number, currency: string) => {
 .search-field {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
 }
 
-.search-field label {
-  font-size: 0.75rem;
-  font-weight: 500;
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
   color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  pointer-events: none;
 }
 
 .input {
@@ -156,10 +174,14 @@ const formatCurrency = (amount: number, currency: string) => {
   border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 0.875rem;
-  min-width: 250px;
+  min-width: 280px;
   transition: border-color 0.2s, background-color 0.3s;
   background: var(--color-surface);
   color: var(--color-text-primary);
+}
+
+.input.with-icon {
+  padding-left: 2.5rem;
 }
 
 .input:focus {

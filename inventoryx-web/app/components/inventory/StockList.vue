@@ -59,8 +59,8 @@ const emit = defineEmits<{
 }>();
 
 // Search state
-const searchSku = ref("");
-const searchLocation = ref("");
+// Search state
+const searchQuery = ref("");
 const stockStatus = ref("all"); // 'all' | 'low' | 'normal' | 'out'
 
 // Refs for keyboard shortcuts
@@ -75,17 +75,15 @@ const LOW_STOCK_THRESHOLD = 10;
 // Computed filtered stocks
 const filteredStocks = computed(() => {
   return props.stocks.filter((stock) => {
-    // SKU filter
-    const matchesSku =
-      !searchSku.value ||
-      stock.sku.toLowerCase().includes(searchSku.value.toLowerCase());
-
-    // Location filter
-    const matchesLocation =
-      !searchLocation.value ||
-      stock.locationId
-        .toLowerCase()
-        .includes(searchLocation.value.toLowerCase());
+    // Search filter (SKU or Location)
+    const query = searchQuery.value.toLowerCase().trim();
+    const locationName = props.locationMap?.[stock.locationId] || "";
+    
+    const matchesSearch =
+      !query ||
+      stock.sku.toLowerCase().includes(query) ||
+      stock.locationId.toLowerCase().includes(query) ||
+      locationName.toLowerCase().includes(query);
 
     // Stock status filter
     const qty = parseFloat(stock.availableQuantity || "0");
@@ -98,13 +96,13 @@ const filteredStocks = computed(() => {
       matchesStatus = qty <= 0;
     }
 
-    return matchesSku && matchesLocation && matchesStatus;
+    return matchesSearch && matchesStatus;
   });
 });
 
 // Check if any filter is active
 const hasActiveFilters = computed(() => {
-  return searchSku.value || searchLocation.value || stockStatus.value !== "all";
+  return searchQuery.value || stockStatus.value !== "all";
 });
 
 // Format quantity for display
@@ -118,8 +116,7 @@ const formatQuantity = (value: string): string => {
 
 // Clear search filters
 const clearFilters = () => {
-  searchSku.value = "";
-  searchLocation.value = "";
+  searchQuery.value = "";
   stockStatus.value = "all";
 };
 
@@ -198,34 +195,37 @@ defineExpose({
   <div class="stock-list">
     <!-- Header with Search and Actions -->
     <div class="stock-list__header">
-      <div class="stock-list__search">
-        <div class="search-field">
-          <label for="search-sku"
-            >{{ t("inventory.sku") }} <kbd class="kbd-hint">/</kbd></label
-          >
-          <input
-            id="search-sku"
-            ref="skuInputRef"
-            v-model="searchSku"
-            type="text"
-            :placeholder="t('common.search') + '...'"
-            class="input"
-          />
+       <div class="stock-list__search">
+        <div class="search-field"> <!-- Consolidated Search Field -->
+          <div class="search-input-wrapper">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="search-icon"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input
+              id="search-input"
+              ref="skuInputRef"
+              v-model="searchQuery"
+              type="text"
+              :placeholder="t('common.search') + '...'"
+              class="input with-icon"
+            />
+          </div>
         </div>
         <div class="search-field">
-          <label for="search-location">{{ t("inventory.location") }}</label>
-          <input
-            id="search-location"
-            v-model="searchLocation"
-            type="text"
-            :placeholder="t('common.search') + '...'"
-            class="input"
-          />
-        </div>
-        <div class="search-field">
-          <label for="stock-status">{{ t("inventory.stockStatus") }}</label>
           <select id="stock-status" v-model="stockStatus" class="input">
-            <option value="all">{{ t("inventory.statusAll") }}</option>
+            <option value="all">{{ t("inventory.stockStatus") }}</option>
             <option value="normal">{{ t("inventory.statusNormal") }}</option>
             <option value="low">{{ t("inventory.statusLow") }}</option>
             <option value="out">{{ t("inventory.statusOut") }}</option>
@@ -550,15 +550,19 @@ defineExpose({
 .search-field {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
 }
 
-.search-field label {
-  font-size: 0.75rem;
-  font-weight: 500;
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
   color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  pointer-events: none;
 }
 
 .input {
@@ -566,12 +570,16 @@ defineExpose({
   border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 0.875rem;
-  min-width: 180px;
+  min-width: 280px;
   transition:
     border-color 0.2s,
     background-color 0.3s;
   background: var(--color-surface);
   color: var(--color-text-primary);
+}
+
+.input.with-icon {
+  padding-left: 2.5rem;
 }
 
 .input:focus {

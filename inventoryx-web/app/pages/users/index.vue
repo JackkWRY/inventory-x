@@ -2,7 +2,8 @@
 import { useUserStore } from "~/stores/users";
 import { storeToRefs } from "pinia";
 import type { User, CreateUserRequest, UpdateUserRequest } from "~/types/user";
-import UserDialog from "~/components/UserDialog.vue";
+import UserDialog from "~/components/user/UserDialog.vue";
+import UserList from "~/components/user/UserList.vue";
 
 definePageMeta({
   title: "User Management",
@@ -21,17 +22,16 @@ const pageSize = ref(10);
 
 // Search state
 const searchQuery = ref("");
-let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
+let debounceTimeout: NodeJS.Timeout | null = null;
 
-const handleSearch = (event: Event) => {
-  const target = event.target as HTMLInputElement;
+// Watch search query for changes
+watch(searchQuery, () => {
   if (debounceTimeout) clearTimeout(debounceTimeout);
   debounceTimeout = setTimeout(() => {
-    searchQuery.value = target.value;
     currentPage.value = 0;
     fetchData();
   }, 300);
-};
+});
 
 // Dialog state
 const isDialogOpen = ref(false);
@@ -120,21 +120,6 @@ const handleUserSubmit = async (
     isSaving.value = false;
   }
 };
-
-const formatDate = (dateArr: string | number[]) => {
-  if (!dateArr) return "-";
-  // Handle array format [2024, 1, 1, 12, 0]
-  if (Array.isArray(dateArr) && dateArr.length >= 5) {
-    return new Date(
-      dateArr[0]!,
-      dateArr[1]! - 1,
-      dateArr[2]!,
-      dateArr[3]!,
-      dateArr[4]!,
-    ).toLocaleString();
-  }
-  return new Date(dateArr as string).toLocaleString();
-};
 </script>
 
 <template>
@@ -151,93 +136,15 @@ const formatDate = (dateArr: string | number[]) => {
       </div>
     </header>
 
-    <!-- Table with Filter -->
-    <div class="list-container">
-      <!-- Header with Search -->
-      <div class="list-header">
-        <div class="list-search">
-          <div class="search-field">
-            <label for="search-user">{{ t('common.search') }} <kbd class="kbd-hint">/</kbd></label>
-            <input
-              id="search-user"
-              type="text"
-              class="input"
-              :placeholder="t('users.searchPlaceholder')"
-              @input="handleSearch"
-            />
-          </div>
-        </div>
-        <div class="list-actions">
-          <button class="btn btn--primary" @click="handleCreateUser">
-            + {{ t("users.createUser") }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Table -->
-      <div class="table-wrapper">
-      <div v-if="loading && !users.length" class="loading-state">
-        {{ t("common.loading") }}
-      </div>
-
-      <table v-else class="data-table">
-        <thead>
-          <tr>
-            <th>{{ t("users.username") }}</th>
-            <th>{{ t("users.name") }}</th>
-            <th>{{ t("users.email") }}</th>
-            <th>{{ t("users.role") }}</th>
-            <th>{{ t("users.status") }}</th>
-            <th>{{ t("users.createdAt") }}</th>
-            <th>{{ t("users.actions") || t("common.actions") }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="user in users" :key="user.id">
-            <td>{{ user.username }}</td>
-            <td>{{ user.firstName }} {{ user.lastName }}</td>
-            <td>{{ user.email }}</td>
-            <td>
-              <span
-                v-for="role in user.roles"
-                :key="role"
-                class="badge badge--info"
-                >{{ t("users.roles." + role) }}</span
-              >
-            </td>
-            <td>
-              <span
-                :class="[
-                  'badge',
-                  user.isActive ? 'badge--success' : 'badge--danger',
-                ]"
-              >
-                {{ user.isActive ? t("users.active") : t("users.inactive") }}
-              </span>
-            </td>
-            <td>{{ formatDate(user.createdAt) }}</td>
-            <td class="actions-cell">
-              <button
-                class="btn btn--small btn--ghost"
-                @click="handleEditUser(user)"
-              >
-                {{ t("common.edit") }}
-              </button>
-              <button
-                class="btn btn--small btn--ghost"
-                @click="handleToggleStatus(user.id)"
-              >
-                {{ user.isActive ? t("users.disable") : t("users.enable") }}
-              </button>
-            </td>
-          </tr>
-          <tr v-if="users.length === 0">
-            <td colspan="7" class="empty-state">{{ t("messages.noData") }}</td>
-          </tr>
-        </tbody>
-      </table>
-      </div>
-    </div>
+    <!-- User List Component -->
+    <UserList
+      v-model:search="searchQuery"
+      :users="users"
+      :loading="loading"
+      @create="handleCreateUser"
+      @edit="handleEditUser"
+      @toggle="handleToggleStatus"
+    />
 
     <!-- Pagination -->
     <CommonPagination
@@ -310,128 +217,6 @@ const formatDate = (dateArr: string | number[]) => {
   flex-shrink: 0;
 }
 
-.list-container {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: var(--theme-transition);
-}
-
-.list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--color-border);
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.list-search {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-end;
-  flex-wrap: wrap;
-}
-
-.search-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.search-field label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.input {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  font-size: 0.875rem;
-  min-width: 280px;
-  transition: border-color 0.2s, background-color 0.3s;
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-}
-
-.input::placeholder {
-  color: var(--color-text-secondary);
-}
-
-.input:focus {
-  outline: none;
-  border-color: #4285f4;
-}
-
-.list-actions {
-  flex-shrink: 0;
-}
-
-.kbd-hint {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.25rem;
-  height: 1.25rem;
-  padding: 0 0.25rem;
-  font-family: monospace;
-  font-size: 0.7rem;
-  font-weight: 500;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  color: var(--color-text-secondary);
-  margin-left: 0.25rem;
-}
-
-.table-wrapper {
-  overflow-x: auto;
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.data-table th,
-.data-table td {
-  padding: 1rem;
-  border-bottom: 1px solid var(--color-border);
-  color: var(--color-text-primary);
-}
-
-.data-table th {
-  background: var(--color-surface);
-  font-weight: 600;
-}
-
-.badge {
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-.badge--success {
-  background: #d1fae5;
-  color: #065f46;
-}
-.badge--danger {
-  background: #fee2e2;
-  color: #991b1b;
-}
-.badge--info {
-  background: #dbeafe;
-  color: #1e40af;
-  margin-right: 4px;
-}
-
 .btn {
   padding: 0.5rem 1rem;
   border-radius: 4px;
@@ -442,28 +227,9 @@ const formatDate = (dateArr: string | number[]) => {
   display: inline-flex;
   align-items: center;
 }
-.btn--primary {
-  background: #1a73e8;
-  color: white;
-}
 .btn--ghost {
   background: transparent;
   color: var(--color-text-secondary);
   border: 1px solid var(--color-border);
-}
-.btn--small {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-}
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.loading-state,
-.empty-state {
-  padding: 2rem;
-  text-align: center;
-  color: var(--color-text-secondary);
 }
 </style>
