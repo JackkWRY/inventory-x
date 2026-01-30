@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Product } from "~/types/product";
 import { useAuthStore } from "~/stores/auth";
+import IconSearch from "~/components/icons/IconSearch.vue";
+import IconEdit from "~/components/icons/IconEdit.vue";
 
 const props = defineProps<{
   products: Product[];
@@ -32,21 +34,7 @@ const formatCurrency = (amount: number, currency: string) => {
       <div class="list-header__search">
         <div class="search-field">
           <div class="search-input-wrapper">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="search-icon"
-            >
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
+            <IconSearch class="search-icon" />
             <input
               id="search-input"
               type="text"
@@ -101,10 +89,7 @@ const formatCurrency = (amount: number, currency: string) => {
               @click="$emit('edit', product)"
               :title="t('common.edit')"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
+              <IconEdit />
               {{ t("common.edit") }}
             </button>
           </td>
