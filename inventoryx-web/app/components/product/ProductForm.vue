@@ -217,22 +217,26 @@ const handleCancel = () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 1rem;
   animation: fadeIn 0.2s ease-out;
 }
 
 .modal {
-  background: var(--color-card);
-  border-radius: 12px;
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
   width: 100%;
   max-width: 500px;
-  box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
   max-height: 90vh;
   display: flex;
   flex-direction: column;
@@ -240,10 +244,11 @@ const handleCancel = () => {
 
 .modal__header {
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--glass-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .modal__header h3 {
@@ -261,6 +266,11 @@ const handleCancel = () => {
   cursor: pointer;
   padding: 0;
   line-height: 1;
+  transition: color 0.2s;
+}
+
+.btn-close:hover {
+  color: var(--color-text-primary);
 }
 
 .modal__body {
@@ -273,13 +283,13 @@ const handleCancel = () => {
 
 .modal__footer {
   padding: 1.25rem 1.5rem;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--glass-border);
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
-  background-color: var(--color-surface);
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom-left-radius: var(--radius-xl);
+  border-bottom-right-radius: var(--radius-xl);
 }
 
 /* Form Styles */
@@ -292,7 +302,7 @@ const handleCancel = () => {
 .form-group label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
 }
 
 .form-group input,
@@ -303,21 +313,22 @@ const handleCancel = () => {
   border-radius: 6px;
   font-size: 0.9375rem;
   transition: all 0.2s;
-  background: var(--color-bg);
+  background: var(--color-surface);
   color: var(--color-text-primary);
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-  border-color: #2563eb; /* Use var if available */
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
   outline: none;
 }
 
 .form-group input:disabled {
-  background-color: var(--color-surface);
+  background-color: var(--color-bg);
   cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .is-invalid {
@@ -338,7 +349,7 @@ const handleCancel = () => {
   flex: 1;
 }
 
-/* Button Styles */
+/* Button Styles - Using global classes, just local overrides if needed */
 .btn {
   padding: 0.625rem 1rem;
   border-radius: 6px;
@@ -353,29 +364,9 @@ const handleCancel = () => {
   border: none;
 }
 
-.btn--primary {
-  background-color: #2563eb;
-  color: white;
-}
-
-.btn--primary:hover {
-  background-color: #1d4ed8;
-}
-
-.btn--primary:disabled {
-  background-color: #93c5fd;
+.btn:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
-}
-
-.btn--secondary {
-  background-color: transparent;
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
-}
-
-.btn--secondary:hover {
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
 }
 
 .spinner {

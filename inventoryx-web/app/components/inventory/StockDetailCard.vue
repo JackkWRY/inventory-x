@@ -89,12 +89,15 @@ const formatQuantity = (value: string): string => {
 <style scoped>
 /* Stock Card */
 .stock-card {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   margin-bottom: 2rem;
   transition: var(--theme-transition);
+  box-shadow: var(--shadow-md);
 }
 
 .stock-card__header {
@@ -102,12 +105,12 @@ const formatQuantity = (value: string): string => {
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .stock-card__sku {
-  font-family: "SF Mono", "Consolas", monospace;
+  font-family: monospace;
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-primary);
@@ -132,7 +135,8 @@ const formatQuantity = (value: string): string => {
   text-align: center;
   padding: 1rem;
   background: var(--color-surface);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
 }
 
 .quantity-item__label {
@@ -149,73 +153,24 @@ const formatQuantity = (value: string): string => {
   display: block;
   font-size: 1.5rem;
   font-weight: 600;
-  font-family: "SF Mono", "Consolas", monospace;
+  font-family: monospace;
   color: var(--color-text-primary);
 }
 
 .quantity-item--available .quantity-item__value {
-  color: #10b981;
+  color: var(--color-success);
 }
 
 .quantity-item--reserved .quantity-item__value {
-  color: #f59e0b;
+  color: var(--color-warning);
 }
 
 .stock-card__actions {
   display: flex;
   gap: 0.75rem;
   padding: 1rem 1.5rem;
-  border-top: 1px solid var(--color-border);
-  background: var(--color-surface);
-}
-
-/* Buttons */
-.btn {
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border: none;
-  text-decoration: none;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn--primary {
-  background: #1a73e8;
-  color: white;
-}
-
-.btn--primary:hover:not(:disabled) {
-  background: #1557b0;
-}
-
-.btn--secondary {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
-}
-
-.btn--secondary:hover:not(:disabled) {
-  background: var(--color-surface-hover);
-}
-
-.btn--ghost {
-  background: transparent;
-  color: var(--color-text-secondary);
-}
-
-.btn--ghost:hover:not(:disabled) {
-  background: var(--color-surface-hover);
-  color: var(--color-text-primary);
+  border-top: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 /* Responsive */

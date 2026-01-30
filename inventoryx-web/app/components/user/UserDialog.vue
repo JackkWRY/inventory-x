@@ -66,7 +66,9 @@ const handleSubmit = (data: CreateUserRequest | UpdateUserRequest) => {
 .dialog-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -75,9 +77,12 @@ const handleSubmit = (data: CreateUserRequest | UpdateUserRequest) => {
 }
 
 .dialog {
-  background: var(--color-card);
-  border-radius: 8px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
   max-width: 500px;
   width: 100%;
   max-height: 90vh;
@@ -90,12 +95,13 @@ const handleSubmit = (data: CreateUserRequest | UpdateUserRequest) => {
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .dialog__title {
   font-size: 1.25rem;
-  font-weight: 500;
+  font-weight: 600;
   margin: 0;
   color: var(--color-text-primary);
 }
@@ -106,6 +112,11 @@ const handleSubmit = (data: CreateUserRequest | UpdateUserRequest) => {
   font-size: 1.25rem;
   color: var(--color-text-secondary);
   cursor: pointer;
+  transition: color 0.2s;
+}
+
+.dialog__close:hover {
+  color: var(--color-text-primary);
 }
 
 .dialog__body {
@@ -116,8 +127,8 @@ const handleSubmit = (data: CreateUserRequest | UpdateUserRequest) => {
 .dialog__error {
   margin: 1rem 1.5rem 0;
   padding: 0.75rem 1rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   color: #dc2626;
   border-radius: 4px;
 }

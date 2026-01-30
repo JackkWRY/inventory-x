@@ -385,7 +385,9 @@ const handleKeydown = (event: KeyboardEvent) => {
 .dialog-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -394,9 +396,12 @@ const handleKeydown = (event: KeyboardEvent) => {
 }
 
 .dialog {
-  background: var(--color-card);
-  border-radius: 8px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
   max-width: 480px;
   width: 100%;
   max-height: 90vh;
@@ -415,7 +420,7 @@ const handleKeydown = (event: KeyboardEvent) => {
 
 .dialog__title {
   font-size: 1.25rem;
-  font-weight: 500;
+  font-weight: 600;
   margin: 0;
   color: var(--color-text-primary);
 }
@@ -439,8 +444,8 @@ const handleKeydown = (event: KeyboardEvent) => {
 .dialog__error {
   margin: 1rem 1.5rem 0;
   padding: 0.75rem 1rem;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 4px;
   color: #dc2626;
   font-size: 0.875rem;
@@ -457,7 +462,7 @@ const handleKeydown = (event: KeyboardEvent) => {
   gap: 0.75rem;
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--color-border);
-  background: var(--color-surface);
+  background: transparent; /* Changed from surface to match glass */
 }
 
 .form-group {
@@ -482,34 +487,6 @@ const handleKeydown = (event: KeyboardEvent) => {
   color: #dc2626;
 }
 
-.form-input {
-  width: 100%;
-  padding: 0.625rem 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  font-size: 0.875rem;
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
-}
-
-.form-input:disabled {
-  background: var(--color-surface);
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.form-textarea {
-  resize: vertical;
-  min-height: 60px;
-}
-
 .form-hint {
   display: block;
   margin-top: 0.25rem;
@@ -517,44 +494,7 @@ const handleKeydown = (event: KeyboardEvent) => {
   color: var(--color-text-secondary);
 }
 
-/* Buttons */
-.btn {
-  padding: 0.625rem 1.25rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn--primary {
-  background: #1a73e8;
-  color: white;
-}
-
-.btn--primary:hover:not(:disabled) {
-  background: #1557b0;
-}
-
-.btn--secondary {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
-}
-
-.btn--secondary:hover:not(:disabled) {
-  background: var(--color-surface-hover);
-}
-
+/* Spinner */
 .spinner {
   display: inline-block;
   width: 1rem;
@@ -601,10 +541,10 @@ const handleKeydown = (event: KeyboardEvent) => {
   top: 100%;
   left: 0;
   right: 0;
-  background: white;
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 4px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-lg);
   max-height: 200px;
   overflow-y: auto;
   z-index: 10;
@@ -614,7 +554,7 @@ const handleKeydown = (event: KeyboardEvent) => {
 .search-item {
   padding: 0.5rem 0.75rem;
   cursor: pointer;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .search-item:last-child {
@@ -622,11 +562,11 @@ const handleKeydown = (event: KeyboardEvent) => {
 }
 
 .search-item:hover {
-  background-color: #f9fafb;
+  background-color: var(--color-surface-hover);
 }
 
 .search-item.loading {
-  color: #6b7280;
+  color: var(--color-text-secondary);
   font-style: italic;
   cursor: default;
 }
@@ -636,14 +576,14 @@ const handleKeydown = (event: KeyboardEvent) => {
 }
 
 .text-muted {
-  color: #6b7280;
+  color: var(--color-text-muted);
 }
 
 .text-warning {
-    color: #d97706;
+  color: var(--color-warning);
 }
 
 .font-medium {
-    font-weight: 500;
+  font-weight: 500;
 }
 </style>

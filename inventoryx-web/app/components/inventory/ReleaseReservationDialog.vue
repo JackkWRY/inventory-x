@@ -223,17 +223,23 @@ onUnmounted(() => {
 .dialog-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  padding: 1rem;
 }
 
 .dialog {
-  background: var(--color-card);
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
   width: 100%;
   max-width: 480px;
   max-height: 90vh;
@@ -273,8 +279,11 @@ onUnmounted(() => {
 }
 
 .dialog__error {
-  padding: 0.75rem 1.5rem;
-  background: #fef2f2;
+  margin: 1rem 1.5rem 0;
+  padding: 0.75rem 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 4px;
   color: #dc2626;
   font-size: 0.875rem;
 }
@@ -335,29 +344,6 @@ onUnmounted(() => {
   color: #ef4444;
 }
 
-.form-input {
-  width: 100%;
-  padding: 0.625rem 0.875rem;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  font-size: 0.9375rem;
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #f59e0b;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
-}
-
-.form-input:disabled {
-  background: var(--color-surface);
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
 .form-error {
   display: block;
   font-size: 0.75rem;
@@ -378,46 +364,10 @@ onUnmounted(() => {
   gap: 0.75rem;
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--color-border);
-  background: var(--color-surface);
+  background: transparent;
 }
 
-.btn {
-  padding: 0.625rem 1.25rem;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.btn--secondary {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
-}
-
-.btn--secondary:hover:not(:disabled) {
-  background: var(--color-surface-hover);
-}
-
-.btn--warning {
-  background: #f59e0b;
-  border: none;
-  color: white;
-}
-
-.btn--warning:hover:not(:disabled) {
-  background: #d97706;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
+/* Spinner */
 .spinner {
   width: 1rem;
   height: 1rem;
@@ -440,4 +390,13 @@ onUnmounted(() => {
 .fade-leave-to {
   opacity: 0;
 }
-</style>
+
+.fade-enter-active .dialog,
+.fade-leave-active .dialog {
+  transition: transform 0.2s ease;
+}
+
+.fade-enter-from .dialog,
+.fade-leave-to .dialog {
+  transform: scale(0.95);
+}</style>

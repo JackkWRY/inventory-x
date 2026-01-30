@@ -227,7 +227,7 @@ const handleSubmit = () => {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.375rem;
   color: var(--color-text-primary);
 }
 .required {
@@ -235,15 +235,23 @@ const handleSubmit = () => {
 }
 .form-input {
   width: 100%;
-  padding: 0.5rem 0.75rem;
+  padding: 0.625rem 0.875rem;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border-radius: 6px;
   background: var(--color-surface);
   color: var(--color-text-primary);
+  font-size: 0.9375rem;
+  transition: all 0.2s;
+}
+.form-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  outline: none;
 }
 .form-input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  background-color: var(--color-bg);
 }
 .form-hint {
   font-size: 0.75rem;
@@ -257,28 +265,24 @@ const handleSubmit = () => {
   justify-content: flex-end;
   gap: 0.75rem;
   margin-top: 1.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--glass-border);
 }
 
 .btn {
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  padding: 0.625rem 1rem;
+  border-radius: 6px;
   cursor: pointer;
   border: none;
   font-weight: 500;
-}
-.btn--primary {
-  background: #1a73e8;
-  color: white;
-}
-.btn--secondary {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .btn:disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 

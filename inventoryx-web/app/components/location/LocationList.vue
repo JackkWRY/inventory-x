@@ -102,7 +102,7 @@ const getStatusBadgeClass = (status: LocationStatus) => {
               </span>
             </td>
             <td class="text-right">
-              <button class="action-btn" @click="$emit('edit', location)">
+              <button class="btn btn--small btn--ghost" @click="$emit('edit', location)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -288,26 +288,6 @@ const getStatusBadgeClass = (status: LocationStatus) => {
 .badge--success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 .badge--danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 .badge--gray { background: var(--color-surface-hover); color: var(--color-text-secondary); border: 1px solid var(--color-border); }
-
-.action-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.375rem 0.75rem;
-  border: 1px solid var(--color-border);
-  background: transparent;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: all 0.2s;
-  font-weight: 500;
-}
-.action-btn:hover {
-  background: var(--color-surface-hover);
-  color: var(--color-primary);
-  border-color: var(--color-primary);
-}
 
 .kbd-hint {
   display: inline-flex;

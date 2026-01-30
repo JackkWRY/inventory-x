@@ -98,11 +98,11 @@ const formatCurrency = (amount: number, currency: string) => {
           <td>{{ product.unitOfMeasure }}</td>
           <td v-if="canEdit" class="text-center">
             <button
-              class="action-btn action-btn--primary"
+              class="btn btn--small btn--ghost"
               @click="$emit('edit', product)"
               :title="t('common.edit')"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
               </svg>
@@ -259,29 +259,7 @@ const formatCurrency = (amount: number, currency: string) => {
   border: 1px solid var(--color-border);
 }
 
-/* Action Button Styles */
-.action-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 10px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
 
-.action-btn--primary {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
-}
-
-.action-btn--primary:hover {
-  background: rgba(59, 130, 246, 0.2);
-}
 
 /* Loading/Empty States */
 .product-list__loading,
