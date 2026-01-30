@@ -3,6 +3,7 @@ import type { ReceiveStockCommand } from "~/types/inventory";
 import { useLocationStore } from "~/stores/location";
 import { useProductStore } from "~/stores/product";
 import type { Product } from "~/types/product";
+import BaseModal from '~/components/common/BaseModal.vue'
 
 /**
  * ReceiveStockDialog Component
@@ -54,7 +55,7 @@ const productSearch = reactive({
   loading: false
 });
 
-// Watch SKU changes to update search query if needed, or handle selection clearing
+// Watch SKU changes
 watch(() => form.sku, (newVal) => {
     if (!newVal) {
         productSearch.query = "";
@@ -66,7 +67,7 @@ let searchTimeout: NodeJS.Timeout;
 const handleSearchInput = async (event: Event) => {
     const query = (event.target as HTMLInputElement).value;
     productSearch.query = query;
-    form.sku = query; // Allow manual entry
+    form.sku = query;
     
     if (searchTimeout) clearTimeout(searchTimeout);
     
@@ -93,10 +94,7 @@ const selectProduct = (product: Product) => {
     productSearch.query = `${product.sku} - ${product.name}`;
     productSearch.showResults = false;
     
-    // Auto-select unit if available
     if (product.unitOfMeasure) {
-        // Simple mapping or direct assignment if formats match
-        // Assuming product UOM matches enum for now or defaulting
         const uom = product.unitOfMeasure.toUpperCase();
         if (unitOptions.some(o => o.value === uom)) {
             form.unitOfMeasure = uom;
@@ -130,7 +128,7 @@ const handleSubmit = () => {
   if (!isValid.value) return;
 
   const command: ReceiveStockCommand = {
-    sku: form.sku.trim().toUpperCase(), // Ensure only SKU is sent, even if query has name
+    sku: form.sku.trim().toUpperCase(),
     locationId: form.locationId.trim(),
     quantity: form.quantity,
     unitOfMeasure: form.unitOfMeasure,
@@ -141,22 +139,32 @@ const handleSubmit = () => {
   emit("submit", command);
 };
 
+// Handle close - also close search results
+const handleClose = () => {
+  if (productSearch.showResults) {
+    productSearch.showResults = false;
+  } else {
+    emit("close");
+  }
+};
+
 // Initial Data Fetch
 onMounted(async () => {
     await locationStore.fetchActiveLocations();
-    document.addEventListener("keydown", handleKeydown);
     // Click outside to close search results
-    document.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        if (!target.closest('.search-container')) {
-            productSearch.showResults = false;
-        }
-    });
+    document.addEventListener('click', handleClickOutside);
 });
 
 onUnmounted(() => {
-  document.removeEventListener("keydown", handleKeydown);
+  document.removeEventListener('click', handleClickOutside);
 });
+
+const handleClickOutside = (e: Event) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest('.search-container')) {
+        productSearch.showResults = false;
+    }
+};
 
 // Reset form when dialog opens
 watch(
@@ -171,220 +179,184 @@ watch(
       form.unitOfMeasure = "PIECE";
       form.reason = "";
       form.performedBy = "";
-      // Refresh locations to be safe
       locationStore.fetchActiveLocations(); 
     }
   }
 );
-
-// Handle backdrop click
-const handleBackdropClick = (event: MouseEvent) => {
-  if ((event.target as HTMLElement).classList.contains("dialog-backdrop")) {
-    emit("close");
-  }
-};
-
-// Handle escape key
-const handleKeydown = (event: KeyboardEvent) => {
-  if (event.key === "Escape" && props.open) {
-    if (productSearch.showResults) {
-        productSearch.showResults = false;
-    } else {
-        emit("close");
-    }
-  }
-};
 </script>
 
 <template>
-  <Teleport to="body">
-    <Transition name="fade">
-      <div v-if="open" class="dialog-backdrop" @click="handleBackdropClick">
-        <div
-          class="dialog"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="dialog-title"
-        >
-          <!-- Header -->
-          <div class="dialog__header">
-            <h2 id="dialog-title" class="dialog__title">{{ t('inventory.receiveStock') }}</h2>
-            <button
-              class="dialog__close"
-              @click="emit('close')"
-              aria-label="Close dialog"
-            >
-              ✕
-            </button>
-          </div>
+  <BaseModal
+    :open="open"
+    :title="t('inventory.receiveStock')"
+    size="md"
+    :close-on-escape="!productSearch.showResults"
+    @close="handleClose"
+  >
+    <!-- Error Message -->
+    <template #error>
+      <div v-if="error" class="dialog__error">{{ error }}</div>
+    </template>
 
-          <!-- Error Message -->
-          <div v-if="error" class="dialog__error">
-            {{ error }}
-          </div>
-
-          <!-- Form -->
-          <form class="dialog__body" @submit.prevent="handleSubmit">
-            <!-- SKU (Searchable) -->
-            <div class="form-group search-container">
-              <label for="sku" class="form-label">
-                {{ t('inventory.sku') }} <span class="required">*</span>
-              </label>
-              <div class="relative">
-                  <input
-                    id="sku"
-                    type="text"
-                    class="form-input"
-                    :value="productSearch.query"
-                    @input="handleSearchInput"
-                    @focus="productSearch.showResults = true"
-                    placeholder="Search Product by SKU or Name..."
-                    :disabled="loading"
-                    required
-                    autocomplete="off"
-                  />
-                  <!-- Search Results Dropdown -->
-                  <div v-if="productSearch.showResults && (productSearch.results.length > 0 || productSearch.loading)" class="search-results">
-                      <div v-if="productSearch.loading" class="search-item loading">Loading...</div>
-                      <div 
-                        v-else 
-                        v-for="product in productSearch.results" 
-                        :key="product.id" 
-                        class="search-item"
-                        @click="selectProduct(product)"
-                      >
-                          <div class="font-medium">{{ product.sku }}</div>
-                          <div class="text-sm text-muted">{{ product.name }}</div>
-                      </div>
-                  </div>
-              </div>
-              <span class="form-hint" v-if="!isValid && form.sku.length > 0 && form.sku.length < 3">
-                  {{ t('inventory.skuHint') }}
-              </span>
-            </div>
-
-            <!-- Location (Select) -->
-            <div class="form-group">
-              <label for="location" class="form-label">
-                {{ t('inventory.location') }} <span class="required">*</span>
-              </label>
-              <select
-                id="location"
-                v-model="form.locationId"
-                class="form-input"
-                :disabled="loading"
-                required
-              >
-                  <option value="" disabled>Select Location</option>
-                  <option v-for="loc in locationStore.activeLocations" :key="loc.id" :value="loc.id">
-                      {{ loc.name }} ({{ loc.type }})
-                  </option>
-              </select>
-              <div v-if="locationStore.activeLocations.length === 0" class="text-sm text-warning mt-1">
-                  No active locations found. Please create one first.
-              </div>
-            </div>
-
-            <!-- Quantity and Unit -->
-            <div class="form-row">
-              <div class="form-group">
-                <label for="quantity" class="form-label">
-                  {{ t('inventory.quantity') }} <span class="required">*</span>
-                </label>
-                <input
-                  id="quantity"
-                  v-model="form.quantity"
-                  type="number"
-                  class="form-input"
-                  placeholder="0"
-                  min="0.01"
-                  step="0.01"
-                  :disabled="loading"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label for="unit" class="form-label">
-                  {{ t('inventory.unit') }} <span class="required">*</span>
-                </label>
-                <select
-                  id="unit"
-                  v-model="form.unitOfMeasure"
-                  class="form-input"
-                  :disabled="loading"
-                  required
-                >
-                  <option
-                    v-for="unit in unitOptions"
-                    :key="unit.value"
-                    :value="unit.value"
-                  >
-                    {{ unit.label }}
-                  </option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Reason -->
-            <div class="form-group">
-              <label for="reason" class="form-label">{{ t('inventory.reason') }}</label>
-              <textarea
-                id="reason"
-                v-model="form.reason"
-                class="form-input form-textarea"
-                :placeholder="t('inventory.reasonPlaceholder')"
-                :disabled="loading"
-                rows="2"
-              ></textarea>
-            </div>
-
-            <!-- Performed By -->
-            <div class="form-group">
-              <label for="performedBy" class="form-label">
-                {{ t('inventory.performedBy') }} <span class="required">*</span>
-              </label>
-              <input
-                id="performedBy"
-                v-model="form.performedBy"
-                type="text"
-                class="form-input"
-                placeholder="Your name or ID"
-                :disabled="loading"
-                required
-              />
-            </div>
-          </form>
-
-          <!-- Footer -->
-          <div class="dialog__footer">
-            <button
-              type="button"
-              class="btn btn--secondary"
+    <!-- Form Body -->
+    <template #body>
+      <form @submit.prevent="handleSubmit">
+        <!-- SKU (Searchable) -->
+        <div class="form-group search-container">
+          <label for="sku" class="form-label">
+            {{ t('inventory.sku') }} <span class="required">*</span>
+          </label>
+          <div class="relative">
+            <input
+              id="sku"
+              type="text"
+              class="form-input"
+              :value="productSearch.query"
+              @input="handleSearchInput"
+              @focus="productSearch.showResults = true"
+              placeholder="Search Product by SKU or Name..."
               :disabled="loading"
-              @click="emit('close')"
-            >
-              {{ t('common.cancel') }}
-            </button>
-            <button
-              type="submit"
-              class="btn btn--primary"
-              :disabled="!isValid || loading"
-              @click="handleSubmit"
-            >
-              <span v-if="loading" class="spinner"></span>
-              {{ loading ? t('inventory.saving') : t('inventory.receiveStock') }}
-            </button>
+              required
+              autocomplete="off"
+            />
+            <!-- Search Results Dropdown -->
+            <div v-if="productSearch.showResults && (productSearch.results.length > 0 || productSearch.loading)" class="search-results">
+              <div v-if="productSearch.loading" class="search-item loading">Loading...</div>
+              <div 
+                v-else 
+                v-for="product in productSearch.results" 
+                :key="product.id" 
+                class="search-item"
+                @click="selectProduct(product)"
+              >
+                <div class="font-medium">{{ product.sku }}</div>
+                <div class="text-sm text-muted">{{ product.name }}</div>
+              </div>
+            </div>
+          </div>
+          <span class="form-hint" v-if="!isValid && form.sku.length > 0 && form.sku.length < 3">
+            {{ t('inventory.skuHint') }}
+          </span>
+        </div>
+
+        <!-- Location (Select) -->
+        <div class="form-group">
+          <label for="location" class="form-label">
+            {{ t('inventory.location') }} <span class="required">*</span>
+          </label>
+          <select
+            id="location"
+            v-model="form.locationId"
+            class="form-input"
+            :disabled="loading"
+            required
+          >
+            <option value="" disabled>Select Location</option>
+            <option v-for="loc in locationStore.activeLocations" :key="loc.id" :value="loc.id">
+              {{ loc.name }} ({{ loc.type }})
+            </option>
+          </select>
+          <div v-if="locationStore.activeLocations.length === 0" class="text-sm text-warning mt-1">
+            No active locations found. Please create one first.
           </div>
         </div>
-      </div>
-    </Transition>
-  </Teleport>
+
+        <!-- Quantity and Unit -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="quantity" class="form-label">
+              {{ t('inventory.quantity') }} <span class="required">*</span>
+            </label>
+            <input
+              id="quantity"
+              v-model="form.quantity"
+              type="number"
+              class="form-input"
+              placeholder="0"
+              min="0.01"
+              step="0.01"
+              :disabled="loading"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="unit" class="form-label">
+              {{ t('inventory.unit') }} <span class="required">*</span>
+            </label>
+            <select
+              id="unit"
+              v-model="form.unitOfMeasure"
+              class="form-input"
+              :disabled="loading"
+              required
+            >
+              <option
+                v-for="unit in unitOptions"
+                :key="unit.value"
+                :value="unit.value"
+              >
+                {{ unit.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Reason -->
+        <div class="form-group">
+          <label for="reason" class="form-label">{{ t('inventory.reason') }}</label>
+          <textarea
+            id="reason"
+            v-model="form.reason"
+            class="form-input form-textarea"
+            :placeholder="t('inventory.reasonPlaceholder')"
+            :disabled="loading"
+            rows="2"
+          ></textarea>
+        </div>
+
+        <!-- Performed By -->
+        <div class="form-group">
+          <label for="performedBy" class="form-label">
+            {{ t('inventory.performedBy') }} <span class="required">*</span>
+          </label>
+          <input
+            id="performedBy"
+            v-model="form.performedBy"
+            type="text"
+            class="form-input"
+            placeholder="Your name or ID"
+            :disabled="loading"
+            required
+          />
+        </div>
+      </form>
+    </template>
+
+    <!-- Footer -->
+    <template #footer>
+      <button
+        type="button"
+        class="btn btn--secondary"
+        :disabled="loading"
+        @click="emit('close')"
+      >
+        {{ t('common.cancel') }}
+      </button>
+      <button
+        type="submit"
+        class="btn btn--primary"
+        :disabled="!isValid || loading"
+        @click="handleSubmit"
+      >
+        <span v-if="loading" class="spinner"></span>
+        {{ loading ? t('inventory.saving') : t('inventory.receiveStock') }}
+      </button>
+    </template>
+  </BaseModal>
 </template>
 
 <style scoped>
-/* All base styles now come from global main.css */
-/* Component-specific overrides only */
-
+/* Component-specific styles only */
 .relative {
   position: relative;
 }
@@ -429,7 +401,6 @@ const handleKeydown = (event: KeyboardEvent) => {
 .text-warning { color: var(--color-warning); }
 .font-medium { font-weight: 500; }
 
-/* Spinner */
 .spinner {
   display: inline-block;
   width: 1rem;
@@ -442,26 +413,5 @@ const handleKeydown = (event: KeyboardEvent) => {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-/* Transitions */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-enter-active .dialog,
-.fade-leave-active .dialog {
-  transition: transform 0.2s ease;
-}
-
-.fade-enter-from .dialog,
-.fade-leave-to .dialog {
-  transform: scale(0.95);
 }
 </style>

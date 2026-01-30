@@ -1,22 +1,12 @@
 <script setup lang="ts">
 import type { Stock, AdjustStockCommand } from '~/types/inventory'
+import BaseModal from '~/components/common/BaseModal.vue'
 
 /**
  * AdjustStockDialog Component
  *
  * Modal dialog for manually adjusting stock quantity.
  * Used for inventory counts, corrections, or shrinkage.
- *
- * BEST PRACTICE: Requires reason and performer for audit trail
- *
- * @example
- * <AdjustStockDialog
- *   :open="isOpen"
- *   :stock="selectedStock"
- *   :loading="isLoading"
- *   @submit="handleSubmit"
- *   @close="handleClose"
- * />
  */
 
 // i18n
@@ -111,147 +101,124 @@ const formatDifference = (diff: number): string => {
   const sign = diff > 0 ? '+' : ''
   return `${sign}${diff.toLocaleString()}`
 }
-
-const handleBackdropClick = (event: MouseEvent) => {
-  if (event.target === event.currentTarget) {
-    emit('close')
-  }
-}
-
-const handleKeydown = (event: KeyboardEvent) => {
-  if (event.key === 'Escape' && props.open) {
-    emit('close')
-  }
-}
-
-onMounted(() => {
-  document.addEventListener('keydown', handleKeydown)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeydown)
-})
 </script>
 
 <template>
-  <Teleport to="body">
-    <Transition name="fade">
-      <div v-if="open" class="dialog-backdrop" @click="handleBackdropClick">
-        <div class="dialog" role="dialog" aria-modal="true">
-          <!-- Header -->
-          <div class="dialog__header">
-            <h2 class="dialog__title">{{ t('inventory.adjustStock') }}</h2>
-            <button class="dialog__close" @click="emit('close')">✕</button>
-          </div>
+  <BaseModal
+    :open="open"
+    :title="t('inventory.adjustStock')"
+    size="md"
+    @close="emit('close')"
+  >
+    <!-- Error -->
+    <template #error>
+      <div v-if="error" class="dialog__error">{{ error }}</div>
+    </template>
 
-          <!-- Error -->
-          <div v-if="error" class="dialog__error">{{ error }}</div>
-
-          <!-- Stock Info -->
-          <div v-if="stock" class="stock-info">
-            <div class="stock-info__row">
-              <span class="stock-info__label">{{ t('inventory.sku') }}</span>
-              <span class="stock-info__value stock-info__value--sku">{{ stock.sku }}</span>
-            </div>
-            <div class="stock-info__row">
-              <span class="stock-info__label">{{ t('inventory.location') }}</span>
-              <span class="stock-info__value">{{ stock.locationId }}</span>
-            </div>
-            <div class="stock-info__row">
-              <span class="stock-info__label">{{ t('inventory.currentAvailable') }}</span>
-              <span class="stock-info__value stock-info__value--available">
-                {{ formatQuantity(stock.availableQuantity) }} {{ stock.unitOfMeasure }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Form -->
-          <form class="dialog__body" @submit.prevent="handleSubmit">
-            <div class="form-group">
-              <label for="adjust-quantity" class="form-label">
-                {{ t('inventory.newQuantity') }} <span class="required">*</span>
-              </label>
-              <input
-                id="adjust-quantity"
-                v-model="form.newQuantity"
-                type="number"
-                step="0.01"
-                min="0"
-                class="form-input"
-                :placeholder="t('validation.positiveNumber')"
-                :disabled="loading"
-                required
-              />
-              <span v-if="quantityError" class="form-error">{{ quantityError }}</span>
-              <span v-else class="form-hint" :class="{ 'form-hint--positive': quantityDifference > 0, 'form-hint--negative': quantityDifference < 0 }">
-                {{ t('inventory.difference') }}: {{ formatDifference(quantityDifference) }}
-              </span>
-            </div>
-
-            <!-- Reason -->
-            <div class="form-group">
-              <label for="adjust-reason" class="form-label">
-                {{ t('inventory.reason') }} <span class="required">*</span>
-              </label>
-              <textarea
-                id="adjust-reason"
-                v-model="form.reason"
-                class="form-textarea"
-                rows="3"
-                :placeholder="t('inventory.adjustReasonPlaceholder')"
-                :disabled="loading"
-                required
-              ></textarea>
-              <span class="form-hint">{{ t('inventory.reasonHint') }}</span>
-            </div>
-
-            <!-- Performed By -->
-            <div class="form-group">
-              <label for="adjust-performedBy" class="form-label">
-                {{ t('inventory.performedBy') }} <span class="required">*</span>
-              </label>
-              <input
-                id="adjust-performedBy"
-                v-model="form.performedBy"
-                type="text"
-                class="form-input"
-                placeholder="e.g., John Smith"
-                :disabled="loading"
-                required
-              />
-            </div>
-          </form>
-
-          <!-- Footer -->
-          <div class="dialog__footer">
-            <button
-              type="button"
-              class="btn btn--secondary"
-              :disabled="loading"
-              @click="emit('close')"
-            >
-              {{ t('common.cancel') }}
-            </button>
-            <button
-              type="button"
-              class="btn btn--primary"
-              :disabled="loading || !isValid"
-              @click="handleSubmit"
-            >
-              <span v-if="loading" class="spinner"></span>
-              {{ loading ? t('common.loading') : t('inventory.adjustStock') }}
-            </button>
-          </div>
+    <!-- Stock Info -->
+    <template #info>
+      <div v-if="stock" class="stock-info">
+        <div class="stock-info__row">
+          <span class="stock-info__label">{{ t('inventory.sku') }}</span>
+          <span class="stock-info__value stock-info__value--sku">{{ stock.sku }}</span>
+        </div>
+        <div class="stock-info__row">
+          <span class="stock-info__label">{{ t('inventory.location') }}</span>
+          <span class="stock-info__value">{{ stock.locationId }}</span>
+        </div>
+        <div class="stock-info__row">
+          <span class="stock-info__label">{{ t('inventory.currentAvailable') }}</span>
+          <span class="stock-info__value stock-info__value--available">
+            {{ formatQuantity(stock.availableQuantity) }} {{ stock.unitOfMeasure }}
+          </span>
         </div>
       </div>
-    </Transition>
-  </Teleport>
+    </template>
+
+    <!-- Form Body -->
+    <template #body>
+      <form @submit.prevent="handleSubmit">
+        <div class="form-group">
+          <label for="adjust-quantity" class="form-label">
+            {{ t('inventory.newQuantity') }} <span class="required">*</span>
+          </label>
+          <input
+            id="adjust-quantity"
+            v-model="form.newQuantity"
+            type="number"
+            step="0.01"
+            min="0"
+            class="form-input"
+            :placeholder="t('validation.positiveNumber')"
+            :disabled="loading"
+            required
+          />
+          <span v-if="quantityError" class="form-error">{{ quantityError }}</span>
+          <span v-else class="form-hint" :class="{ 'form-hint--positive': quantityDifference > 0, 'form-hint--negative': quantityDifference < 0 }">
+            {{ t('inventory.difference') }}: {{ formatDifference(quantityDifference) }}
+          </span>
+        </div>
+
+        <!-- Reason -->
+        <div class="form-group">
+          <label for="adjust-reason" class="form-label">
+            {{ t('inventory.reason') }} <span class="required">*</span>
+          </label>
+          <textarea
+            id="adjust-reason"
+            v-model="form.reason"
+            class="form-textarea"
+            rows="3"
+            :placeholder="t('inventory.adjustReasonPlaceholder')"
+            :disabled="loading"
+            required
+          ></textarea>
+          <span class="form-hint">{{ t('inventory.reasonHint') }}</span>
+        </div>
+
+        <!-- Performed By -->
+        <div class="form-group">
+          <label for="adjust-performedBy" class="form-label">
+            {{ t('inventory.performedBy') }} <span class="required">*</span>
+          </label>
+          <input
+            id="adjust-performedBy"
+            v-model="form.performedBy"
+            type="text"
+            class="form-input"
+            placeholder="e.g., John Smith"
+            :disabled="loading"
+            required
+          />
+        </div>
+      </form>
+    </template>
+
+    <!-- Footer -->
+    <template #footer>
+      <button
+        type="button"
+        class="btn btn--secondary"
+        :disabled="loading"
+        @click="emit('close')"
+      >
+        {{ t('common.cancel') }}
+      </button>
+      <button
+        type="button"
+        class="btn btn--primary"
+        :disabled="loading || !isValid"
+        @click="handleSubmit"
+      >
+        <span v-if="loading" class="spinner"></span>
+        {{ loading ? t('common.loading') : t('inventory.adjustStock') }}
+      </button>
+    </template>
+  </BaseModal>
 </template>
 
 <style scoped>
-/* All base styles now come from global main.css */
-/* Component-specific overrides only */
-
+/* Component-specific styles only */
 .form-hint--positive {
   color: var(--color-success);
   font-weight: 500;
@@ -262,7 +229,6 @@ onUnmounted(() => {
   font-weight: 500;
 }
 
-/* Spinner */
 .spinner {
   width: 1rem;
   height: 1rem;
@@ -275,23 +241,4 @@ onUnmounted(() => {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-enter-active .dialog,
-.fade-leave-active .dialog {
-  transition: transform 0.2s ease;
-}
-
-.fade-enter-from .dialog,
-.fade-leave-to .dialog {
-  transform: scale(0.95);
-}</style>
+</style>

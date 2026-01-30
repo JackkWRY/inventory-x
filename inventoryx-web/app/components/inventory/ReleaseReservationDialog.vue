@@ -1,22 +1,9 @@
 <script setup lang="ts">
 import type { Stock, ReleaseReservationCommand } from '~/types/inventory'
+import BaseModal from '~/components/common/BaseModal.vue'
 
 /**
- * ReleaseReservationDialog Component
- *
- * Modal dialog for releasing/canceling a stock reservation.
- * Releases reserved quantity back to available.
- *
- * BEST PRACTICE: Follows same pattern as ReserveStockDialog
- *
- * @example
- * <ReleaseReservationDialog
- *   :open="isOpen"
- *   :stock="selectedStock"
- *   :loading="isLoading"
- *   @submit="handleSubmit"
- *   @close="handleClose"
- * />
+ * ReleaseReservationDialog Component - Modal for releasing/canceling stock reservation.
  */
 
 // i18n
@@ -74,7 +61,6 @@ const isValid = computed(() => {
   )
 })
 
-// Methods
 const handleSubmit = () => {
   if (!isValid.value || !props.stock) return
 
@@ -98,132 +84,108 @@ const formatQuantity = (value: string): string => {
   const num = parseFloat(value)
   return isNaN(num) ? '0' : num.toLocaleString()
 }
-
-const handleBackdropClick = (event: MouseEvent) => {
-  if (event.target === event.currentTarget) {
-    emit('close')
-  }
-}
-
-const handleKeydown = (event: KeyboardEvent) => {
-  if (event.key === 'Escape' && props.open) {
-    emit('close')
-  }
-}
-
-onMounted(() => {
-  document.addEventListener('keydown', handleKeydown)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeydown)
-})
 </script>
 
 <template>
-  <Teleport to="body">
-    <Transition name="fade">
-      <div v-if="open" class="dialog-backdrop" @click="handleBackdropClick">
-        <div class="dialog" role="dialog" aria-modal="true">
-          <!-- Header -->
-          <div class="dialog__header">
-            <h2 class="dialog__title">{{ t('inventory.releaseReservation') }}</h2>
-            <button class="dialog__close" @click="emit('close')">✕</button>
-          </div>
+  <BaseModal
+    :open="open"
+    :title="t('inventory.releaseReservation')"
+    size="md"
+    @close="emit('close')"
+  >
+    <!-- Error -->
+    <template #error>
+      <div v-if="error" class="dialog__error">{{ error }}</div>
+    </template>
 
-          <!-- Error -->
-          <div v-if="error" class="dialog__error">{{ error }}</div>
-
-          <!-- Stock Info -->
-          <div v-if="stock" class="stock-info">
-            <div class="stock-info__row">
-              <span class="stock-info__label">{{ t('inventory.sku') }}</span>
-              <span class="stock-info__value stock-info__value--sku">{{ stock.sku }}</span>
-            </div>
-            <div class="stock-info__row">
-              <span class="stock-info__label">{{ t('inventory.location') }}</span>
-              <span class="stock-info__value">{{ stock.locationId }}</span>
-            </div>
-            <div class="stock-info__row">
-              <span class="stock-info__label">{{ t('inventory.reservedQuantity') }}</span>
-              <span class="stock-info__value stock-info__value--reserved">
-                {{ formatQuantity(stock.reservedQuantity) }} {{ stock.unitOfMeasure }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Form -->
-          <form class="dialog__body" @submit.prevent="handleSubmit">
-            <!-- Quantity -->
-            <div class="form-group">
-              <label for="release-quantity" class="form-label">
-                {{ t('inventory.quantity') }} <span class="required">*</span>
-              </label>
-              <input
-                id="release-quantity"
-                v-model="form.quantity"
-                type="number"
-                step="0.01"
-                min="0"
-                :max="reservedQuantity"
-                class="form-input"
-                :placeholder="t('validation.positiveNumber')"
-                :disabled="loading"
-                required
-              />
-              <span v-if="quantityError" class="form-error">{{ quantityError }}</span>
-              <span v-else class="form-hint">{{ t('inventory.maximum') }}: {{ formatQuantity(String(reservedQuantity)) }}</span>
-            </div>
-
-            <!-- Order ID -->
-            <div class="form-group">
-              <label for="release-orderId" class="form-label">
-                {{ t('inventory.orderId') }} <span class="required">*</span>
-              </label>
-              <input
-                id="release-orderId"
-                v-model="form.orderId"
-                type="text"
-                class="form-input"
-                placeholder="e.g., ORD-2024-001"
-                :disabled="loading"
-                required
-              />
-              <span class="form-hint">{{ t('inventory.orderReference') }}</span>
-            </div>
-          </form>
-
-          <!-- Footer -->
-          <div class="dialog__footer">
-            <button
-              type="button"
-              class="btn btn--secondary"
-              :disabled="loading"
-              @click="emit('close')"
-            >
-              {{ t('common.cancel') }}
-            </button>
-            <button
-              type="button"
-              class="btn btn--warning"
-              :disabled="loading || !isValid"
-              @click="handleSubmit"
-            >
-              <span v-if="loading" class="spinner"></span>
-              {{ loading ? t('common.loading') : t('inventory.releaseReservation') }}
-            </button>
-          </div>
+    <!-- Stock Info -->
+    <template #info>
+      <div v-if="stock" class="stock-info">
+        <div class="stock-info__row">
+          <span class="stock-info__label">{{ t('inventory.sku') }}</span>
+          <span class="stock-info__value stock-info__value--sku">{{ stock.sku }}</span>
+        </div>
+        <div class="stock-info__row">
+          <span class="stock-info__label">{{ t('inventory.location') }}</span>
+          <span class="stock-info__value">{{ stock.locationId }}</span>
+        </div>
+        <div class="stock-info__row">
+          <span class="stock-info__label">{{ t('inventory.reservedQuantity') }}</span>
+          <span class="stock-info__value stock-info__value--reserved">
+            {{ formatQuantity(stock.reservedQuantity) }} {{ stock.unitOfMeasure }}
+          </span>
         </div>
       </div>
-    </Transition>
-  </Teleport>
+    </template>
+
+    <!-- Form Body -->
+    <template #body>
+      <form @submit.prevent="handleSubmit">
+        <!-- Quantity -->
+        <div class="form-group">
+          <label for="release-quantity" class="form-label">
+            {{ t('inventory.quantity') }} <span class="required">*</span>
+          </label>
+          <input
+            id="release-quantity"
+            v-model="form.quantity"
+            type="number"
+            step="0.01"
+            min="0"
+            :max="reservedQuantity"
+            class="form-input"
+            :placeholder="t('validation.positiveNumber')"
+            :disabled="loading"
+            required
+          />
+          <span v-if="quantityError" class="form-error">{{ quantityError }}</span>
+          <span v-else class="form-hint">{{ t('inventory.maximum') }}: {{ formatQuantity(String(reservedQuantity)) }}</span>
+        </div>
+
+        <!-- Order ID -->
+        <div class="form-group">
+          <label for="release-orderId" class="form-label">
+            {{ t('inventory.orderId') }} <span class="required">*</span>
+          </label>
+          <input
+            id="release-orderId"
+            v-model="form.orderId"
+            type="text"
+            class="form-input"
+            placeholder="e.g., ORD-2024-001"
+            :disabled="loading"
+            required
+          />
+          <span class="form-hint">{{ t('inventory.orderReference') }}</span>
+        </div>
+      </form>
+    </template>
+
+    <!-- Footer -->
+    <template #footer>
+      <button
+        type="button"
+        class="btn btn--secondary"
+        :disabled="loading"
+        @click="emit('close')"
+      >
+        {{ t('common.cancel') }}
+      </button>
+      <button
+        type="button"
+        class="btn btn--warning"
+        :disabled="loading || !isValid"
+        @click="handleSubmit"
+      >
+        <span v-if="loading" class="spinner"></span>
+        {{ loading ? t('common.loading') : t('inventory.releaseReservation') }}
+      </button>
+    </template>
+  </BaseModal>
 </template>
 
 <style scoped>
-/* All base styles now come from global main.css */
-/* Component-specific overrides only */
-
-/* Override stock-info for embedded layout */
+/* Component-specific styles only */
 .stock-info {
   padding: 1rem 1.5rem;
   background: var(--color-surface);
@@ -236,7 +198,6 @@ onUnmounted(() => {
   color: #f59e0b;
 }
 
-/* Spinner */
 .spinner {
   width: 1rem;
   height: 1rem;
@@ -249,23 +210,4 @@ onUnmounted(() => {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-enter-active .dialog,
-.fade-leave-active .dialog {
-  transition: transform 0.2s ease;
-}
-
-.fade-enter-from .dialog,
-.fade-leave-to .dialog {
-  transform: scale(0.95);
-}</style>
+</style>
