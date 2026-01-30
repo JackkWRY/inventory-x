@@ -2,6 +2,7 @@
 import type { CreateProductCommand, Product } from "~/types/product";
 import { useForm } from "vee-validate";
 import * as yup from "yup";
+import BaseModal from "~/components/common/BaseModal.vue";
 
 const props = defineProps<{
   initialData?: Product | null;
@@ -25,7 +26,7 @@ const schema = computed(() => {
     category: yup.string().nullable(),
     price: yup
       .number()
-      .typeError(t("validation.positiveNumber")) // Generic error for number types
+      .typeError(t("validation.positiveNumber"))
       .positive(t("validation.positiveNumber"))
       .required(t("validation.required")),
     unitOfMeasure: yup.string().required(t("validation.required")),
@@ -85,6 +86,10 @@ watch(
   },
 );
 
+const dialogTitle = computed(() =>
+  props.isEditMode ? t("products.updateProduct") : t("products.createProduct")
+);
+
 const onSubmit = handleSubmit((values: CreateProductCommand) => {
   emit("submit", values);
 });
@@ -95,62 +100,61 @@ const handleCancel = () => {
 </script>
 
 <template>
-  <div v-if="isOpen" class="modal-overlay">
-    <div class="modal">
-      <header class="modal__header">
-        <h3>
-          {{
-            isEditMode
-              ? t("products.updateProduct")
-              : t("products.createProduct")
-          }}
-        </h3>
-        <button class="btn-close" @click="handleCancel" :disabled="loading">
-          ×
-        </button>
-      </header>
-
-      <form @submit.prevent="onSubmit" class="modal__body">
+  <BaseModal
+    :open="isOpen"
+    :title="dialogTitle"
+    size="md"
+    :close-on-escape="!loading"
+    :close-on-backdrop="!loading"
+    @close="handleCancel"
+  >
+    <!-- Form Body -->
+    <template #body>
+      <form @submit.prevent="onSubmit" class="product-form">
         <!-- SKU (Read-only in Edit Mode) -->
         <div class="form-group">
-          <label>{{ t("products.productCode") }} (SKU)</label>
+          <label class="form-label">{{ t("products.productCode") }} (SKU)</label>
           <input
             v-model="sku"
             type="text"
+            class="form-input"
             :class="{ 'is-invalid': errors.sku }"
             placeholder="e.g. APPLE-15"
             :disabled="isEditMode"
           />
-          <span class="error-text">{{ errors.sku }}</span>
+          <span v-if="errors.sku" class="form-error">{{ errors.sku }}</span>
         </div>
 
         <!-- Name -->
         <div class="form-group">
-          <label>{{ t("products.productName") }}</label>
+          <label class="form-label">{{ t("products.productName") }}</label>
           <input
             v-model="name"
             type="text"
+            class="form-input"
             :class="{ 'is-invalid': errors.name }"
             :placeholder="t('products.productName')"
           />
-          <span class="error-text">{{ errors.name }}</span>
+          <span v-if="errors.name" class="form-error">{{ errors.name }}</span>
         </div>
 
         <!-- Category -->
         <div class="form-group">
-          <label>{{ t("products.category") }}</label>
+          <label class="form-label">{{ t("products.category") }}</label>
           <input
             v-model="category"
             type="text"
+            class="form-input"
             placeholder="Electronics, Food, etc."
           />
         </div>
 
         <!-- Description -->
         <div class="form-group">
-          <label>{{ t("products.description") }}</label>
+          <label class="form-label">{{ t("products.description") }}</label>
           <textarea
             v-model="description"
+            class="form-input"
             rows="3"
             :placeholder="t('products.description')"
           ></textarea>
@@ -159,20 +163,22 @@ const handleCancel = () => {
         <!-- Price & Unit Group -->
         <div class="form-row">
           <div class="form-group">
-            <label>{{ t("products.price") }}</label>
+            <label class="form-label">{{ t("products.price") }}</label>
             <input
               v-model.number="price"
               type="number"
               step="0.01"
+              class="form-input"
               :class="{ 'is-invalid': errors.price }"
             />
-            <span class="error-text">{{ errors.price }}</span>
+            <span v-if="errors.price" class="form-error">{{ errors.price }}</span>
           </div>
 
           <div class="form-group">
-            <label>{{ t("common.unit") || "Unit" }}</label>
+            <label class="form-label">{{ t("common.unit") || "Unit" }}</label>
             <select
               v-model="unitOfMeasure"
+              class="form-input"
               :class="{ 'is-invalid': errors.unitOfMeasure }"
             >
               <option value="PIECE">Piece</option>
@@ -181,163 +187,41 @@ const handleCancel = () => {
               <option value="LITER">Liter</option>
               <option value="METER">Meter</option>
             </select>
-            <span class="error-text">{{ errors.unitOfMeasure }}</span>
+            <span v-if="errors.unitOfMeasure" class="form-error">{{ errors.unitOfMeasure }}</span>
           </div>
         </div>
       </form>
+    </template>
 
-      <footer class="modal__footer">
-        <button
-          type="button"
-          class="btn btn--secondary"
-          @click="handleCancel"
-          :disabled="loading"
-        >
-          {{ t("common.cancel") }}
-        </button>
-        <button
-          type="button"
-          class="btn btn--primary"
-          @click="onSubmit"
-          :disabled="loading"
-        >
-          <span v-if="loading" class="spinner"></span>
-          {{ isEditMode ? t("common.update") : t("common.create") }}
-        </button>
-      </footer>
-    </div>
-  </div>
+    <!-- Footer -->
+    <template #footer>
+      <button
+        type="button"
+        class="btn btn--secondary"
+        @click="handleCancel"
+        :disabled="loading"
+      >
+        {{ t("common.cancel") }}
+      </button>
+      <button
+        type="button"
+        class="btn btn--primary"
+        @click="onSubmit"
+        :disabled="loading"
+      >
+        <span v-if="loading" class="spinner"></span>
+        {{ isEditMode ? t("common.update") : t("common.create") }}
+      </button>
+    </template>
+  </BaseModal>
 </template>
 
 <style scoped>
-/* Reusing Modal Styles from UserDialog - Should extract to CommonModal later */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 1rem;
-  animation: fadeIn 0.2s ease-out;
-}
-
-.modal {
-  background: var(--glass-bg-strong);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
-  width: 100%;
-  max-width: 500px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.modal__header {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--glass-border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.modal__header h3 {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-}
-
-.btn-close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-  transition: color 0.2s;
-}
-
-.btn-close:hover {
-  color: var(--color-text-primary);
-}
-
-.modal__body {
-  padding: 1.5rem;
-  overflow-y: auto;
+/* Form layout */
+.product-form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-}
-
-.modal__footer {
-  padding: 1.25rem 1.5rem;
-  border-top: 1px solid var(--glass-border);
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-bottom-left-radius: var(--radius-xl);
-  border-bottom-right-radius: var(--radius-xl);
-}
-
-/* Form Styles */
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-}
-
-.form-group label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-primary);
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  padding: 0.625rem 0.875rem;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  font-size: 0.9375rem;
-  transition: all 0.2s;
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-  outline: none;
-}
-
-.form-group input:disabled {
-  background-color: var(--color-bg);
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-.is-invalid {
-  border-color: #dc2626 !important;
-}
-
-.error-text {
-  font-size: 0.75rem;
-  color: #dc2626;
 }
 
 .form-row {
@@ -349,26 +233,12 @@ const handleCancel = () => {
   flex: 1;
 }
 
-/* Button Styles - Using global classes, just local overrides if needed */
-.btn {
-  padding: 0.625rem 1rem;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  border: none;
+/* Validation states */
+.is-invalid {
+  border-color: #dc2626 !important;
 }
 
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
+/* Spinner */
 .spinner {
   width: 1rem;
   height: 1rem;
@@ -379,17 +249,7 @@ const handleCancel = () => {
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  to { transform: rotate(360deg); }
 }
 </style>
+
