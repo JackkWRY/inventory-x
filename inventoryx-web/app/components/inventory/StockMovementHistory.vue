@@ -1,6 +1,13 @@
 <script setup lang="ts">
+/**
+ * StockMovementHistory Component
+ * 
+ * Displays movement history for a stock item in a modal dialog.
+ * Uses BaseModal for consistent modal behavior.
+ */
 import { useDateFormat } from "@vueuse/core";
 import { type StockMovement } from "~/types/inventory";
+import BaseModal from "~/components/common/BaseModal.vue";
 
 const props = defineProps<{
   open: boolean;
@@ -63,7 +70,7 @@ const getMovementTypeClass = (type: string) => {
     case "WITHDRAWAL":
     case "SALE":
     case "RESERVATION":
-      return "text-warning"; // Reservation is warning/pending
+      return "text-warning";
     case "ADJUSTMENT":
       return "text-info";
     default:
@@ -81,229 +88,132 @@ const formatQuantity = (qty: string | number) => {
 
 const isNegative = (qty: string) => parseFloat(qty) < 0;
 const isPositive = (qty: string) => parseFloat(qty) > 0;
+
+const dialogTitle = computed(() => t("inventory.movementHistory"));
 </script>
 
 <template>
-  <div v-if="open" class="modal-overlay" @click.self="$emit('close')">
-    <div class="modal">
-      <div class="modal-header">
+  <BaseModal
+    :open="open"
+    :title="dialogTitle"
+    size="lg"
+    @close="emit('close')"
+  >
+    <!-- Custom header with subtitle -->
+    <template #header>
+      <div class="dialog__header">
         <div>
-          <h3>{{ t("inventory.movementHistory") }}</h3>
-          <p class="subtitle">{{ t("inventory.sku") }}: {{ stockSku }}</p>
+          <h2 id="modal-title" class="dialog__title">{{ dialogTitle }}</h2>
+          <p class="dialog__subtitle">{{ t("inventory.sku") }}: {{ stockSku }}</p>
         </div>
-        <button class="close-btn" @click="$emit('close')">&times;</button>
-      </div>
-
-      <div class="modal-body">
-        <CommonErrorBanner v-if="error" :message="error" />
-
-        <div v-if="loading" class="loading-state">
-          <span class="spinner"></span>
-          {{ t("common.loading") }}
-        </div>
-
-        <div v-else-if="movements.length === 0" class="empty-state">
-          {{ t("chart.noData") }}
-        </div>
-
-        <table v-else class="history-table">
-          <thead>
-            <tr>
-              <th>{{ t("inventory.performedAt") }}</th>
-              <th>{{ t("inventory.movementType") }}</th>
-              <th class="text-right">{{ t("inventory.quantity") }}</th>
-              <th>{{ t("inventory.reason") }}</th>
-              <th>{{ t("inventory.performedBy") }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="movement in movements" :key="movement.id">
-              <td>{{ formatDate(movement.performedAt) }}</td>
-              <td>
-                <span :class="getMovementTypeClass(movement.movementType)">
-                  {{ t(`movementTypes.${movement.movementType}`) }}
-                </span>
-              </td>
-              <td class="text-right font-mono">
-                <span
-                  :class="{
-                    'text-danger': isNegative(movement.quantity),
-                    'text-success': isPositive(movement.quantity),
-                  }"
-                >
-                  {{ isPositive(movement.quantity) ? "+" : ""
-                  }}{{ formatQuantity(movement.quantity) }}
-                </span>
-              </td>
-              <td>{{ movement.reason }}</td>
-              <td>{{ movement.performedBy }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="modal-actions">
-        <button class="btn btn--secondary" @click="$emit('close')">
-          {{ t("common.close") }}
+        <button class="dialog__close" @click="emit('close')" :aria-label="t('common.close')">
+          &times;
         </button>
       </div>
-    </div>
-  </div>
+    </template>
+
+    <template #error>
+      <CommonErrorBanner v-if="error" :message="error" />
+    </template>
+
+    <template #body>
+      <div v-if="loading" class="loading-state">
+        <span class="spinner"></span>
+        {{ t("common.loading") }}
+      </div>
+
+      <div v-else-if="movements.length === 0" class="empty-state">
+        {{ t("chart.noData") }}
+      </div>
+
+      <table v-else class="data-table data-table--compact">
+        <thead>
+          <tr>
+            <th>{{ t("inventory.performedAt") }}</th>
+            <th>{{ t("inventory.movementType") }}</th>
+            <th class="text-right">{{ t("inventory.quantity") }}</th>
+            <th>{{ t("inventory.reason") }}</th>
+            <th>{{ t("inventory.performedBy") }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="movement in movements" :key="movement.id">
+            <td>{{ formatDate(movement.performedAt) }}</td>
+            <td>
+              <span :class="getMovementTypeClass(movement.movementType)">
+                {{ t(`movementTypes.${movement.movementType}`) }}
+              </span>
+            </td>
+            <td class="text-right text-mono">
+              <span
+                :class="{
+                  'text-danger': isNegative(movement.quantity),
+                  'text-success': isPositive(movement.quantity),
+                }"
+              >
+                {{ isPositive(movement.quantity) ? "+" : ""
+                }}{{ formatQuantity(movement.quantity) }}
+              </span>
+            </td>
+            <td>{{ movement.reason }}</td>
+            <td>{{ movement.performedBy }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
+
+    <template #footer>
+      <button class="btn btn--secondary" @click="emit('close')">
+        {{ t("common.close") }}
+      </button>
+    </template>
+  </BaseModal>
 </template>
 
 <style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal {
-  background: white;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 800px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  max-height: 90vh;
-}
-
-.modal-header {
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.modal-header h3 {
-  margin: 0;
-  font-size: 1.125rem;
-  color: #111827;
-}
-
-.subtitle {
+/* Subtitle for header */
+.dialog__subtitle {
   margin: 0.25rem 0 0 0;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #6b7280;
-  padding: 0;
-  margin-left: 1rem;
-}
-
-.modal-body {
-  padding: 0;
-  overflow-y: auto;
-  flex: 1;
-}
-
+/* Loading and empty states */
 .loading-state,
 .empty-state {
   padding: 3rem;
   text-align: center;
-  color: #6b7280;
+  color: var(--color-text-secondary);
 }
 
-.history-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.history-table th {
-  padding: 0.75rem 1.5rem;
-  text-align: left;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: #6b7280;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.history-table td {
-  padding: 0.75rem 1.5rem;
-  font-size: 0.875rem;
-  color: #374151;
-  border-bottom: 1px solid #f3f4f6;
-}
-
+/* Text utilities */
 .text-right {
   text-align: right;
 }
 
-.font-mono {
+.text-mono {
   font-family: "SF Mono", "Consolas", monospace;
 }
 
 .text-success {
   color: #10b981;
 }
+
 .text-danger {
   color: #ef4444;
 }
+
 .text-warning {
   color: #f59e0b;
 }
+
 .text-info {
   color: #3b82f6;
 }
 
-.modal-actions {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #e5e7eb;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.btn {
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
-}
-
-.btn--secondary {
-  background: white;
-  border: 1px solid #d1d5db;
-  color: #374151;
-}
-
-.btn--secondary:hover {
-  background: #f9fafb;
-}
-
-.spinner {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid #e5e7eb;
-  border-top-color: #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-right: 0.5rem;
-  vertical-align: middle;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+/* Compact table variant */
+.data-table--compact th,
+.data-table--compact td {
+  padding: 0.75rem 1rem;
 }
 </style>
