@@ -26,10 +26,10 @@ const formatDate = (dateArr: string | number[]) => {
 </script>
 
 <template>
-  <div class="user-list">
+  <div class="list-container">
     <!-- Header with Search -->
     <div class="list-header">
-      <div class="list-search">
+      <div class="list-header__search">
         <div class="search-field">
           <div class="search-input-wrapper">
             <svg
@@ -58,7 +58,7 @@ const formatDate = (dateArr: string | number[]) => {
           </div>
         </div>
       </div>
-      <div class="list-actions">
+      <div class="list-header__actions">
         <button class="btn btn--primary" @click="$emit('create')">
           + {{ t("users.createUser") }}
         </button>
@@ -144,140 +144,13 @@ const formatDate = (dateArr: string | number[]) => {
 </template>
 
 <style scoped>
-.user-list {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: var(--theme-transition);
-}
-
-.list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--color-border);
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.list-search {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-end;
-  flex-wrap: wrap;
-}
-
-.search-field {
-  display: flex;
-  flex-direction: column;
-}
-
-.search-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.search-icon {
-  position: absolute;
-  left: 0.75rem;
-  color: var(--color-text-secondary);
-  pointer-events: none;
-}
-
-.input {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  font-size: 0.875rem;
-  min-width: 280px;
-  transition: border-color 0.2s, background-color 0.3s;
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-}
-
-.input.with-icon {
-  padding-left: 2.5rem;
-}
-
-.input:focus {
-  outline: none;
-  border-color: #4285f4;
-}
-
-.list-actions {
-  flex-shrink: 0;
-}
-
+/* All base styles now come from global main.css */
+/* Only component-specific overrides remain here */
 .table-wrapper {
   overflow-x: auto;
 }
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-.data-table th,
-.data-table td {
-  padding: 1rem;
-  border-bottom: 1px solid var(--color-border);
-  color: var(--color-text-primary);
-  transition: all 0.2s ease;
-}
-
-.data-table th {
-  background: var(--glass-bg-strong);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  font-weight: 600;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-secondary);
-}
-
-.data-table tbody tr {
-  transition: all 0.2s ease;
-}
-
-.data-table tbody tr:hover {
-  background: var(--color-surface-hover);
-}
-
-.data-table tbody tr:hover td:first-child {
-  box-shadow: inset 3px 0 0 var(--color-primary);
-}
-
-.badge {
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-.badge--success {
-  background: #d1fae5;
-  color: #065f46;
-}
-.badge--danger {
-  background: #fee2e2;
-  color: #991b1b;
-}
-.badge--status-info {
-  background: #dbeafe;
-  color: #1e40af;
-  margin-right: 4px;
-}
-
-.loading-state,
-.empty-state {
-  padding: 2rem;
-  text-align: center;
-  color: var(--color-text-secondary);
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
 }
 </style>

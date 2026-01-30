@@ -26,10 +26,10 @@ const formatCurrency = (amount: number, currency: string) => {
 </script>
 
 <template>
-  <div class="product-list">
+  <div class="list-container">
     <!-- Header with Search -->
-    <div class="product-list__header">
-      <div class="product-list__search">
+    <div class="list-header">
+      <div class="list-header__search">
         <div class="search-field">
           <div class="search-input-wrapper">
             <svg
@@ -58,8 +58,7 @@ const formatCurrency = (amount: number, currency: string) => {
           </div>
         </div>
       </div>
-      <div class="product-list__actions">
-        <!-- Create Product Button (Moved here) -->
+      <div class="list-header__actions">
          <button
           v-if="canEdit"
           class="btn btn--primary"
@@ -71,7 +70,7 @@ const formatCurrency = (amount: number, currency: string) => {
     </div>
 
     <!-- Product Table -->
-    <table v-if="!loading && products.length > 0" class="product-table">
+    <table v-if="!loading && products.length > 0" class="data-table">
       <thead>
         <tr>
           <th>{{ t("products.productCode") }}</th>
@@ -83,9 +82,9 @@ const formatCurrency = (amount: number, currency: string) => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="product in products" :key="product.id" class="hover-row">
+        <tr v-for="product in products" :key="product.id">
           <td>
-             <span class="product-sku">{{ product.sku }}</span>
+             <span class="text-mono">{{ product.sku }}</span>
           </td>
           <td class="font-medium">{{ product.name }}</td>
           <td>
@@ -114,176 +113,18 @@ const formatCurrency = (amount: number, currency: string) => {
     </table>
 
     <!-- Loading State -->
-    <div v-if="loading" class="product-list__loading">
+    <div v-if="loading" class="loading-state">
       {{ t("common.loading") }}
     </div>
 
     <!-- Empty State -->
-    <div v-if="!loading && products.length === 0" class="product-list__empty">
+    <div v-if="!loading && products.length === 0" class="empty-state">
       <p>{{ t("messages.noData") }}</p>
     </div>
   </div>
 </template>
 
 <style scoped>
-.product-list {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: var(--theme-transition);
-}
-
-.product-list__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--color-border);
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.product-list__search {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-end;
-  flex-wrap: wrap;
-}
-
-.search-field {
-  display: flex;
-  flex-direction: column;
-}
-
-.search-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.search-icon {
-  position: absolute;
-  left: 0.75rem;
-  color: var(--color-text-secondary);
-  pointer-events: none;
-}
-
-.input {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  font-size: 0.875rem;
-  min-width: 280px;
-  transition: border-color 0.2s, background-color 0.3s;
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-}
-
-.input.with-icon {
-  padding-left: 2.5rem;
-}
-
-.input:focus {
-  outline: none;
-  border-color: #4285f4;
-}
-
-.product-table {
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-.product-table th {
-  padding: 0.875rem 1rem;
-  text-align: left;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: var(--glass-bg-strong);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.product-table td {
-  padding: 0.875rem 1rem;
-  border-bottom: 1px solid var(--color-border);
-  font-size: 0.875rem;
-  color: var(--color-text-primary);
-  transition: all 0.2s ease;
-}
-
-.hover-row {
-  transition: all 0.2s ease;
-}
-
-.hover-row:hover {
-  background: var(--color-surface-hover);
-}
-
-.hover-row:hover td:first-child {
-  box-shadow: inset 3px 0 0 var(--color-primary);
-}
-
-.product-sku {
-  font-family: "SF Mono", "Consolas", monospace;
-  font-weight: 500;
-  color: var(--color-primary);
-}
-
-.text-center {
-  text-align: center;
-}
-
-.text-muted {
-  color: var(--color-text-secondary);
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.badge--surface {
-  background: var(--color-background);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
-}
-
-
-
-/* Loading/Empty States */
-.product-list__loading,
-.product-list__empty {
-  padding: 3rem;
-  text-align: center;
-  color: var(--color-text-secondary);
-}
-
-/* Keyboard hint */
-.kbd-hint {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.25rem;
-  height: 1.25rem;
-  padding: 0 0.25rem;
-  font-family: monospace;
-  font-size: 0.7rem;
-  font-weight: 500;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  color: var(--color-text-secondary);
-  margin-left: 0.25rem;
-}
+/* All base styles now come from global main.css */
+/* Only component-specific overrides remain here */
 </style>
