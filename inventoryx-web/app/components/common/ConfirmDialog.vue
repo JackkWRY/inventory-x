@@ -1,10 +1,9 @@
 <script setup lang="ts">
 /**
- * ConfirmDialog Component
- *
- * Reusable confirmation modal for destructive actions.
- * Shows a warning message and requires user confirmation before proceeding.
+ * ConfirmDialog Component - Reusable confirmation modal for destructive actions.
  */
+
+import BaseModal from "./BaseModal.vue";
 
 const { t } = useI18n()
 
@@ -36,131 +35,92 @@ const iconSvg = computed(() => {
   }
   return icons[props.type]
 })
-
-const handleBackdropClick = (e: MouseEvent) => {
-  if ((e.target as HTMLElement).classList.contains('confirm-backdrop')) {
-    emit('cancel')
-  }
-}
-
-const handleKeydown = (e: KeyboardEvent) => {
-  if (e.key === 'Escape' && props.show) {
-    emit('cancel')
-  }
-}
-
-onMounted(() => {
-  window.addEventListener('keydown', handleKeydown)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeydown)
-})
 </script>
 
 <template>
-  <Teleport to="body">
-    <Transition name="confirm-fade">
-      <div
-        v-if="show"
-        class="confirm-backdrop"
-        @click="handleBackdropClick"
-      >
-        <div class="confirm-dialog" :class="`confirm-dialog--${type}`">
-          <!-- Icon -->
-          <div class="confirm-dialog__icon" :class="`icon--${type}`" v-html="iconSvg"></div>
+  <BaseModal
+    :open="show"
+    size="sm"
+    :close-on-escape="!loading"
+    :close-on-backdrop="!loading"
+    @close="emit('cancel')"
+  >
+    <!-- Custom centered content (no header) -->
+    <template #body>
+      <div class="confirm-content" :class="`confirm-content--${type}`">
+        <!-- Gradient border accent -->
+        <div class="confirm-accent" :class="`accent--${type}`"></div>
+        
+        <!-- Icon -->
+        <div class="confirm-icon" :class="`icon--${type}`" v-html="iconSvg"></div>
 
-          <!-- Title -->
-          <h3 class="confirm-dialog__title">{{ title }}</h3>
+        <!-- Title -->
+        <h3 class="confirm-title">{{ title }}</h3>
 
-          <!-- Message -->
-          <p class="confirm-dialog__message">{{ message }}</p>
-
-          <!-- Actions -->
-          <div class="confirm-dialog__actions">
-            <button
-              class="btn btn--secondary"
-              :disabled="loading"
-              @click="emit('cancel')"
-            >
-              {{ cancelText || t('common.cancel') }}
-            </button>
-            <button
-              class="btn"
-              :class="{
-                'btn--warning': type === 'warning',
-                'btn--danger': type === 'danger',
-                'btn--primary': type === 'info'
-              }"
-              :disabled="loading"
-              @click="emit('confirm')"
-            >
-              <span v-if="loading" class="spinner"></span>
-              {{ confirmText || t('common.confirm') }}
-            </button>
-          </div>
-        </div>
+        <!-- Message -->
+        <p class="confirm-message">{{ message }}</p>
       </div>
-    </Transition>
-  </Teleport>
+    </template>
+
+    <!-- Footer Actions -->
+    <template #footer>
+      <div class="confirm-actions">
+        <button
+          class="btn btn--secondary"
+          :disabled="loading"
+          @click="emit('cancel')"
+        >
+          {{ cancelText || t('common.cancel') }}
+        </button>
+        <button
+          class="btn"
+          :class="{
+            'btn--warning': type === 'warning',
+            'btn--danger': type === 'danger',
+            'btn--primary': type === 'info'
+          }"
+          :disabled="loading"
+          @click="emit('confirm')"
+        >
+          <span v-if="loading" class="spinner"></span>
+          {{ confirmText || t('common.confirm') }}
+        </button>
+      </div>
+    </template>
+  </BaseModal>
 </template>
 
 <style scoped>
-/* Backdrop with Enhanced Blur */
-.confirm-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  padding: 1rem;
-}
-
-/* Dialog with Glassmorphism */
-.confirm-dialog {
-  background: var(--glass-bg-strong);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-  padding: 2rem;
-  width: 100%;
-  max-width: 400px;
+/* Confirm dialog specific layout */
+.confirm-content {
   text-align: center;
-  box-shadow: var(--shadow-xl);
+  padding: 0.5rem 0;
   position: relative;
-  overflow: hidden;
 }
 
 /* Gradient border accent */
-.confirm-dialog::before {
-  content: '';
+.confirm-accent {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: -1.5rem;
+  left: -1.5rem;
+  right: -1.5rem;
   height: 4px;
-  opacity: 1;
 }
 
-.confirm-dialog--warning::before {
+.accent--warning {
   background: var(--gradient-warning);
 }
 
-.confirm-dialog--danger::before {
+.accent--danger {
   background: var(--gradient-danger);
 }
 
-.confirm-dialog--info::before {
+.accent--info {
   background: var(--gradient-info);
 }
 
 /* Icon with gradient background */
-.confirm-dialog__icon {
+.confirm-icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -187,7 +147,7 @@ onUnmounted(() => {
 }
 
 /* Title */
-.confirm-dialog__title {
+.confirm-title {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text-primary);
@@ -195,88 +155,19 @@ onUnmounted(() => {
 }
 
 /* Message */
-.confirm-dialog__message {
+.confirm-message {
   font-size: 0.9375rem;
   color: var(--color-text-secondary);
-  margin: 0 0 1.5rem;
+  margin: 0;
   line-height: 1.6;
 }
 
-/* Actions */
-.confirm-dialog__actions {
+/* Actions - center aligned */
+.confirm-actions {
   display: flex;
   gap: 0.75rem;
   justify-content: center;
-}
-
-/* Buttons */
-.btn {
-  padding: 0.75rem 1.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  border-radius: var(--radius-md);
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.btn:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn--secondary {
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-  border-color: var(--color-border);
-}
-
-.btn--secondary:hover:not(:disabled) {
-  background: var(--color-surface-hover);
-  transform: translateY(-1px);
-}
-
-.btn--warning {
-  background: var(--gradient-warning);
-  color: white;
-  box-shadow: var(--shadow-glow-warning);
-}
-
-.btn--warning:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md), var(--shadow-glow-warning);
-}
-
-.btn--danger {
-  background: var(--gradient-danger);
-  color: white;
-  box-shadow: var(--shadow-glow-danger);
-}
-
-.btn--danger:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md), var(--shadow-glow-danger);
-}
-
-.btn--primary {
-  background: var(--gradient-primary-vivid);
-  color: white;
-  box-shadow: var(--shadow-glow-primary);
-}
-
-.btn--primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md), var(--shadow-glow-primary);
+  width: 100%;
 }
 
 /* Spinner */
@@ -294,60 +185,16 @@ onUnmounted(() => {
   to { transform: rotate(360deg); }
 }
 
-/* Transition */
-.confirm-fade-enter-active,
-.confirm-fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.confirm-fade-enter-from,
-.confirm-fade-leave-to {
-  opacity: 0;
-}
-
-.confirm-fade-enter-active .confirm-dialog {
-  animation: dialog-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.confirm-fade-leave-active .confirm-dialog {
-  animation: dialog-out 0.2s ease-in;
-}
-
-@keyframes dialog-in {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes dialog-out {
-  from {
-    opacity: 1;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.95) translateY(-10px);
-  }
-}
-
 /* Responsive */
 @media (max-width: 480px) {
-  .confirm-dialog {
-    padding: 1.5rem;
-  }
-  
-  .confirm-dialog__actions {
+  .confirm-actions {
     flex-direction: column-reverse;
   }
   
-  .btn {
+  .confirm-actions .btn {
     width: 100%;
     justify-content: center;
   }
 }
 </style>
+
