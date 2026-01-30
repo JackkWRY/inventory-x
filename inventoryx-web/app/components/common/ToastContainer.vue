@@ -97,7 +97,7 @@ const handleKeydown = (e: KeyboardEvent, id: string) => {
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
   max-width: 400px;
   pointer-events: none;
 }
@@ -106,63 +106,70 @@ const handleKeydown = (e: KeyboardEvent, id: string) => {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  padding: 1rem;
-  border-radius: 8px;
-  background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow-lg);
   pointer-events: auto;
-  animation: slideIn 0.3s ease-out;
+  animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid var(--glass-border);
 }
 
 .toast:focus {
-  outline: 2px solid #1a73e8;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-/* Type-specific styling */
+/* Type-specific styling with gradient borders */
 .toast--success {
-  border-left: 4px solid #10b981;
+  border-left: 4px solid var(--color-success);
 }
 
 .toast--success .toast__icon {
-  color: #10b981;
-  background: #d1fae5;
+  color: white;
+  background: var(--gradient-success);
+  box-shadow: var(--shadow-glow-success);
 }
 
 .toast--error {
-  border-left: 4px solid #ef4444;
+  border-left: 4px solid var(--color-danger);
 }
 
 .toast--error .toast__icon {
-  color: #ef4444;
-  background: #fee2e2;
+  color: white;
+  background: var(--gradient-danger);
+  box-shadow: var(--shadow-glow-danger);
 }
 
 .toast--warning {
-  border-left: 4px solid #f59e0b;
+  border-left: 4px solid var(--color-warning);
 }
 
 .toast--warning .toast__icon {
-  color: #f59e0b;
-  background: #fef3c7;
+  color: white;
+  background: var(--gradient-warning);
+  box-shadow: var(--shadow-glow-warning);
 }
 
 .toast--info {
-  border-left: 4px solid #3b82f6;
+  border-left: 4px solid var(--color-info);
 }
 
 .toast--info .toast__icon {
-  color: #3b82f6;
-  background: #dbeafe;
+  color: white;
+  background: var(--gradient-info);
+  box-shadow: var(--shadow-glow-info);
 }
 
 .toast__icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-md);
   font-size: 0.875rem;
   font-weight: 600;
   flex-shrink: 0;
@@ -177,13 +184,13 @@ const handleKeydown = (e: KeyboardEvent, id: string) => {
   display: block;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text-primary);
   margin-bottom: 0.25rem;
 }
 
 .toast__message {
   font-size: 0.875rem;
-  color: #4b5563;
+  color: var(--color-text-secondary);
   margin: 0;
   word-wrap: break-word;
 }
@@ -196,22 +203,22 @@ const handleKeydown = (e: KeyboardEvent, id: string) => {
   height: 1.5rem;
   border: none;
   background: transparent;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-size: 0.75rem;
   cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
   flex-shrink: 0;
 }
 
 .toast__close:hover {
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
 }
 
 /* Transition animations */
 .toast-enter-active {
-  animation: slideIn 0.3s ease-out;
+  animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .toast-leave-active {
@@ -220,7 +227,7 @@ const handleKeydown = (e: KeyboardEvent, id: string) => {
 
 @keyframes slideIn {
   from {
-    transform: translateX(100%);
+    transform: translateX(120%);
     opacity: 0;
   }
   to {
@@ -235,7 +242,7 @@ const handleKeydown = (e: KeyboardEvent, id: string) => {
     opacity: 1;
   }
   to {
-    transform: translateX(100%);
+    transform: translateX(120%);
     opacity: 0;
   }
 }

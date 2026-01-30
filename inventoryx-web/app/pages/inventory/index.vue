@@ -381,7 +381,7 @@ const handlePageSizeChange = async (size: number) => {
         <p class="page-header__subtitle">{{ t("inventory.subtitle") }}</p>
       </div>
       <div class="page-header__actions">
-        <NuxtLink to="/" class="btn btn--ghost">
+        <NuxtLink to="/" class="btn btn--back">
           ← {{ t("common.back") }}
         </NuxtLink>
       </div>
@@ -609,30 +609,5 @@ const handlePageSizeChange = async (size: number) => {
 
 .error-banner__close:hover {
   background: rgba(220, 38, 38, 0.1);
-}
-
-/* Button Styles */
-.btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.btn--ghost {
-  background: transparent;
-  color: var(--color-text-secondary);
-}
-
-.btn--ghost:hover {
-  background: var(--color-surface-hover);
-  color: var(--color-text-primary);
 }
 </style>

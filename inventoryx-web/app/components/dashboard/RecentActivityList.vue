@@ -90,23 +90,42 @@ const getMovementTypeClass = (type: string) => {
 .activity-table {
   width: 100%;
   border-collapse: collapse;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 .activity-table th {
-  padding: 0.75rem 1.5rem;
+  padding: 0.875rem 1.5rem;
   text-align: left;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--color-text-secondary);
-  background: var(--color-background-alt);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--color-border);
 }
 
 .activity-table td {
-  padding: 0.75rem 1.5rem;
+  padding: 0.875rem 1.5rem;
   border-bottom: 1px solid var(--color-border);
   color: var(--color-text-primary);
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.activity-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.activity-table tbody tr:hover {
+  background: var(--color-surface-hover);
+}
+
+.activity-table tbody tr:hover td:first-child {
+  box-shadow: inset 3px 0 0 var(--color-primary);
 }
 
 .activity-table tr:last-child td {

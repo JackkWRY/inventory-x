@@ -30,7 +30,7 @@ async function handleLogin(data: LoginCommand) {
 
   const result = await authStore.login({
     username: data.username,
-    password: data.password
+    password: data.password,
   });
 
   if (result.success) {
@@ -54,30 +54,88 @@ async function handleLogin(data: LoginCommand) {
   justify-content: center;
   background: var(--color-background-alt);
   padding: 1rem;
+  position: relative;
+  overflow: hidden;
 }
 
 .login-container {
   position: relative;
   width: 100%;
   max-width: 420px;
+  z-index: 1;
 }
 
-/* Background Pattern */
+/* Animated Background Pattern */
 .login-bg {
   position: fixed;
   inset: 0;
   background:
     radial-gradient(
-      circle at 20% 80%,
-      var(--color-primary-light) 0%,
+      ellipse 80% 50% at 20% 40%,
+      rgba(99, 102, 241, 0.15) 0%,
       transparent 50%
     ),
     radial-gradient(
-      circle at 80% 20%,
-      var(--color-info-light) 0%,
+      ellipse 60% 40% at 80% 60%,
+      rgba(168, 85, 247, 0.12) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 50% 50% at 50% 100%,
+      rgba(59, 130, 246, 0.1) 0%,
       transparent 50%
     ),
     var(--color-background-alt);
-  z-index: -1;
+  z-index: 0;
+  animation: bgShift 20s ease-in-out infinite;
+}
+
+@keyframes bgShift {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Decorative Floating Orb */
+.login-bg::before {
+  content: "";
+  position: absolute;
+  top: 20%;
+  left: 10%;
+  width: 300px;
+  height: 300px;
+  background: var(--gradient-primary);
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  animation: float 8s ease-in-out infinite;
+}
+
+.login-bg::after {
+  content: "";
+  position: absolute;
+  bottom: 20%;
+  right: 10%;
+  width: 250px;
+  height: 250px;
+  background: var(--gradient-info);
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.15;
+  animation: float 6s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+  }
 }
 </style>

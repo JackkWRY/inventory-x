@@ -150,12 +150,12 @@ provide("closeDropdown", close);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 2.25rem;
+  height: 2.25rem;
   padding: 0;
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   color: var(--color-text-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -164,10 +164,11 @@ provide("closeDropdown", close);
 .action-dropdown__trigger:hover {
   background: var(--color-surface-hover);
   color: var(--color-text-primary);
+  transform: scale(1.05);
 }
 
 .action-dropdown__trigger--active {
-  background: var(--color-surface-hover);
+  background: var(--color-primary-light);
   color: var(--color-primary);
 }
 </style>
@@ -178,23 +179,44 @@ provide("closeDropdown", close);
   position: absolute;
   z-index: 9999;
   min-width: 180px;
-  padding: 6px;
-  background: var(--color-card, #1e1e3f);
-  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  padding: 0.375rem;
+  background: var(--glass-bg-strong, rgba(255, 255, 255, 0.9));
+  backdrop-filter: var(--glass-blur, blur(12px));
+  -webkit-backdrop-filter: var(--glass-blur, blur(12px));
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.3));
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(--shadow-lg, 0 8px 32px rgba(0, 0, 0, 0.15));
 }
 
 /* Animation */
-.dropdown-enter-active,
-.dropdown-leave-active {
-  transition: all 0.15s ease;
+.dropdown-enter-active {
+  animation: dropdown-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.dropdown-enter-from,
-.dropdown-leave-to {
-  opacity: 0;
-  transform: scale(0.95);
+.dropdown-leave-active {
+  animation: dropdown-out 0.15s ease-in;
+}
+
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes dropdown-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
 }
 </style>
 

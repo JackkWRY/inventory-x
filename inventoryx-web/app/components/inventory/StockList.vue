@@ -503,14 +503,6 @@ defineExpose({
       </tbody>
     </table>
 
-    <!-- Summary Footer -->
-    <div v-if="filteredStocks.length > 0" class="stock-list__footer">
-      <span
-        >{{ filteredStocks.length }} / {{ stocks.length }}
-        {{ t("inventory.stocks") }}</span
-      >
-    </div>
-
     <!-- History Dialog -->
     <InventoryStockMovementHistory
       :open="historyOpen"
@@ -619,29 +611,42 @@ defineExpose({
 .stock-table {
   width: 100%;
   border-collapse: collapse;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 .stock-table th {
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1rem;
   text-align: left;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: var(--color-surface);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--color-border);
 }
 
 .stock-table td {
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1rem;
   border-bottom: 1px solid var(--color-border);
   font-size: 0.875rem;
   color: var(--color-text-primary);
+  transition: all 0.2s ease;
+}
+
+.stock-table tbody tr {
+  transition: all 0.2s ease;
 }
 
 .stock-table tbody tr:hover {
   background: var(--color-surface-hover);
+}
+
+.stock-table tbody tr:hover td:first-child {
+  box-shadow: inset 3px 0 0 var(--color-primary);
 }
 
 .text-right {
@@ -685,81 +690,6 @@ defineExpose({
   display: flex;
   gap: 0.5rem;
   justify-content: center;
-}
-
-.stock-list__footer {
-  padding: 0.75rem 1.5rem;
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-}
-
-/* Button Styles */
-.btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn--primary {
-  background: #1a73e8;
-  color: white;
-}
-
-.btn--primary:hover:not(:disabled) {
-  background: #1557b0;
-}
-
-.btn--secondary {
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
-}
-
-.btn--secondary:hover:not(:disabled) {
-  background: var(--color-surface-hover);
-}
-
-.btn--ghost {
-  background: transparent;
-  color: var(--color-primary);
-}
-
-.btn--ghost:hover:not(:disabled) {
-  background: var(--color-surface-hover);
-}
-
-.btn--small {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-}
-
-.btn--warning {
-  background: #f59e0b;
-  color: white;
-}
-
-.btn--warning:hover:not(:disabled) {
-  background: #d97706;
-}
-
-.btn--danger {
-  background: #ef4444;
-  color: white;
-}
-
-.btn--danger:hover:not(:disabled) {
-  background: #dc2626;
 }
 
 /* Keyboard hint */

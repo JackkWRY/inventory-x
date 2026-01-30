@@ -219,7 +219,7 @@ const handleQuickSaleSubmit = async (command: QuickSaleCommand) => {
         <h1 class="page-header__title">{{ t("inventory.stockDetails") }}</h1>
       </div>
       <div class="page-header__actions">
-        <NuxtLink to="/inventory" class="btn btn--ghost">
+        <NuxtLink to="/inventory" class="btn btn--back">
           ← {{ t("common.back") }}
         </NuxtLink>
       </div>

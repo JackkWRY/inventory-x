@@ -125,13 +125,41 @@ const handleSubmit = () => {
 </script>
 
 <style scoped>
-/* Login Card */
+/* Login Card with Glassmorphism */
 .login-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
   padding: 2.5rem;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle gradient border effect */
+.login-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.3),
+    transparent 50%,
+    rgba(168, 85, 247, 0.2)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 /* Header */
@@ -144,18 +172,22 @@ const handleSubmit = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: 0.625rem;
+  margin-bottom: 0.75rem;
 }
 
 .logo-icon {
-  font-size: 2rem;
+  font-size: 2.25rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .logo-text {
-  font-size: 1.75rem;
+  font-size: 1.875rem;
   font-weight: 700;
-  color: var(--color-primary);
+  background: var(--gradient-primary-vivid);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   letter-spacing: -0.025em;
   margin: 0;
 }
@@ -177,6 +209,7 @@ const handleSubmit = () => {
   border-radius: var(--radius-md);
   font-size: 0.875rem;
   margin-bottom: 1.5rem;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .login-alert svg {
@@ -213,17 +246,22 @@ const handleSubmit = () => {
   transform: translateY(-50%);
   color: var(--color-text-muted);
   pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.input-wrapper:focus-within .input-icon {
+  color: var(--color-primary);
 }
 
 .form-input {
   width: 100%;
-  padding: 0.75rem 0.875rem 0.75rem 2.75rem;
+  padding: 0.875rem 1rem 0.875rem 2.75rem;
   font-size: 0.9375rem;
   color: var(--color-text-primary);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  transition: all 0.2s;
+  border-radius: var(--radius-lg);
+  transition: all 0.2s ease;
 }
 
 .form-input::placeholder {
@@ -233,37 +271,68 @@ const handleSubmit = () => {
 .form-input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: var(--focus-ring);
+  box-shadow: var(--focus-ring), var(--shadow-glow-primary);
 }
 
-/* Submit Button */
+.form-input:hover:not(:focus) {
+  border-color: var(--color-text-muted);
+}
+
+/* Submit Button with Gradient */
 .btn-submit {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   width: 100%;
-  padding: 0.875rem 1.5rem;
+  padding: 0.9375rem 1.5rem;
   font-size: 1rem;
   font-weight: 600;
   color: white;
-  background: var(--color-primary);
+  background: var(--gradient-primary-vivid);
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   margin-top: 0.5rem;
+  box-shadow: var(--shadow-glow-primary);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shimmer effect */
+.btn-submit::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.btn-submit:hover:not(:disabled)::before {
+  left: 100%;
 }
 
 .btn-submit:hover:not(:disabled) {
-  background: var(--color-primary-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md), var(--shadow-glow-primary);
 }
 
 .btn-submit:focus-visible {
   outline: none;
-  box-shadow: var(--focus-ring);
+  box-shadow: var(--focus-ring), var(--shadow-glow-primary);
+}
+
+.btn-submit:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .btn-submit:disabled {
@@ -296,6 +365,10 @@ const handleSubmit = () => {
 
   .logo-text {
     font-size: 1.5rem;
+  }
+
+  .form-input {
+    padding: 0.75rem 0.875rem 0.75rem 2.5rem;
   }
 }
 </style>

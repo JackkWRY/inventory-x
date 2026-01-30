@@ -106,12 +106,13 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Backdrop */
+/* Backdrop with Enhanced Blur */
 .confirm-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -119,54 +120,70 @@ onUnmounted(() => {
   padding: 1rem;
 }
 
-/* Dialog */
+/* Dialog with Glassmorphism */
 .confirm-dialog {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
   padding: 2rem;
   width: 100%;
   max-width: 400px;
   text-align: center;
   box-shadow: var(--shadow-xl);
+  position: relative;
+  overflow: hidden;
 }
 
-.confirm-dialog--warning {
-  border-top: 4px solid var(--color-warning);
+/* Gradient border accent */
+.confirm-dialog::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  opacity: 1;
 }
 
-.confirm-dialog--danger {
-  border-top: 4px solid var(--color-danger);
+.confirm-dialog--warning::before {
+  background: var(--gradient-warning);
 }
 
-.confirm-dialog--info {
-  border-top: 4px solid var(--color-info);
+.confirm-dialog--danger::before {
+  background: var(--gradient-danger);
 }
 
-/* Icon */
+.confirm-dialog--info::before {
+  background: var(--gradient-info);
+}
+
+/* Icon with gradient background */
 .confirm-dialog__icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 1rem;
-  border-radius: 50%;
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto 1.25rem;
+  border-radius: var(--radius-lg);
+  color: white;
 }
 
 .icon--warning {
-  background: var(--color-warning-light);
-  color: var(--color-warning);
+  background: var(--gradient-warning);
+  box-shadow: var(--shadow-glow-warning);
 }
 
 .icon--danger {
-  background: var(--color-danger-light);
-  color: var(--color-danger);
+  background: var(--gradient-danger);
+  box-shadow: var(--shadow-glow-danger);
 }
 
 .icon--info {
-  background: var(--color-info-light);
-  color: var(--color-info);
+  background: var(--gradient-info);
+  box-shadow: var(--shadow-glow-info);
 }
 
 /* Title */
@@ -179,7 +196,7 @@ onUnmounted(() => {
 
 /* Message */
 .confirm-dialog__message {
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   color: var(--color-text-secondary);
   margin: 0 0 1.5rem;
   line-height: 1.6;
@@ -194,16 +211,18 @@ onUnmounted(() => {
 
 /* Buttons */
 .btn {
-  padding: 0.625rem 1.25rem;
+  padding: 0.75rem 1.5rem;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn:focus-visible {
@@ -224,33 +243,40 @@ onUnmounted(() => {
 
 .btn--secondary:hover:not(:disabled) {
   background: var(--color-surface-hover);
+  transform: translateY(-1px);
 }
 
 .btn--warning {
-  background: var(--color-warning);
+  background: var(--gradient-warning);
   color: white;
+  box-shadow: var(--shadow-glow-warning);
 }
 
 .btn--warning:hover:not(:disabled) {
-  background: #d97706;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md), var(--shadow-glow-warning);
 }
 
 .btn--danger {
-  background: var(--color-danger);
+  background: var(--gradient-danger);
   color: white;
+  box-shadow: var(--shadow-glow-danger);
 }
 
 .btn--danger:hover:not(:disabled) {
-  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md), var(--shadow-glow-danger);
 }
 
 .btn--primary {
-  background: var(--color-primary);
+  background: var(--gradient-primary-vivid);
   color: white;
+  box-shadow: var(--shadow-glow-primary);
 }
 
 .btn--primary:hover:not(:disabled) {
-  background: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md), var(--shadow-glow-primary);
 }
 
 /* Spinner */
@@ -279,14 +305,34 @@ onUnmounted(() => {
   opacity: 0;
 }
 
-.confirm-fade-enter-active .confirm-dialog,
-.confirm-fade-leave-active .confirm-dialog {
-  transition: transform 0.2s ease;
+.confirm-fade-enter-active .confirm-dialog {
+  animation: dialog-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.confirm-fade-enter-from .confirm-dialog,
-.confirm-fade-leave-to .confirm-dialog {
-  transform: scale(0.95);
+.confirm-fade-leave-active .confirm-dialog {
+  animation: dialog-out 0.2s ease-in;
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes dialog-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
 }
 
 /* Responsive */

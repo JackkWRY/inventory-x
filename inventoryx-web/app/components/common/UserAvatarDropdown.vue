@@ -159,106 +159,138 @@ onUnmounted(() => {
 .avatar-button {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.375rem;
   padding: 0.25rem;
   background: transparent;
   border: none;
   border-radius: var(--radius-full);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .avatar-button:hover {
-  background: var(--color-surface-hover);
+  background: var(--color-primary-light);
 }
 
 .avatar {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  background: var(--color-primary);
+  width: 2.5rem;
+  height: 2.5rem;
+  background: var(--gradient-primary-vivid);
   color: white;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   border-radius: 50%;
   text-transform: uppercase;
+  box-shadow: var(--shadow-glow-primary);
+  transition: transform 0.2s ease;
+}
+
+.avatar-button:hover .avatar {
+  transform: scale(1.05);
 }
 
 .chevron {
   color: var(--color-text-secondary);
-  transition: transform var(--transition-fast);
+  transition: transform 0.2s ease;
 }
 
 .chevron--open {
   transform: rotate(180deg);
 }
 
-/* Dropdown Menu */
+/* Dropdown Menu with Glassmorphism */
 .dropdown-menu {
   position: absolute;
-  top: calc(100% + 0.5rem);
+  top: calc(100% + 0.75rem);
   right: 0;
-  min-width: 260px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  min-width: 280px;
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
   z-index: 1000;
   overflow: hidden;
 }
 
 /* Dropdown Animation */
-.dropdown-enter-active,
-.dropdown-leave-active {
-  transition: all 0.2s ease;
+.dropdown-enter-active {
+  animation: dropdown-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.dropdown-enter-from,
-.dropdown-leave-to {
-  opacity: 0;
-  transform: translateY(-8px);
+.dropdown-leave-active {
+  animation: dropdown-out 0.15s ease-in;
+}
+
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dropdown-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.98);
+  }
 }
 
 /* Header */
 .dropdown-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
+  gap: 0.875rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.05) 100%);
 }
 
 .header-avatar {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  background: var(--color-primary);
+  width: 3rem;
+  height: 3rem;
+  background: var(--gradient-primary-vivid);
   color: white;
-  font-size: 1rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  border-radius: 50%;
+  border-radius: var(--radius-lg);
   text-transform: uppercase;
+  box-shadow: var(--shadow-glow-primary);
 }
 
 .header-info {
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
+  gap: 0.25rem;
 }
 
 .header-name {
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--color-text-primary);
 }
 
 .header-role {
   font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-primary);
+  font-weight: 600;
+  background: var(--gradient-primary-vivid);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -279,10 +311,10 @@ onUnmounted(() => {
 .dropdown-item {
   display: flex;
   align-items: center;
-  padding: 0.625rem 0.75rem;
+  padding: 0.75rem;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .dropdown-item:hover {
@@ -296,21 +328,22 @@ onUnmounted(() => {
 .setting-label {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: 0.75rem;
   font-size: 0.875rem;
+  font-weight: 500;
   color: var(--color-text-primary);
 }
 
 .setting-icon {
-  font-size: 1rem;
+  font-size: 1.125rem;
 }
 
-/* Toggle Switch */
+/* Toggle Switch with Gradient */
 .toggle-switch {
   position: relative;
   display: inline-block;
-  width: 40px;
-  height: 22px;
+  width: 44px;
+  height: 24px;
 }
 
 .toggle-switch input {
@@ -327,46 +360,49 @@ onUnmounted(() => {
   right: 0;
   bottom: 0;
   background-color: var(--color-border);
-  transition: 0.3s;
-  border-radius: 22px;
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 24px;
 }
 
 .toggle-slider::before {
   position: absolute;
   content: "";
-  height: 16px;
-  width: 16px;
+  height: 18px;
+  width: 18px;
   left: 3px;
   bottom: 3px;
   background-color: white;
-  transition: 0.3s;
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 50%;
+  box-shadow: var(--shadow-sm);
 }
 
 .toggle-switch input:checked + .toggle-slider {
-  background-color: var(--color-primary);
+  background: var(--gradient-primary-vivid);
 }
 
 .toggle-switch input:checked + .toggle-slider::before {
-  transform: translateX(18px);
+  transform: translateX(20px);
 }
 
 /* Language Select */
 .language-select {
-  padding: 0.375rem 0.625rem;
+  padding: 0.375rem 0.75rem;
   font-size: 0.8125rem;
+  font-weight: 500;
   color: var(--color-text-primary);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   cursor: pointer;
   outline: none;
-  transition: border-color var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .language-select:hover,
 .language-select:focus {
   border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
 }
 
 /* Footer */
@@ -380,19 +416,20 @@ onUnmounted(() => {
   justify-content: center;
   gap: 0.5rem;
   width: 100%;
-  padding: 0.625rem 0.75rem;
+  padding: 0.75rem;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-danger);
   background: transparent;
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background var(--transition-fast);
+  transition: all 0.2s ease;
 }
 
 .logout-button:hover {
   background: var(--color-danger-light);
+  transform: translateY(-1px);
 }
 
 .logout-button svg {

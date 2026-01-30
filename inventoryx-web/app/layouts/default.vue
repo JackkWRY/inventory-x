@@ -8,33 +8,33 @@
             <span class="brand-text">InventoryX</span>
           </NuxtLink>
         </div>
-        
+
         <nav class="navbar-menu" v-if="authStore.isAuthenticated">
           <NuxtLink to="/dashboard" class="nav-link">
-            {{ t('navigation.dashboard') }}
+            {{ t("navigation.dashboard") }}
           </NuxtLink>
           <NuxtLink to="/products" class="nav-link">
-            {{ t('navigation.products') }}
+            {{ t("navigation.products") }}
           </NuxtLink>
           <NuxtLink to="/inventory" class="nav-link">
-            {{ t('navigation.inventory') }}
+            {{ t("navigation.inventory") }}
           </NuxtLink>
           <NuxtLink to="/locations" class="nav-link">
-            {{ t('navigation.warehouses') }}
+            {{ t("navigation.warehouses") }}
           </NuxtLink>
-          <NuxtLink 
-            to="/users" 
-            class="nav-link" 
+          <NuxtLink
+            to="/users"
+            class="nav-link"
             v-if="authStore.hasRole('ADMIN')"
           >
-            {{ t('navigation.users') }}
+            {{ t("navigation.users") }}
           </NuxtLink>
-          
+
           <div class="navbar-divider"></div>
-          
+
           <CommonUserAvatarDropdown />
         </nav>
-        
+
         <div v-else class="navbar-auth">
           <NuxtLink to="/login" class="btn btn-primary btn-sm">
             Sign In
@@ -46,7 +46,7 @@
     <main class="main-content">
       <slot />
     </main>
-    
+
     <footer class="footer">
       <div class="container">
         <small>&copy; {{ new Date().getFullYear() }} InventoryX System</small>
@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '~/stores/auth';
+import { useAuthStore } from "~/stores/auth";
 
 const { t } = useI18n();
 const authStore = useAuthStore();
@@ -69,16 +69,16 @@ const authStore = useAuthStore();
   flex-direction: column;
 }
 
-/* Navbar */
+/* Navbar with Glassmorphism */
 .navbar {
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border);
   padding: 0;
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(8px);
-  background: rgba(var(--color-surface), 0.95);
 }
 
 .navbar-content {
@@ -88,27 +88,33 @@ const authStore = useAuthStore();
   height: 64px;
 }
 
-/* Brand */
+/* Brand with Hover Glow */
 .brand-link {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.625rem;
   text-decoration: none;
-  transition: opacity var(--transition-fast);
+  transition: all 0.3s ease;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
 }
 
 .brand-link:hover {
-  opacity: 0.8;
+  background: var(--color-primary-light);
 }
 
 .brand-icon {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .brand-text {
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   font-weight: 700;
-  color: var(--color-primary);
+  background: var(--gradient-primary-vivid);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   letter-spacing: -0.025em;
 }
 
@@ -122,13 +128,27 @@ const authStore = useAuthStore();
 .nav-link {
   display: flex;
   align-items: center;
-  padding: 0.5rem 0.875rem;
+  padding: 0.5rem 1rem;
   color: var(--color-text-secondary);
   text-decoration: none;
   font-size: 0.875rem;
   font-weight: 500;
   border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary-vivid);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
 }
 
 .nav-link:hover {
@@ -140,6 +160,10 @@ const authStore = useAuthStore();
   color: var(--color-primary);
   background: var(--color-primary-light);
   font-weight: 600;
+}
+
+.nav-link.router-link-active::after {
+  width: 60%;
 }
 
 /* Divider */
@@ -166,22 +190,24 @@ const authStore = useAuthStore();
   font-weight: 500;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.2s ease;
   text-decoration: none;
   border: none;
 }
 
 .btn-primary {
-  background: var(--color-primary);
+  background: var(--gradient-primary-vivid);
   color: white;
+  box-shadow: var(--shadow-glow-primary);
 }
 
 .btn-primary:hover {
-  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md), var(--shadow-glow-primary);
 }
 
 .btn-sm {
-  padding: 0.375rem 0.75rem;
+  padding: 0.375rem 0.875rem;
   font-size: 0.8125rem;
 }
 
@@ -212,30 +238,32 @@ const authStore = useAuthStore();
   .navbar-content {
     height: 56px;
   }
-  
+
   .navbar-menu {
     gap: 0;
   }
-  
+
   .nav-link {
-    padding: 0.5rem;
+    padding: 0.5rem 0.75rem;
     font-size: 0.8125rem;
   }
-  
+
   .navbar-divider {
     margin: 0 0.5rem;
   }
-  
 }
 
 @media (max-width: 640px) {
   .nav-link {
-    padding: 0.375rem;
+    padding: 0.375rem 0.5rem;
   }
-  
+
   .navbar-divider {
     display: none;
   }
-  
+
+  .brand-text {
+    font-size: 1.125rem;
+  }
 }
 </style>

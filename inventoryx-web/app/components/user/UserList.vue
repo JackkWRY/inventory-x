@@ -207,6 +207,8 @@ const formatDate = (dateArr: string | number[]) => {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 .data-table th,
@@ -214,11 +216,30 @@ const formatDate = (dateArr: string | number[]) => {
   padding: 1rem;
   border-bottom: 1px solid var(--color-border);
   color: var(--color-text-primary);
+  transition: all 0.2s ease;
 }
 
 .data-table th {
-  background: var(--color-surface);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+}
+
+.data-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.data-table tbody tr:hover {
+  background: var(--color-surface-hover);
+}
+
+.data-table tbody tr:hover td:first-child {
+  box-shadow: inset 3px 0 0 var(--color-primary);
 }
 
 .badge {
@@ -235,38 +256,10 @@ const formatDate = (dateArr: string | number[]) => {
   background: #fee2e2;
   color: #991b1b;
 }
-.badge--info {
+.badge--status-info {
   background: #dbeafe;
   color: #1e40af;
   margin-right: 4px;
-}
-
-.btn {
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  border: none;
-  font-weight: 500;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-}
-.btn--primary {
-  background: #1a73e8;
-  color: white;
-}
-.btn--ghost {
-  background: transparent;
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
-}
-.btn--small {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-}
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .loading-state,

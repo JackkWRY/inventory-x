@@ -167,11 +167,13 @@ const emit = defineEmits<{
 .error-banner {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  animation: slideIn 0.3s ease-out;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 1rem;
+  animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 @keyframes slideIn {
@@ -187,29 +189,51 @@ const emit = defineEmits<{
 
 /* Error variant */
 .error-banner--error {
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--color-danger-light);
   border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #dc2626;
+  color: var(--color-danger);
 }
 
 /* Warning variant */
 .error-banner--warning {
-  background: rgba(245, 158, 11, 0.1);
+  background: var(--color-warning-light);
   border: 1px solid rgba(245, 158, 11, 0.3);
-  color: #d97706;
+  color: var(--color-warning);
 }
 
 /* Info variant */
 .error-banner--info {
-  background: rgba(59, 130, 246, 0.1);
+  background: var(--color-info-light);
   border: 1px solid rgba(59, 130, 246, 0.3);
-  color: #2563eb;
+  color: var(--color-info);
 }
 
 .error-banner__icon {
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-md);
+}
+
+.error-banner--error .error-banner__icon {
+  background: var(--gradient-danger);
+  color: white;
+  box-shadow: var(--shadow-glow-danger);
+}
+
+.error-banner--warning .error-banner__icon {
+  background: var(--gradient-warning);
+  color: white;
+  box-shadow: var(--shadow-glow-warning);
+}
+
+.error-banner--info .error-banner__icon {
+  background: var(--gradient-info);
+  color: white;
+  box-shadow: var(--shadow-glow-info);
 }
 
 .error-banner__content {
@@ -219,79 +243,58 @@ const emit = defineEmits<{
 
 .error-banner__title {
   font-weight: 600;
-  font-size: 0.875rem;
-  margin: 0 0 4px 0;
+  font-size: 0.9375rem;
+  margin: 0 0 0.25rem 0;
+  color: var(--color-text-primary);
 }
 
 .error-banner__message {
   font-size: 0.875rem;
   margin: 0;
-  opacity: 0.9;
+  color: var(--color-text-secondary);
 }
 
 .error-banner__actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
   flex-shrink: 0;
 }
 
 .error-banner__btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
   font-size: 0.8125rem;
   font-weight: 500;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .error-banner__btn--retry {
-  background: rgba(255, 255, 255, 0.8);
-  color: inherit;
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+  color: var(--color-text-primary);
 }
 
 .error-banner__btn--retry:hover {
-  background: rgba(255, 255, 255, 1);
+  background: var(--color-surface);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .error-banner__btn--dismiss {
   background: transparent;
-  padding: 6px;
-  color: inherit;
-  opacity: 0.6;
+  padding: 0.375rem;
+  color: var(--color-text-muted);
 }
 
 .error-banner__btn--dismiss:hover {
-  opacity: 1;
-}
-
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  .error-banner--error {
-    background: rgba(239, 68, 68, 0.15);
-    color: #fca5a5;
-  }
-
-  .error-banner--warning {
-    background: rgba(245, 158, 11, 0.15);
-    color: #fcd34d;
-  }
-
-  .error-banner--info {
-    background: rgba(59, 130, 246, 0.15);
-    color: #93c5fd;
-  }
-
-  .error-banner__btn--retry {
-    background: rgba(255, 255, 255, 0.15);
-  }
-
-  .error-banner__btn--retry:hover {
-    background: rgba(255, 255, 255, 0.25);
-  }
+  color: var(--color-text-primary);
 }
 </style>

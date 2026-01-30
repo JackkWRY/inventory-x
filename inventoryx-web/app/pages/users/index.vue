@@ -130,7 +130,7 @@ const handleUserSubmit = async (
         <p class="page-header__subtitle">{{ t("users.subtitle") }}</p>
       </div>
       <div class="page-header__actions">
-        <NuxtLink to="/" class="btn btn--ghost">
+        <NuxtLink to="/" class="btn btn--back">
           ← {{ t("common.back") }}
         </NuxtLink>
       </div>
@@ -215,21 +215,5 @@ const handleUserSubmit = async (
   align-items: center;
   gap: 0.5rem;
   flex-shrink: 0;
-}
-
-.btn {
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  border: none;
-  font-weight: 500;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-}
-.btn--ghost {
-  background: transparent;
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
 }
 </style>

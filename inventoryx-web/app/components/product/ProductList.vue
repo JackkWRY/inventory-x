@@ -192,29 +192,42 @@ const formatCurrency = (amount: number, currency: string) => {
 .product-table {
   width: 100%;
   border-collapse: collapse;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 .product-table th {
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1rem;
   text-align: left;
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: var(--color-surface);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--color-border);
 }
 
 .product-table td {
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1rem;
   border-bottom: 1px solid var(--color-border);
   font-size: 0.875rem;
   color: var(--color-text-primary);
+  transition: all 0.2s ease;
+}
+
+.hover-row {
+  transition: all 0.2s ease;
 }
 
 .hover-row:hover {
   background: var(--color-surface-hover);
+}
+
+.hover-row:hover td:first-child {
+  box-shadow: inset 3px 0 0 var(--color-primary);
 }
 
 .product-sku {
@@ -294,27 +307,5 @@ const formatCurrency = (amount: number, currency: string) => {
   border-radius: 4px;
   color: var(--color-text-secondary);
   margin-left: 0.25rem;
-}
-
-/* Button Styles (copied from StockList to match) */
-.btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-}
-
-.btn--primary {
-  background: #1a73e8;
-  color: white;
-}
-
-.btn--primary:hover {
-  background: #1557b0;
 }
 </style>

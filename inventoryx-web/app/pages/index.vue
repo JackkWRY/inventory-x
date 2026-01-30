@@ -118,12 +118,8 @@ definePageMeta({
 
 <style scoped>
 /**
- * Landing Page Styles
- * 
- * DESIGN SYSTEM:
- * - 2x2 grid for balanced layout
- * - SVG icons for professional look
- * - Card hover animations
+ * Landing Page Styles - Modern Premium
+ * Gradient icons, glassmorphism cards, shine animations
  */
 
 .home {
@@ -140,7 +136,7 @@ definePageMeta({
 .home__header {
   position: relative;
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 3.5rem;
 }
 
 .home__controls {
@@ -152,16 +148,20 @@ definePageMeta({
 }
 
 .home__title {
-  font-size: 3rem;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  color: var(--color-text-primary);
-  margin-bottom: 0.5rem;
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  background: var(--gradient-primary-vivid);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.75rem;
 }
 
 .home__subtitle {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   color: var(--color-text-secondary);
+  font-weight: 500;
 }
 
 /* ===== Navigation Grid ===== */
@@ -171,40 +171,71 @@ definePageMeta({
   gap: 1.5rem;
 }
 
-/* ===== Navigation Card ===== */
+/* ===== Navigation Card with Glassmorphism ===== */
 .nav-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
-  padding: 2rem;
-  background: var(--color-card);
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
+  gap: 1.25rem;
+  padding: 2.5rem 2rem;
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
   text-decoration: none;
   color: inherit;
-  transition: all 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shine overlay */
+.nav-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  transform: skewX(-25deg);
+  transition: left 0.6s ease;
 }
 
 .nav-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
 }
 
-/* Icon Container */
+.nav-card:hover::before {
+  left: 150%;
+}
+
+/* Icon Container with Gradient */
 .nav-card__icon {
-  width: 56px;
-  height: 56px;
+  width: 4rem;
+  height: 4rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  transition: all 0.25s ease;
+  border-radius: var(--radius-lg);
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.nav-card:hover .nav-card__icon {
+  transform: scale(1.1);
 }
 
 .nav-card__icon svg {
-  width: 28px;
-  height: 28px;
+  width: 2rem;
+  height: 2rem;
 }
 
 /* Content */
@@ -216,51 +247,55 @@ definePageMeta({
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text-primary);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.375rem;
 }
 
 .nav-card__description {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
-/* ===== Card Variants (Color Themes) ===== */
+/* ===== Card Variants with Gradients ===== */
 
 /* Dashboard - Blue */
 .nav-card--dashboard .nav-card__icon {
-  background: var(--color-info-light);
-  color: var(--color-info);
+  background: var(--gradient-info);
+  box-shadow: var(--shadow-glow-info);
 }
 .nav-card--dashboard:hover {
   border-color: var(--color-info);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-info);
 }
 
 /* Inventory - Green */
 .nav-card--inventory .nav-card__icon {
-  background: var(--color-success-light);
-  color: var(--color-success);
+  background: var(--gradient-success);
+  box-shadow: var(--shadow-glow-success);
 }
 .nav-card--inventory:hover {
   border-color: var(--color-success);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-success);
 }
 
 /* Products - Purple */
 .nav-card--products .nav-card__icon {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
+  background: var(--gradient-primary);
+  box-shadow: var(--shadow-glow-primary);
 }
 .nav-card--products:hover {
   border-color: var(--color-primary);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-primary);
 }
 
 /* Warehouses - Orange */
 .nav-card--warehouses .nav-card__icon {
-  background: var(--color-warning-light);
-  color: var(--color-warning);
+  background: var(--gradient-warning);
+  box-shadow: var(--shadow-glow-warning);
 }
 .nav-card--warehouses:hover {
   border-color: var(--color-warning);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-warning);
 }
 
 /* ===== Responsive: Mobile ===== */
@@ -270,7 +305,11 @@ definePageMeta({
   }
 
   .home__title {
-    font-size: 2rem;
+    font-size: 2.25rem;
+  }
+
+  .home__subtitle {
+    font-size: 1rem;
   }
 
   .home__nav {
@@ -278,7 +317,17 @@ definePageMeta({
   }
 
   .nav-card {
-    padding: 1.5rem;
+    padding: 1.75rem 1.5rem;
+  }
+
+  .nav-card__icon {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .nav-card__icon svg {
+    width: 1.75rem;
+    height: 1.75rem;
   }
 }
 </style>

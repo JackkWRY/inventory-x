@@ -36,13 +36,7 @@ const formatCurrency = (value: number) => {
           <p class="text-secondary">{{ currentDate }}</p>
         </div>
         <div class="page-header__actions">
-          <button
-            class="btn btn-secondary"
-            @click="dashboardStore.fetchDashboardData"
-          >
-            {{ t('common.refresh') }}
-          </button>
-          <NuxtLink to="/" class="btn btn--ghost">
+          <NuxtLink to="/" class="btn btn--back">
             ← {{ t('common.back') }}
           </NuxtLink>
         </div>
@@ -213,20 +207,5 @@ const formatCurrency = (value: number) => {
   text-align: center;
   padding: 3rem;
   color: var(--color-text-secondary);
-}
-
-.btn {
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-  font-weight: 500;
-  transition: all var(--transition-fast);
-}
-
-.btn:hover {
-  background: var(--color-surface-hover);
 }
 </style>

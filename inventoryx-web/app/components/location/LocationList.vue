@@ -55,8 +55,7 @@ const getStatusBadgeClass = (status: LocationStatus) => {
       </div>
       <div class="location-list__actions">
         <button class="btn btn--primary" @click="$emit('create')">
-          <span class="icon">+</span>
-          {{ t("locations.create") }}
+          + {{ t("locations.create") }}
         </button>
       </div>
     </div>
@@ -207,12 +206,16 @@ const getStatusBadgeClass = (status: LocationStatus) => {
 .location-table {
   width: 100%;
   border-collapse: collapse;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 .location-table th {
   padding: 0.875rem 1.5rem;
   text-align: left;
-  background: var(--color-surface);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   font-weight: 600;
   color: var(--color-text-secondary);
   font-size: 0.75rem;
@@ -227,14 +230,23 @@ const getStatusBadgeClass = (status: LocationStatus) => {
   border-bottom: 1px solid var(--color-border);
   color: var(--color-text-primary);
   font-size: 0.875rem;
+  transition: all 0.2s ease;
 }
 
 .location-table tr:last-child td {
   border-bottom: none;
 }
 
+.hover-row {
+  transition: all 0.2s ease;
+}
+
 .hover-row:hover {
   background-color: var(--color-surface-hover);
+}
+
+.hover-row:hover td:first-child {
+  box-shadow: inset 3px 0 0 var(--color-primary);
 }
 
 .location-name {
@@ -276,32 +288,6 @@ const getStatusBadgeClass = (status: LocationStatus) => {
 .badge--success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 .badge--danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 .badge--gray { background: var(--color-surface-hover); color: var(--color-text-secondary); border: 1px solid var(--color-border); }
-
-/* Button Styles */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
-  transition: all 0.15s ease-in-out;
-}
-.btn--primary {
-  background: var(--color-primary);
-  color: white;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-.btn--primary:hover {
-  background: var(--color-primary-dark);
-  transform: translateY(-1px);
-}
-.btn:active {
-  transform: translateY(0);
-}
 
 .action-btn {
   display: inline-flex;
