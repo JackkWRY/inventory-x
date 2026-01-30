@@ -382,155 +382,8 @@ const handleKeydown = (event: KeyboardEvent) => {
 </template>
 
 <style scoped>
-.dialog-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-}
-
-.dialog {
-  background: var(--glass-bg-strong);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
-  max-width: 480px;
-  width: 100%;
-  max-height: 90vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.dialog__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.dialog__title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
-  color: var(--color-text-primary);
-}
-
-.dialog__close {
-  background: none;
-  border: none;
-  font-size: 1.25rem;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  padding: 0.25rem;
-  line-height: 1;
-  border-radius: 4px;
-  transition: background 0.2s;
-}
-
-.dialog__close:hover {
-  background: var(--color-surface-hover);
-}
-
-.dialog__error {
-  margin: 1rem 1.5rem 0;
-  padding: 0.75rem 1rem;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: 4px;
-  color: #dc2626;
-  font-size: 0.875rem;
-}
-
-.dialog__body {
-  padding: 1.5rem;
-  overflow-y: auto;
-}
-
-.dialog__footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  padding: 1rem 1.5rem;
-  border-top: 1px solid var(--color-border);
-  background: transparent; /* Changed from surface to match glass */
-}
-
-.form-group {
-  margin-bottom: 1.25rem;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.form-label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-primary);
-  margin-bottom: 0.375rem;
-}
-
-.required {
-  color: #dc2626;
-}
-
-.form-hint {
-  display: block;
-  margin-top: 0.25rem;
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-}
-
-/* Spinner */
-.spinner {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Transitions */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-enter-active .dialog,
-.fade-leave-active .dialog {
-  transition: transform 0.2s ease;
-}
-
-.fade-enter-from .dialog,
-.fade-leave-to .dialog {
-  transform: scale(0.95);
-}
+/* All base styles now come from global main.css */
+/* Component-specific overrides only */
 
 .relative {
   position: relative;
@@ -571,19 +424,44 @@ const handleKeydown = (event: KeyboardEvent) => {
   cursor: default;
 }
 
-.text-sm {
-  font-size: 0.75rem;
+.text-sm { font-size: 0.75rem; }
+.text-muted { color: var(--color-text-muted); }
+.text-warning { color: var(--color-warning); }
+.font-medium { font-weight: 500; }
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-.text-muted {
-  color: var(--color-text-muted);
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.text-warning {
-  color: var(--color-warning);
+/* Transitions */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
 }
 
-.font-medium {
-  font-weight: 500;
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-active .dialog,
+.fade-leave-active .dialog {
+  transition: transform 0.2s ease;
+}
+
+.fade-enter-from .dialog,
+.fade-leave-to .dialog {
+  transform: scale(0.95);
 }
 </style>

@@ -258,158 +258,26 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.dialog-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-}
+/* All base styles now come from global main.css */
+/* Component-specific overrides only */
 
-.dialog {
-  background: var(--glass-bg-strong);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
-  max-width: 420px;
+.form-textarea {
   width: 100%;
-  max-height: 90vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.dialog__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.dialog__title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
-  color: var(--color-text-primary);
-}
-
-.dialog__close {
-  background: none;
-  border: none;
-  font-size: 1.25rem;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  padding: 0.25rem;
-  line-height: 1;
-  border-radius: 4px;
-  transition: background 0.2s;
-}
-
-.dialog__close:hover {
-  background: var(--color-surface-hover);
-}
-
-.dialog__error {
-  margin: 1rem 1.5rem 0;
-  padding: 0.75rem 1rem;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: 4px;
-  color: #dc2626;
-  font-size: 0.875rem;
-}
-
-.stock-info {
-  margin: 0 1.5rem;
-  padding: 1rem;
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
-  margin-top: 1rem;
+  padding: 0.625rem 0.875rem;
   border: 1px solid var(--color-border);
-}
-
-.stock-info__row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.375rem 0;
-}
-
-.stock-info__row:not(:last-child) {
-  border-bottom: 1px solid var(--color-border);
-}
-
-.stock-info__label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-secondary);
-}
-
-.stock-info__value {
-  font-weight: 500;
-  font-size: 0.875rem;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  background: var(--color-surface);
   color: var(--color-text-primary);
+  resize: vertical;
+  min-height: 60px;
+  transition: all 0.2s;
 }
 
-.stock-info__value--sku {
-  font-family: 'SF Mono', 'Consolas', monospace;
-  color: var(--color-primary);
-}
-
-.stock-info__value--available {
-  color: var(--color-success);
-}
-
-.dialog__body {
-  padding: 1.5rem;
-  overflow-y: auto;
-}
-
-.dialog__footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  padding: 1rem 1.5rem;
-  border-top: 1px solid var(--color-border);
-  background: transparent;
-}
-
-.form-group {
-  margin-bottom: 1.25rem;
-}
-
-.form-label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-primary);
-  margin-bottom: 0.375rem;
-}
-
-.required {
-  color: #dc2626;
-}
-
-.form-hint {
-  display: block;
-  margin-top: 0.25rem;
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-}
-
-.form-error {
-  display: block;
-  margin-top: 0.25rem;
-  font-size: 0.75rem;
-  color: #dc2626;
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--focus-ring-color);
 }
 
 /* Spinner */

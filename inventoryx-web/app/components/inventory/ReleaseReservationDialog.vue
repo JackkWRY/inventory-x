@@ -220,151 +220,20 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.dialog-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-}
+/* All base styles now come from global main.css */
+/* Component-specific overrides only */
 
-.dialog {
-  background: var(--glass-bg-strong);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
-  width: 100%;
-  max-width: 480px;
-  max-height: 90vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.dialog__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.dialog__title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-.dialog__close {
-  background: none;
-  border: none;
-  font-size: 1.25rem;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 4px;
-}
-
-.dialog__close:hover {
-  background: var(--color-surface-hover);
-  color: var(--color-text-primary);
-}
-
-.dialog__error {
-  margin: 1rem 1.5rem 0;
-  padding: 0.75rem 1rem;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: 4px;
-  color: #dc2626;
-  font-size: 0.875rem;
-}
-
+/* Override stock-info for embedded layout */
 .stock-info {
   padding: 1rem 1.5rem;
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
-}
-
-.stock-info__row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.375rem 0;
-}
-
-.stock-info__label {
-  color: var(--color-text-secondary);
-  font-size: 0.875rem;
-}
-
-.stock-info__value {
-  font-weight: 500;
-  color: var(--color-text-primary);
-}
-
-.stock-info__value--sku {
-  font-family: monospace;
-  color: var(--color-primary);
+  margin: 0;
+  border-radius: 0;
 }
 
 .stock-info__value--reserved {
   color: #f59e0b;
-}
-
-.dialog__body {
-  padding: 1.5rem;
-  overflow-y: auto;
-}
-
-.form-group {
-  margin-bottom: 1.25rem;
-}
-
-.form-group:last-child {
-  margin-bottom: 0;
-}
-
-.form-label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-primary);
-  margin-bottom: 0.5rem;
-}
-
-.required {
-  color: #ef4444;
-}
-
-.form-error {
-  display: block;
-  font-size: 0.75rem;
-  color: #ef4444;
-  margin-top: 0.375rem;
-}
-
-.form-hint {
-  display: block;
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-  margin-top: 0.375rem;
-}
-
-.dialog__footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  padding: 1rem 1.5rem;
-  border-top: 1px solid var(--color-border);
-  background: transparent;
 }
 
 /* Spinner */
