@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /**
  * BulkActionDialog Component - Dialog for bulk actions on multiple stocks.
+ * Refactored to use standard styles (no missing utility classes).
  */
 
 import type { Stock } from "~/types/inventory";
@@ -92,22 +93,22 @@ watch(
     <!-- Content Body -->
     <template #body>
       <!-- Selected Items Summary -->
-      <div class="selected-summary">
-        <span class="selected-summary__count">
+      <div style="background: var(--color-surface); padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--color-border);">
+        <span style="font-weight: 600; color: var(--color-primary);">
           {{ stocks.length }} {{ t("bulk.itemsSelected") }}
         </span>
       </div>
 
       <!-- Selected Items List -->
-      <div class="selected-list">
+      <div style="max-height: 150px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: 8px; margin-bottom: 1.5rem; background: var(--color-surface);">
         <div
           v-for="stock in stocks"
           :key="stock.id"
-          class="selected-item"
+          style="display: flex; gap: 1rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--color-border); font-size: 0.875rem;"
         >
-          <span class="selected-item__sku">{{ stock.sku }}</span>
-          <span class="selected-item__location">{{ stock.locationId }}</span>
-          <span class="selected-item__qty">
+          <span style="font-family: monospace; font-weight: 500; color: var(--color-primary); min-width: 120px;">{{ stock.sku }}</span>
+          <span style="color: var(--color-text-secondary); flex: 1;">{{ stock.locationId }}</span>
+          <span style="color: var(--color-text-secondary);">
             {{ t("inventory.availableQuantity") }}: {{ stock.availableQuantity }}
           </span>
         </div>
@@ -155,79 +156,11 @@ watch(
         :disabled="!isValid || loading"
         @click="handleConfirm"
       >
-        <span v-if="loading" class="spinner"></span>
+        <span v-if="loading" class="spinner spinner--sm spinner--light"></span>
         {{ actionButtonText }}
       </button>
     </template>
   </BaseModal>
 </template>
 
-<style scoped>
-/* Selected Summary */
-.selected-summary {
-  background: var(--color-surface);
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  border: 1px solid var(--color-border);
-}
-
-.selected-summary__count {
-  font-weight: 600;
-  color: var(--color-primary);
-}
-
-/* Selected Items List */
-.selected-list {
-  max-height: 150px;
-  overflow-y: auto;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  background: var(--color-surface);
-}
-
-.selected-item {
-  display: flex;
-  gap: 1rem;
-  padding: 0.5rem 1rem;
-  border-bottom: 1px solid var(--color-border);
-  font-size: 0.875rem;
-}
-
-.selected-item:last-child {
-  border-bottom: none;
-}
-
-.selected-item__sku {
-  font-family: monospace;
-  font-weight: 500;
-  color: var(--color-primary);
-  min-width: 120px;
-}
-
-.selected-item__location {
-  color: var(--color-text-secondary);
-  flex: 1;
-}
-
-.selected-item__qty {
-  color: var(--color-text-secondary);
-}
-
-.spinner {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid currentColor;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin-right: 0.5rem;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-</style>
-
+<!-- Scoped CSS removed - using inline styles for component-specific layout to avoid global pollution -->

@@ -1,15 +1,13 @@
 <script setup lang="ts">
+/**
+ * ConfirmReservationDialog Component - Modal for confirming stock reservation (completing sale).
+ * Refactored to use global styles (alert, spinner, stock-info).
+ */
 import type { Stock, ConfirmReservationCommand } from '~/types/inventory'
 import BaseModal from '~/components/common/BaseModal.vue'
 
-/**
- * ConfirmReservationDialog Component - Modal for confirming stock reservation (completing sale).
- */
-
-// i18n
 const { t } = useI18n()
 
-// Props
 interface Props {
   open: boolean
   stock: Stock | null
@@ -22,19 +20,16 @@ const props = withDefaults(defineProps<Props>(), {
   error: null
 })
 
-// Emits
 const emit = defineEmits<{
   submit: [command: ConfirmReservationCommand]
   close: []
 }>()
 
-// Form State
 const form = reactive({
   quantity: '',
   orderId: ''
 })
 
-// Computed
 const reservedQuantity = computed(() => {
   if (!props.stock) return 0
   return parseFloat(props.stock.reservedQuantity || '0')
@@ -72,7 +67,6 @@ const handleSubmit = () => {
   emit('submit', command)
 }
 
-// Reset form when dialog opens
 watch(() => props.open, (isOpen) => {
   if (isOpen) {
     form.quantity = ''
@@ -95,7 +89,7 @@ const formatQuantity = (value: string): string => {
   >
     <!-- Warning -->
     <template #error>
-      <div class="dialog__warning">
+      <div class="alert alert-warning mb-4">
         {{ t('inventory.confirmWarning') }}
       </div>
       <div v-if="error" class="dialog__error">{{ error }}</div>
@@ -114,7 +108,8 @@ const formatQuantity = (value: string): string => {
         </div>
         <div class="stock-info__row">
           <span class="stock-info__label">{{ t('inventory.reservedQuantity') }}</span>
-          <span class="stock-info__value stock-info__value--reserved">
+          <!-- Use inline style for specific color or add global utility if frequently used -->
+          <span class="stock-info__value" style="color: #f59e0b;">
             {{ formatQuantity(stock.reservedQuantity) }} {{ stock.unitOfMeasure }}
           </span>
         </div>
@@ -127,7 +122,7 @@ const formatQuantity = (value: string): string => {
         <!-- Quantity -->
         <div class="form-group">
           <label for="confirm-quantity" class="form-label">
-            {{ t('inventory.quantity') }} <span class="required">*</span>
+            {{ t('inventory.quantity') }} <span class="text-danger">*</span>
           </label>
           <input
             id="confirm-quantity"
@@ -148,7 +143,7 @@ const formatQuantity = (value: string): string => {
         <!-- Order ID -->
         <div class="form-group">
           <label for="confirm-orderId" class="form-label">
-            {{ t('inventory.orderId') }} <span class="required">*</span>
+            {{ t('inventory.orderId') }} <span class="text-danger">*</span>
           </label>
           <input
             id="confirm-orderId"
@@ -180,46 +175,11 @@ const formatQuantity = (value: string): string => {
         :disabled="loading || !isValid"
         @click="handleSubmit"
       >
-        <span v-if="loading" class="spinner"></span>
+        <span v-if="loading" class="spinner spinner--sm spinner--light"></span>
         {{ loading ? t('common.loading') : t('inventory.confirmReservation') }}
       </button>
     </template>
   </BaseModal>
 </template>
 
-<style scoped>
-/* Component-specific styles only */
-.dialog__warning {
-  padding: 0.75rem 1.5rem;
-  background: rgba(251, 191, 36, 0.1);
-  border: 1px solid rgba(251, 191, 36, 0.2);
-  color: #d97706;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.stock-info {
-  padding: 1rem 1.5rem;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  margin: 0;
-  border-radius: 0;
-}
-
-.stock-info__value--reserved {
-  color: #f59e0b;
-}
-
-.spinner {
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid currentColor;
-  border-right-color: transparent;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-</style>
+<!-- Scoped CSS removed - uses global alert, spinner, and stock-info classes from main.css -->
