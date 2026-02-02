@@ -9,10 +9,9 @@ import BaseModal from '~/components/common/BaseModal.vue'
  * ReceiveStockDialog Component
  *
  * Modal dialog for receiving stock into warehouse.
- * Includes form validation and submission handling.
+ * Uses BaseModal for consistent dialog behavior.
  */
 
-// i18n
 const { t } = useI18n()
 
 // Props
@@ -151,7 +150,6 @@ const handleClose = () => {
 // Initial Data Fetch
 onMounted(async () => {
     await locationStore.fetchActiveLocations();
-    // Click outside to close search results
     document.addEventListener('click', handleClickOutside);
 });
 
@@ -195,7 +193,7 @@ watch(
   >
     <!-- Error Message -->
     <template #error>
-      <div v-if="error" class="dialog__error">{{ error }}</div>
+      <CommonErrorBanner v-if="error" :message="error" />
     </template>
 
     <!-- Form Body -->
@@ -204,9 +202,9 @@ watch(
         <!-- SKU (Searchable) -->
         <div class="form-group search-container">
           <label for="sku" class="form-label">
-            {{ t('inventory.sku') }} <span class="required">*</span>
+            {{ t('inventory.sku') }} <span class="text-danger">*</span>
           </label>
-          <div class="relative">
+          <div class="search-wrapper">
             <input
               id="sku"
               type="text"
@@ -220,17 +218,19 @@ watch(
               autocomplete="off"
             />
             <!-- Search Results Dropdown -->
-            <div v-if="productSearch.showResults && (productSearch.results.length > 0 || productSearch.loading)" class="search-results">
-              <div v-if="productSearch.loading" class="search-item loading">Loading...</div>
+            <div v-if="productSearch.showResults && (productSearch.results.length > 0 || productSearch.loading)" class="search-dropdown">
+              <div v-if="productSearch.loading" class="search-dropdown__item search-dropdown__item--loading">
+                <span class="spinner spinner--sm"></span> Loading...
+              </div>
               <div 
                 v-else 
                 v-for="product in productSearch.results" 
                 :key="product.id" 
-                class="search-item"
+                class="search-dropdown__item"
                 @click="selectProduct(product)"
               >
                 <div class="font-medium">{{ product.sku }}</div>
-                <div class="text-sm text-muted">{{ product.name }}</div>
+                <div class="text-xs text-muted">{{ product.name }}</div>
               </div>
             </div>
           </div>
@@ -242,7 +242,7 @@ watch(
         <!-- Location (Select) -->
         <div class="form-group">
           <label for="location" class="form-label">
-            {{ t('inventory.location') }} <span class="required">*</span>
+            {{ t('inventory.location') }} <span class="text-danger">*</span>
           </label>
           <select
             id="location"
@@ -256,7 +256,7 @@ watch(
               {{ loc.name }} ({{ loc.type }})
             </option>
           </select>
-          <div v-if="locationStore.activeLocations.length === 0" class="text-sm text-warning mt-1">
+          <div v-if="locationStore.activeLocations.length === 0" class="form-hint text-warning">
             No active locations found. Please create one first.
           </div>
         </div>
@@ -265,7 +265,7 @@ watch(
         <div class="form-row">
           <div class="form-group">
             <label for="quantity" class="form-label">
-              {{ t('inventory.quantity') }} <span class="required">*</span>
+              {{ t('inventory.quantity') }} <span class="text-danger">*</span>
             </label>
             <input
               id="quantity"
@@ -281,7 +281,7 @@ watch(
           </div>
           <div class="form-group">
             <label for="unit" class="form-label">
-              {{ t('inventory.unit') }} <span class="required">*</span>
+              {{ t('inventory.unit') }} <span class="text-danger">*</span>
             </label>
             <select
               id="unit"
@@ -317,7 +317,7 @@ watch(
         <!-- Performed By -->
         <div class="form-group">
           <label for="performedBy" class="form-label">
-            {{ t('inventory.performedBy') }} <span class="required">*</span>
+            {{ t('inventory.performedBy') }} <span class="text-danger">*</span>
           </label>
           <input
             id="performedBy"
@@ -348,7 +348,7 @@ watch(
         :disabled="!isValid || loading"
         @click="handleSubmit"
       >
-        <span v-if="loading" class="spinner"></span>
+        <span v-if="loading" class="spinner spinner--sm"></span>
         {{ loading ? t('inventory.saving') : t('inventory.receiveStock') }}
       </button>
     </template>
@@ -356,19 +356,19 @@ watch(
 </template>
 
 <style scoped>
-/* Component-specific styles only */
-.relative {
+/* Search dropdown - component-specific only */
+.search-wrapper {
   position: relative;
 }
 
-.search-results {
+.search-dropdown {
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   max-height: 200px;
   overflow-y: auto;
@@ -376,42 +376,26 @@ watch(
   margin-top: 4px;
 }
 
-.search-item {
-  padding: 0.5rem 0.75rem;
+.search-dropdown__item {
+  padding: 0.625rem 0.75rem;
   cursor: pointer;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border-light);
+  transition: background 0.15s ease;
 }
 
-.search-item:last-child {
+.search-dropdown__item:last-child {
   border-bottom: none;
 }
 
-.search-item:hover {
-  background-color: var(--color-surface-hover);
+.search-dropdown__item:hover {
+  background: var(--color-surface-hover);
 }
 
-.search-item.loading {
+.search-dropdown__item--loading {
   color: var(--color-text-secondary);
-  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   cursor: default;
-}
-
-.text-sm { font-size: 0.75rem; }
-.text-muted { color: var(--color-text-muted); }
-.text-warning { color: var(--color-warning); }
-.font-medium { font-weight: 500; }
-
-.spinner {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
 }
 </style>
