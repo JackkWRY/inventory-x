@@ -10,7 +10,7 @@
     </div>
 
     <!-- Error Alert -->
-    <div v-if="error" class="login-alert">
+    <div v-if="error" class="alert alert-danger login-alert">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="16"
@@ -33,9 +33,9 @@
     <form @submit.prevent="handleSubmit" class="login-form">
       <div class="form-group">
         <label for="username" class="form-label">Username</label>
-        <div class="input-wrapper">
+        <div class="input-with-icon">
           <svg
-            class="input-icon"
+            class="input-with-icon__icon"
             xmlns="http://www.w3.org/2000/svg"
             width="18"
             height="18"
@@ -53,7 +53,7 @@
             id="username"
             v-model="form.username"
             type="text"
-            class="form-input"
+            class="form-input input-with-icon__input"
             placeholder="Enter your username"
             required
             autofocus
@@ -63,9 +63,9 @@
 
       <div class="form-group">
         <label for="password" class="form-label">Password</label>
-        <div class="input-wrapper">
+        <div class="input-with-icon">
           <svg
-            class="input-icon"
+            class="input-with-icon__icon"
             xmlns="http://www.w3.org/2000/svg"
             width="18"
             height="18"
@@ -83,15 +83,15 @@
             id="password"
             v-model="form.password"
             type="password"
-            class="form-input"
+            class="form-input input-with-icon__input"
             placeholder="Enter your password"
             required
           />
         </div>
       </div>
 
-      <button type="submit" class="btn-submit" :disabled="loading">
-        <span v-if="loading" class="spinner"></span>
+      <button type="submit" class="btn btn--primary btn--lg btn--full" :disabled="loading">
+        <span v-if="loading" class="spinner spinner--sm spinner--light"></span>
         {{ loading ? "Signing in..." : "Sign In" }}
       </button>
     </form>
@@ -99,6 +99,12 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * LoginForm Component
+ * 
+ * Authentication form with username and password fields.
+ * Uses global form and button classes for consistent styling.
+ */
 import { reactive } from "vue";
 import type { LoginCommand } from "~/types/auth";
 
@@ -125,7 +131,7 @@ const handleSubmit = () => {
 </script>
 
 <style scoped>
-/* Login Card with Glassmorphism */
+/* Login Card - unique glassmorphism styling */
 .login-card {
   background: var(--glass-bg-strong);
   backdrop-filter: var(--glass-blur);
@@ -198,48 +204,24 @@ const handleSubmit = () => {
   margin: 0;
 }
 
-/* Alert */
+/* Alert override for login */
 .login-alert {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background: var(--color-danger-light);
-  color: var(--color-danger);
-  border-radius: var(--radius-md);
-  font-size: 0.875rem;
   margin-bottom: 1.5rem;
-  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
-.login-alert svg {
-  flex-shrink: 0;
-}
-
-/* Form */
+/* Form layout */
 .login-form {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  margin-bottom: 0.5rem;
-}
-
-.input-wrapper {
+/* Input with icon pattern */
+.input-with-icon {
   position: relative;
 }
 
-.input-icon {
+.input-with-icon__icon {
   position: absolute;
   left: 0.875rem;
   top: 50%;
@@ -249,112 +231,12 @@ const handleSubmit = () => {
   transition: color 0.2s ease;
 }
 
-.input-wrapper:focus-within .input-icon {
+.input-with-icon:focus-within .input-with-icon__icon {
   color: var(--color-primary);
 }
 
-.form-input {
-  width: 100%;
-  padding: 0.875rem 1rem 0.875rem 2.75rem;
-  font-size: 0.9375rem;
-  color: var(--color-text-primary);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  transition: all 0.2s ease;
-}
-
-.form-input::placeholder {
-  color: var(--color-text-muted);
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: var(--focus-ring), var(--shadow-glow-primary);
-}
-
-.form-input:hover:not(:focus) {
-  border-color: var(--color-text-muted);
-}
-
-/* Submit Button with Gradient */
-.btn-submit {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 0.9375rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: white;
-  background: var(--gradient-primary-vivid);
-  border: none;
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 0.5rem;
-  box-shadow: var(--shadow-glow-primary);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Shimmer effect */
-.btn-submit::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: left 0.5s ease;
-}
-
-.btn-submit:hover:not(:disabled)::before {
-  left: 100%;
-}
-
-.btn-submit:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md), var(--shadow-glow-primary);
-}
-
-.btn-submit:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring), var(--shadow-glow-primary);
-}
-
-.btn-submit:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.btn-submit:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Spinner */
-.spinner {
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+.input-with-icon__input {
+  padding-left: 2.75rem;
 }
 
 /* Responsive */
@@ -365,10 +247,6 @@ const handleSubmit = () => {
 
   .logo-text {
     font-size: 1.5rem;
-  }
-
-  .form-input {
-    padding: 0.75rem 0.875rem 0.75rem 2.5rem;
   }
 }
 </style>

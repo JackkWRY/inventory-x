@@ -531,6 +531,17 @@ a:hover {
   font-size: var(--font-size-xs);
 }
 
+/* Large size variant */
+.btn--lg {
+  padding: 0.9375rem 1.5rem;
+  font-size: 1rem;
+}
+
+/* Full width variant */
+.btn--full {
+  width: 100%;
+}
+
 /* Clear variant */
 .btn--clear {
   background: transparent;
@@ -924,11 +935,36 @@ a:hover {
   animation: spin 0.6s linear infinite;
 }
 
+.spinner--sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 2px;
+}
+
+.spinner--md {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-width: 2px;
+}
+
+.spinner--lg {
+  width: 2rem;
+  height: 2rem;
+  border-width: 3px;
+}
+
+/* Light variant for dark backgrounds */
+.spinner--light {
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
+
 
 /* Transitions */
 .fade-enter-active,
