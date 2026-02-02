@@ -1,18 +1,15 @@
 <script setup lang="ts">
+/**
+ * WithdrawStockDialog Component
+ * 
+ * Modal dialog for internal stock withdrawal.
+ * Uses BaseModal and global form/button classes.
+ */
 import type { Stock, WithdrawStockCommand } from '~/types/inventory'
 import BaseModal from '~/components/common/BaseModal.vue'
 
-/**
- * WithdrawStockDialog Component
- *
- * Modal dialog for internal stock withdrawal.
- * Used for department requisitions, material consumption.
- */
-
-// i18n
 const { t } = useI18n()
 
-// Props
 interface Props {
   open: boolean
   stock: Stock | null
@@ -25,13 +22,11 @@ const props = withDefaults(defineProps<Props>(), {
   error: null
 })
 
-// Emits
 const emit = defineEmits<{
   (e: 'submit', command: WithdrawStockCommand): void
   (e: 'close'): void
 }>()
 
-// Form state
 const form = reactive({
   quantity: '',
   department: '',
@@ -39,7 +34,6 @@ const form = reactive({
   performedBy: ''
 })
 
-// Computed
 const availableQuantity = computed(() => {
   if (!props.stock?.availableQuantity) return 0
   return parseFloat(props.stock.availableQuantity)
@@ -86,7 +80,6 @@ function handleSubmit() {
   emit('submit', command)
 }
 
-// Reset form when dialog opens
 watch(() => props.open, (isOpen) => {
   if (isOpen) {
     form.quantity = ''
@@ -135,7 +128,7 @@ watch(() => props.open, (isOpen) => {
         <!-- Quantity -->
         <div class="form-group">
           <label for="withdraw-quantity" class="form-label">
-            {{ t('inventory.quantity') }} <span class="required">*</span>
+            {{ t('inventory.quantity') }} <span class="text-danger">*</span>
           </label>
           <input
             id="withdraw-quantity"
@@ -156,7 +149,7 @@ watch(() => props.open, (isOpen) => {
         <!-- Department -->
         <div class="form-group">
           <label for="withdraw-department" class="form-label">
-            {{ t('inventory.department') }} <span class="required">*</span>
+            {{ t('inventory.department') }} <span class="text-danger">*</span>
           </label>
           <input
             id="withdraw-department"
@@ -172,7 +165,7 @@ watch(() => props.open, (isOpen) => {
         <!-- Reason -->
         <div class="form-group">
           <label for="withdraw-reason" class="form-label">
-            {{ t('inventory.reason') }} <span class="required">*</span>
+            {{ t('inventory.reason') }} <span class="text-danger">*</span>
           </label>
           <textarea
             id="withdraw-reason"
@@ -188,7 +181,7 @@ watch(() => props.open, (isOpen) => {
         <!-- Performed By -->
         <div class="form-group">
           <label for="withdraw-performedBy" class="form-label">
-            {{ t('inventory.performedBy') }} <span class="required">*</span>
+            {{ t('inventory.performedBy') }} <span class="text-danger">*</span>
           </label>
           <input
             id="withdraw-performedBy"
@@ -219,45 +212,11 @@ watch(() => props.open, (isOpen) => {
         :disabled="!isValid || loading"
         @click="handleSubmit"
       >
-        <span v-if="loading" class="spinner"></span>
+        <span v-if="loading" class="spinner spinner--sm spinner--light"></span>
         {{ loading ? t('common.loading') : t('inventory.withdrawStock') }}
       </button>
     </template>
   </BaseModal>
 </template>
 
-<style scoped>
-/* Component-specific styles only */
-.form-textarea {
-  width: 100%;
-  padding: 0.625rem 0.875rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-  resize: vertical;
-  min-height: 60px;
-  transition: all 0.2s;
-}
-
-.form-textarea:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--focus-ring-color);
-}
-
-.spinner {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-</style>
+<!-- No scoped styles - uses global form, button, spinner, and stock-info classes from main.css -->
