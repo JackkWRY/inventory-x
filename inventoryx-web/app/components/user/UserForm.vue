@@ -1,9 +1,15 @@
 <script setup lang="ts">
+/**
+ * UserForm Component
+ * 
+ * Form for creating and editing users.
+ * Uses global form and button classes for consistent styling.
+ */
 import type { User, CreateUserRequest, UpdateUserRequest } from "~/types/user";
 
 // Props
 interface Props {
-  user?: User | null; // If provided, edit mode
+  user?: User | null;
   loading?: boolean;
 }
 
@@ -102,9 +108,9 @@ const handleSubmit = () => {
   <form class="user-form" @submit.prevent="handleSubmit">
     <div class="form-row" v-if="!isEditMode">
       <div class="form-group">
-        <label class="form-label"
-          >{{ t("users.username") }} <span class="required">*</span></label
-        >
+        <label class="form-label">
+          {{ t("users.username") }} <span class="text-danger">*</span>
+        </label>
         <input
           v-model="form.username"
           class="form-input"
@@ -114,9 +120,9 @@ const handleSubmit = () => {
         />
       </div>
       <div class="form-group">
-        <label class="form-label"
-          >{{ t("users.password") }} <span class="required">*</span></label
-        >
+        <label class="form-label">
+          {{ t("users.password") }} <span class="text-danger">*</span>
+        </label>
         <input
           type="password"
           v-model="form.password"
@@ -135,9 +141,9 @@ const handleSubmit = () => {
 
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label"
-          >{{ t("users.firstName") }} <span class="required">*</span></label
-        >
+        <label class="form-label">
+          {{ t("users.firstName") }} <span class="text-danger">*</span>
+        </label>
         <input
           v-model="form.firstName"
           class="form-input"
@@ -146,9 +152,9 @@ const handleSubmit = () => {
         />
       </div>
       <div class="form-group">
-        <label class="form-label"
-          >{{ t("users.lastName") }} <span class="required">*</span></label
-        >
+        <label class="form-label">
+          {{ t("users.lastName") }} <span class="text-danger">*</span>
+        </label>
         <input
           v-model="form.lastName"
           class="form-input"
@@ -159,9 +165,9 @@ const handleSubmit = () => {
     </div>
 
     <div class="form-group">
-      <label class="form-label"
-        >{{ t("users.email") }} <span class="required">*</span></label
-      >
+      <label class="form-label">
+        {{ t("users.email") }} <span class="text-danger">*</span>
+      </label>
       <input
         type="email"
         v-model="form.email"
@@ -172,9 +178,9 @@ const handleSubmit = () => {
     </div>
 
     <div class="form-group">
-      <label class="form-label"
-        >{{ t("users.role") }} <span class="required">*</span></label
-      >
+      <label class="form-label">
+        {{ t("users.role") }} <span class="text-danger">*</span>
+      </label>
       <select v-model="form.roleName" class="form-input" :disabled="loading">
         <option
           v-for="role in roleOptions"
@@ -201,7 +207,7 @@ const handleSubmit = () => {
         class="btn btn--primary"
         :disabled="!isValid || loading"
       >
-        <span v-if="loading" class="spinner"></span>
+        <span v-if="loading" class="spinner spinner--sm spinner--light"></span>
         {{
           loading
             ? t("common.saving")
@@ -214,91 +220,4 @@ const handleSubmit = () => {
   </form>
 </template>
 
-<style scoped>
-.form-group {
-  margin-bottom: 1rem;
-}
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-.form-label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-bottom: 0.375rem;
-  color: var(--color-text-primary);
-}
-.required {
-  color: #dc2626;
-}
-.form-input {
-  width: 100%;
-  padding: 0.625rem 0.875rem;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  background: var(--color-surface);
-  color: var(--color-text-primary);
-  font-size: 0.9375rem;
-  transition: all 0.2s;
-}
-.form-input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-  outline: none;
-}
-.form-input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  background-color: var(--color-bg);
-}
-.form-hint {
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-  display: block;
-  margin-top: 0.25rem;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--glass-border);
-}
-
-.btn {
-  padding: 0.625rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  border: none;
-  font-weight: 500;
-  font-size: 0.875rem;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.spinner {
-  display: inline-block;
-  width: 0.875rem;
-  height: 0.875rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin-right: 0.5rem;
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-</style>
+<!-- No scoped styles needed - uses global form, button, and spinner classes from main.css -->
