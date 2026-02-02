@@ -1192,9 +1192,15 @@ a:hover {
   flex-direction: column;
 }
 
-.dialog--sm { max-width: 380px; }
-.dialog--md { max-width: 480px; }
-.dialog--lg { max-width: 600px; }
+.dialog--sm {
+  max-width: 380px;
+}
+.dialog--md {
+  max-width: 480px;
+}
+.dialog--lg {
+  max-width: 600px;
+}
 
 .dialog__header {
   display: flex;
@@ -1473,4 +1479,204 @@ a:hover {
     width: 100%;
     justify-content: center;
   }
+}
+
+/* ===== Toggle Switch Component ===== */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-switch__slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-border);
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 24px;
+}
+
+.toggle-switch__slider::before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+}
+
+.toggle-switch input:checked + .toggle-switch__slider {
+  background: var(--gradient-primary-vivid);
+}
+
+.toggle-switch input:checked + .toggle-switch__slider::before {
+  transform: translateX(20px);
+}
+
+/* ===== Avatar Component ===== */
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-primary-vivid);
+  color: white;
+  font-weight: 600;
+  border-radius: 50%;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-glow-primary);
+  transition: transform 0.2s ease;
+}
+
+.avatar--sm {
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.75rem;
+}
+
+.avatar--md {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 0.9375rem;
+}
+
+.avatar--lg {
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.125rem;
+  border-radius: var(--radius-lg);
+}
+
+/* ===== Dropdown Menu Component ===== */
+.dropdown {
+  position: relative;
+}
+
+.dropdown__trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown__trigger:hover {
+  background: var(--color-primary-light);
+}
+
+.dropdown__menu {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  right: 0;
+  min-width: 280px;
+  background: var(--glass-bg-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.dropdown__header {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1.25rem;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.08) 0%,
+    rgba(168, 85, 247, 0.05) 100%
+  );
+}
+
+.dropdown__divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 0;
+}
+
+.dropdown__section {
+  padding: 0.5rem;
+}
+
+.dropdown__item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown__item:hover {
+  background: var(--color-surface-hover);
+}
+
+.dropdown__item--setting {
+  justify-content: space-between;
+}
+
+.dropdown__footer {
+  padding: 0.5rem;
+}
+
+/* Dropdown Animation */
+.dropdown-enter-active {
+  animation: dropdown-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dropdown-leave-active {
+  animation: dropdown-out 0.15s ease-in;
+}
+
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dropdown-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.98);
+  }
+}
+
+/* ===== Chevron Icon ===== */
+.chevron {
+  color: var(--color-text-secondary);
+  transition: transform 0.2s ease;
+}
+
+.chevron--open {
+  transform: rotate(180deg);
 }
