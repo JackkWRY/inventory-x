@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { onClickOutside, useWindowScroll, useEventListener } from '@vueuse/core';
+
 /**
  * ActionDropdown Component
  *
@@ -17,6 +19,7 @@
 // State
 const isOpen = ref(false);
 const triggerRef = ref<HTMLElement | null>(null);
+const menuRef = ref<HTMLElement | null>(null); // New ref for the menu
 const menuStyle = ref({ top: '0px', left: '0px' });
 
 // Toggle dropdown
@@ -57,44 +60,28 @@ const close = () => {
   isOpen.value = false;
 };
 
-// Close on click outside
-const handleClickOutside = (event: MouseEvent) => {
-  const target = event.target as Node;
-  if (triggerRef.value && !triggerRef.value.contains(target)) {
-    // Check if click is inside menu (teleported)
-    const menu = document.querySelector('.action-dropdown__menu--teleported');
-    if (menu && menu.contains(target)) return;
-    close();
+// Handle simple close
+onClickOutside(menuRef, (event) => {
+  // If the click is on the trigger, let the toggle handler take care of it
+  if (triggerRef.value && triggerRef.value.contains(event.target as Node)) {
+      return;
   }
-};
-
-// Handle escape key
-const handleKeydown = (event: KeyboardEvent) => {
-  if (event.key === "Escape") {
-    close();
-  }
-};
-
-// Handle scroll/resize - close dropdown
-const handleScrollResize = () => {
-  if (isOpen.value) {
-    close();
-  }
-};
-
-// Setup event listeners
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-  document.addEventListener("keydown", handleKeydown);
-  window.addEventListener("scroll", handleScrollResize, true);
-  window.addEventListener("resize", handleScrollResize);
+  close();
 });
 
-onUnmounted(() => {
-  document.removeEventListener("click", handleClickOutside);
-  document.removeEventListener("keydown", handleKeydown);
-  window.removeEventListener("scroll", handleScrollResize, true);
-  window.removeEventListener("resize", handleScrollResize);
+// Handle escape key
+useEventListener(document, 'keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Escape') close();
+});
+
+// Handle scroll/resize - close dropdown
+const { x, y } = useWindowScroll();
+watch([x, y], () => {
+    if(isOpen.value) close();
+});
+
+useEventListener(window, 'resize', () => {
+    if(isOpen.value) close();
 });
 
 // Expose close for child items
@@ -129,6 +116,7 @@ provide("closeDropdown", close);
       <Transition name="dropdown">
         <div
           v-if="isOpen"
+          ref="menuRef"
           class="action-dropdown__menu action-dropdown__menu--teleported"
           :style="menuStyle"
           @click.stop

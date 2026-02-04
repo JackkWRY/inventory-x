@@ -77,13 +77,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-const formatQuantity = (value: string): string => {
-  const num = parseFloat(value || "0");
-  return num.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-};
+import { formatQuantity } from "~/utils/format";
 </script>
 
 <style scoped>

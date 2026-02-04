@@ -77,13 +77,7 @@ const filteredStocks = computed(() => {
 
 const hasActiveFilters = computed(() => searchQuery.value || stockStatus.value !== "all");
 
-const formatQuantity = (value: string): string => {
-  const num = parseFloat(value || "0");
-  return num.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-};
+import { formatQuantity } from "~/utils/format";
 
 const clearFilters = () => {
   searchQuery.value = "";
@@ -379,11 +373,11 @@ defineExpose({
 }
 
 .quantity--available {
-  color: #0d9488;
+  color: var(--color-success);
 }
 
 .quantity--reserved {
-  color: #9333ea;
+  color: var(--color-warning);
 }
 
 /* Link styling */

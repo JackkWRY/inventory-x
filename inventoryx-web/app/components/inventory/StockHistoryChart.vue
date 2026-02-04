@@ -75,6 +75,14 @@ const filteredMovements = computed(() => {
     .sort((a, b) => new Date(a.performedAt).getTime() - new Date(b.performedAt).getTime())
 })
 
+// Use useTheme composable or simple robust color mapping
+const chartColors = {
+  primary: 'rgb(14, 165, 233)', // Sky 500
+  primaryBg: 'rgba(14, 165, 233, 0.1)',
+  grid: 'rgba(255, 255, 255, 0.1)',
+  text: '#9ca3af'
+}
+
 // Computed: Build chart data from movements
 const chartData = computed(() => {
   const movements = filteredMovements.value
@@ -86,8 +94,8 @@ const chartData = computed(() => {
         {
           label: t('chart.stockLevel'),
           data: [props.currentQuantity],
-          borderColor: '#00c8ff',
-          backgroundColor: 'rgba(0, 200, 255, 0.1)',
+          borderColor: chartColors.primary,
+          backgroundColor: chartColors.primaryBg,
           fill: true,
           tension: 0.3,
           pointRadius: 4,
@@ -146,8 +154,8 @@ const chartData = computed(() => {
       {
         label: t('chart.stockLevel'),
         data: dataPoints.map((d) => d.quantity),
-        borderColor: '#00c8ff',
-        backgroundColor: 'rgba(0, 200, 255, 0.1)',
+        borderColor: chartColors.primary,
+        backgroundColor: chartColors.primaryBg,
         fill: true,
         tension: 0.3,
         pointRadius: 4,
@@ -157,8 +165,8 @@ const chartData = computed(() => {
   }
 })
 
-// Chart options (using any to avoid complex Chart.js types)
-const chartOptions = {
+// Chart options
+const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -176,23 +184,23 @@ const chartOptions = {
   scales: {
     x: {
       grid: {
-        color: 'rgba(255, 255, 255, 0.1)',
+        color: chartColors.grid,
       },
       ticks: {
-        color: '#9ca3af',
+        color: chartColors.text,
       },
     },
     y: {
       beginAtZero: true,
       grid: {
-        color: 'rgba(255, 255, 255, 0.1)',
+        color: chartColors.grid,
       },
       ticks: {
-        color: '#9ca3af',
+        color: chartColors.text,
       },
     },
   },
-}
+}))
 
 // Has enough data for chart
 const hasData = computed(() => props.movements.length > 0 || props.currentQuantity > 0)
