@@ -1,9 +1,8 @@
 import { defineStore } from "pinia";
 import type { Location, CreateLocationCommand, UpdateLocationCommand } from "~/types/location";
+import { useLocationApi } from "~/composables/api/useLocationApi";
 
 export const useLocationStore = defineStore("location", () => {
-  const { $api } = useNuxtApp();
-  
   const locations = ref<Location[]>([]);
   const activeLocations = ref<Location[]>([]);
   const loading = ref(false);
@@ -23,26 +22,22 @@ export const useLocationStore = defineStore("location", () => {
     loading.value = true;
     error.value = null;
     try {
-      const response = await $api.get<{
-        content: Location[];
-        totalPages: number;
-        totalElements: number;
-        first: boolean;
-        last: boolean;
-        number: number;
-        size: number;
-      }>("/locations", {
-        params: { page, size, sort: "name,asc", search },
+      const api = useLocationApi();
+      const response = await api.getLocations({ 
+        page, 
+        size, 
+        search,
+        sort: "name,asc" 
       });
       
-      locations.value = response.data.content;
+      locations.value = response.content;
       pagination.value = {
-        currentPage: response.data.number,
-        pageSize: response.data.size,
-        totalElements: response.data.totalElements,
-        totalPages: response.data.totalPages,
-        isFirst: response.data.first,
-        isLast: response.data.last,
+        currentPage: response.number,
+        pageSize: response.size,
+        totalElements: response.totalElements,
+        totalPages: response.totalPages,
+        isFirst: response.first,
+        isLast: response.last,
       };
     } catch (err: any) {
       error.value = err.message || "Failed to fetch locations";
@@ -54,8 +49,8 @@ export const useLocationStore = defineStore("location", () => {
   async function fetchActiveLocations() {
     loading.value = true;
     try {
-      const response = await $api.get<Location[]>("/locations/active");
-      activeLocations.value = response.data;
+      const api = useLocationApi();
+      activeLocations.value = await api.getActiveLocations();
     } catch (err: any) {
       console.error("Failed to fetch active locations", err);
     } finally {
@@ -67,7 +62,8 @@ export const useLocationStore = defineStore("location", () => {
     loading.value = true;
     error.value = null;
     try {
-      await $api.post("/locations", location);
+      const api = useLocationApi();
+      await api.createLocation(location);
       await fetchLocations(pagination.value.currentPage, pagination.value.pageSize);
     } catch (err: any) {
       error.value = err.message || "Failed to create location";
@@ -81,7 +77,8 @@ export const useLocationStore = defineStore("location", () => {
     loading.value = true;
     error.value = null;
     try {
-      await $api.put(`/locations/${id}`, location);
+      const api = useLocationApi();
+      await api.updateLocation(id, location);
       await fetchLocations(pagination.value.currentPage, pagination.value.pageSize);
     } catch (err: any) {
       error.value = err.message || "Failed to update location";
