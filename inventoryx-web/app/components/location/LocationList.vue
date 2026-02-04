@@ -21,6 +21,20 @@ const handleSearch = useDebounceFn(() => {
 const getStatusBadgeClass = (status: LocationStatus) => {
   return status === LocationStatus.ACTIVE ? "badge--success" : "badge--danger";
 };
+
+import { useListFilter } from "~/composables/useListFilter";
+
+const { filteredItems: filteredLocations } = useListFilter(
+  toRef(props, "locations"),
+  searchQuery,
+  (location, query) => {
+    return (
+      location.name.toLowerCase().includes(query) ||
+      location.type.toLowerCase().includes(query) ||
+      (location.address?.toLowerCase().includes(query) ?? false)
+    );
+  }
+);
 </script>
 
 <template>
@@ -68,14 +82,14 @@ const getStatusBadgeClass = (status: LocationStatus) => {
           </tr>
           
           <!-- Empty State -->
-          <tr v-else-if="locations.length === 0">
+          <tr v-else-if="filteredLocations.length === 0">
             <td colspan="5" class="empty-state">
               {{ t("common.noData") }}
             </td>
           </tr>
 
           <!-- Data Rows -->
-          <tr v-else v-for="location in locations" :key="location.id">
+          <tr v-else v-for="location in filteredLocations" :key="location.id">
             <td class="font-medium text-mono">{{ location.name }}</td>
             <td>
               <span class="badge badge--gray">{{ location.type }}</span>

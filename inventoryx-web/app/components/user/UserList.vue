@@ -25,6 +25,21 @@ const formatDate = (dateArr: string | number[]) => {
   }
   return new Date(dateArr as string).toLocaleString();
 };
+
+import { useListFilter } from "~/composables/useListFilter";
+
+const { filteredItems: filteredUsers } = useListFilter(
+  toRef(props, "users"),
+  computed(() => props.search || ""),
+  (user, query) => {
+    return (
+      user.username.toLowerCase().includes(query) ||
+      user.firstName.toLowerCase().includes(query) ||
+      user.lastName.toLowerCase().includes(query) ||
+      user.email.toLowerCase().includes(query)
+    );
+  }
+);
 </script>
 
 <template>
@@ -55,7 +70,7 @@ const formatDate = (dateArr: string | number[]) => {
 
     <!-- Table -->
     <div class="table-wrapper">
-      <div v-if="loading && !users.length" class="loading-state">
+      <div v-if="loading && !filteredUsers.length" class="loading-state">
         {{ t("common.loading") }}
       </div>
 
@@ -72,7 +87,7 @@ const formatDate = (dateArr: string | number[]) => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in users" :key="user.id">
+          <tr v-for="user in filteredUsers" :key="user.id">
             <td>{{ user.username }}</td>
             <td>{{ user.firstName }} {{ user.lastName }}</td>
             <td>{{ user.email }}</td>
@@ -119,7 +134,7 @@ const formatDate = (dateArr: string | number[]) => {
               </button>
             </td>
           </tr>
-          <tr v-if="users.length === 0">
+          <tr v-if="filteredUsers.length === 0">
             <td colspan="7" class="empty-state">{{ t("messages.noData") }}</td>
           </tr>
         </tbody>

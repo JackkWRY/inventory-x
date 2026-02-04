@@ -25,6 +25,19 @@ const formatCurrency = (amount: number, currency: string) => {
     currency: currency,
   }).format(amount);
 };
+import { useListFilter } from "~/composables/useListFilter";
+
+const { filteredItems: filteredProducts } = useListFilter(
+  toRef(props, "products"),
+  computed(() => props.search || ""),
+  (product, query) => {
+    return (
+      product.sku.toLowerCase().includes(query) ||
+      product.name.toLowerCase().includes(query) ||
+      (product.category?.toLowerCase().includes(query) ?? false)
+    );
+  }
+);
 </script>
 
 <template>
@@ -58,7 +71,7 @@ const formatCurrency = (amount: number, currency: string) => {
     </div>
 
     <!-- Product Table -->
-    <table v-if="!loading && products.length > 0" class="data-table">
+    <table v-if="!loading && filteredProducts.length > 0" class="data-table">
       <thead>
         <tr>
           <th>{{ t("products.productCode") }}</th>
@@ -70,7 +83,7 @@ const formatCurrency = (amount: number, currency: string) => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="product in products" :key="product.id">
+        <tr v-for="product in filteredProducts" :key="product.id">
           <td>
              <span class="text-mono">{{ product.sku }}</span>
           </td>
@@ -103,7 +116,7 @@ const formatCurrency = (amount: number, currency: string) => {
     </div>
 
     <!-- Empty State -->
-    <div v-if="!loading && products.length === 0" class="empty-state">
+    <div v-if="!loading && filteredProducts.length === 0" class="empty-state">
       <p>{{ t("messages.noData") }}</p>
     </div>
   </div>

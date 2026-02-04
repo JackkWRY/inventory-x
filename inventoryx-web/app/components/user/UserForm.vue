@@ -6,6 +6,7 @@
  * Uses global form and button classes for consistent styling.
  */
 import type { User, CreateUserRequest, UpdateUserRequest } from "~/types/user";
+import { useUserValidation } from "~/composables/useUserValidation";
 
 // Props
 interface Props {
@@ -47,16 +48,7 @@ const roleOptions = computed(() => [
 ]);
 
 // Validation
-const isValid = computed(() => {
-  const basic =
-    form.username.length >= 3 &&
-    form.email.includes("@") &&
-    form.firstName.length > 0 &&
-    form.lastName.length > 0;
-
-  if (isEditMode.value) return basic;
-  return basic && form.password.length >= 6;
-});
+const { isValid } = useUserValidation(form, isEditMode);
 
 // Watch for edit mode to populate form
 watch(

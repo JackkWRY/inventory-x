@@ -49,18 +49,25 @@ const selectedIds = ref<Set<string>>(new Set());
 // Configuration
 const LOW_STOCK_THRESHOLD = 10;
 
-// Computed filtered stocks
-const filteredStocks = computed(() => {
-  return props.stocks.filter((stock) => {
-    const query = searchQuery.value.toLowerCase().trim();
+import { useListFilter } from "~/composables/useListFilter";
+
+// Search Logic using Composable
+const { filteredItems: searchResults } = useListFilter(
+  toRef(props, "stocks"),
+  searchQuery,
+  (stock, query) => {
     const locationName = props.locationMap?.[stock.locationId] || "";
-    
-    const matchesSearch =
-      !query ||
+    return (
       stock.sku.toLowerCase().includes(query) ||
       stock.locationId.toLowerCase().includes(query) ||
-      locationName.toLowerCase().includes(query);
+      locationName.toLowerCase().includes(query)
+    );
+  }
+);
 
+// Computed filtered stocks (Status Filter)
+const filteredStocks = computed(() => {
+  return searchResults.value.filter((stock) => {
     const qty = parseFloat(stock.availableQuantity || "0");
     let matchesStatus = true;
     if (stockStatus.value === "low") {
@@ -71,7 +78,7 @@ const filteredStocks = computed(() => {
       matchesStatus = qty <= 0;
     }
 
-    return matchesSearch && matchesStatus;
+    return matchesStatus;
   });
 });
 
