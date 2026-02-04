@@ -8,6 +8,8 @@
 import { useDateFormat } from "@vueuse/core";
 import { type StockMovement } from "~/types/inventory";
 import BaseModal from "~/components/common/BaseModal.vue";
+import { useInventoryApi } from "~/composables/api/useInventoryApi";
+import { formatQuantity } from "~/utils/format";
 
 const props = defineProps<{
   open: boolean;
@@ -18,12 +20,13 @@ const props = defineProps<{
 const emit = defineEmits(["close"]);
 
 const { t } = useI18n();
-const config = useRuntimeConfig();
-const authStore = useAuthStore();
+// const config = useRuntimeConfig(); // No longer needed
+// const authStore = useAuthStore(); // No longer needed
 
 const movements = ref<StockMovement[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
+const inventoryApi = useInventoryApi();
 
 // Fetch movements when modal opens
 watch(
@@ -39,17 +42,8 @@ const fetchMovements = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await $fetch<StockMovement[]>(
-      `/stocks/${props.stockId}/movements`,
-      {
-        baseURL: config.public.apiBaseUrl,
-        headers: {
-          Authorization: `Bearer ${authStore.token}`,
-        },
-      },
-    );
-    movements.value = response;
-  } catch (err: any) {
+    movements.value = await inventoryApi.getStockMovements(props.stockId);
+  } catch (err: unknown) {
     error.value = t("error.loadFailed");
     console.error("Failed to fetch movements", err);
   } finally {
@@ -78,16 +72,8 @@ const getMovementTypeClass = (type: string) => {
   }
 };
 
-const formatQuantity = (qty: string | number) => {
-  const value = typeof qty === "string" ? parseFloat(qty) : qty;
-  return new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-};
-
-const isNegative = (qty: string) => parseFloat(qty) < 0;
-const isPositive = (qty: string) => parseFloat(qty) > 0;
+const isNegative = (qty: string | number) => parseFloat(String(qty)) < 0;
+const isPositive = (qty: string | number) => parseFloat(String(qty)) > 0;
 
 const dialogTitle = computed(() => t("inventory.movementHistory"));
 </script>

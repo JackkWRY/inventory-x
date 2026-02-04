@@ -14,7 +14,7 @@ export const useUserStore = defineStore("users", () => {
             const response = await getUsers(page, size, search);
             users.value = response.data.content;
             totalRecords.value = response.data.totalElements;
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("Failed to fetch users", error);
         } finally {
             loading.value = false;
@@ -25,7 +25,7 @@ export const useUserStore = defineStore("users", () => {
         try {
             await apiCreateUser(data);
             return true;
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("Failed to create user", error);
             throw error;
         }
@@ -35,7 +35,7 @@ export const useUserStore = defineStore("users", () => {
         try {
             await apiUpdateUser(id, data);
             return true;
-        } catch (error) {
+        } catch (error: unknown) {
             console.error("Failed to update user", error);
             throw error;
         }
@@ -50,7 +50,7 @@ export const useUserStore = defineStore("users", () => {
                 user.isActive = !user.isActive;
             }
             return true;
-        } catch (error) {
+        } catch (error: unknown) {
             return false;
         }
     }

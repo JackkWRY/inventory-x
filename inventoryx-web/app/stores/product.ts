@@ -21,8 +21,8 @@ export const useProductStore = defineStore('product', () => {
             const response = await api.getProducts({ page, size, search, sort: 'createdAt,desc' });
             products.value = response.content;
             totalRecords.value = response.totalElements;
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to fetch products';
+        } catch (err: unknown) {
+            error.value = (err as any).response?.data?.message || 'Failed to fetch products';
         } finally {
             loading.value = false;
         }
@@ -35,8 +35,8 @@ export const useProductStore = defineStore('product', () => {
             const api = useProductApi();
             await api.createProduct(payload);
             await fetchProducts(); // Refresh list
-        } catch (err: any) {
-             const message = err.response?.data?.message || 'Failed to create product';
+        } catch (err: unknown) {
+             const message = (err as any).response?.data?.message || 'Failed to create product';
              error.value = message;
              throw new Error(message);
         } finally {
@@ -51,8 +51,8 @@ export const useProductStore = defineStore('product', () => {
             const api = useProductApi();
             await api.updateProduct(id, payload);
             await fetchProducts(); // Refresh list
-        } catch (err: any) {
-             const message = err.response?.data?.message || 'Failed to update product';
+        } catch (err: unknown) {
+             const message = (err as any).response?.data?.message || 'Failed to update product';
              error.value = message;
             throw new Error(message);
         } finally {
@@ -67,8 +67,8 @@ export const useProductStore = defineStore('product', () => {
             const product = await api.getProductById(id);
             selectedProduct.value = product;
             return product;
-        } catch (err: any) {
-             error.value = err.response?.data?.message || 'Failed to get product';
+        } catch (err: unknown) {
+             error.value = (err as any).response?.data?.message || 'Failed to get product';
         } finally {
             loading.value = false;
         }

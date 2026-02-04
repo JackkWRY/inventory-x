@@ -39,8 +39,8 @@ export const useLocationStore = defineStore("location", () => {
         isFirst: response.first,
         isLast: response.last,
       };
-    } catch (err: any) {
-      error.value = err.message || "Failed to fetch locations";
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : "Failed to fetch locations";
     } finally {
       loading.value = false;
     }
@@ -51,7 +51,7 @@ export const useLocationStore = defineStore("location", () => {
     try {
       const api = useLocationApi();
       activeLocations.value = await api.getActiveLocations();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to fetch active locations", err);
     } finally {
       loading.value = false;
@@ -65,8 +65,8 @@ export const useLocationStore = defineStore("location", () => {
       const api = useLocationApi();
       await api.createLocation(location);
       await fetchLocations(pagination.value.currentPage, pagination.value.pageSize);
-    } catch (err: any) {
-      error.value = err.message || "Failed to create location";
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : "Failed to create location";
       throw err;
     } finally {
       loading.value = false;
@@ -80,8 +80,8 @@ export const useLocationStore = defineStore("location", () => {
       const api = useLocationApi();
       await api.updateLocation(id, location);
       await fetchLocations(pagination.value.currentPage, pagination.value.pageSize);
-    } catch (err: any) {
-      error.value = err.message || "Failed to update location";
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : "Failed to update location";
       throw err;
     } finally {
       loading.value = false;
