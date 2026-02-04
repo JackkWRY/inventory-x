@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import type { Product, CreateProductCommand, UpdateProductCommand, ProductPageResponse } from '~/types/product';
+import { useProductApi } from '~/composables/api/useProductApi';
 
 export const useProductStore = defineStore('product', () => {
     // State
@@ -9,18 +10,17 @@ export const useProductStore = defineStore('product', () => {
     const error = ref<string | null>(null);
     const totalRecords = ref(0);
 
+    const { t } = useI18n();
+
     // Actions
     async function fetchProducts(page = 0, size = 10, search = '') {
         loading.value = true;
         error.value = null;
-        const { $api } = useNuxtApp();
         try {
-            const params: any = { page, size, sort: 'createdAt,desc' };
-            if (search) params.search = search;
-            
-            const response = await $api.get<ProductPageResponse>('/products', { params });
-            products.value = response.data.content;
-            totalRecords.value = response.data.totalElements;
+            const api = useProductApi();
+            const response = await api.getProducts({ page, size, search, sort: 'createdAt,desc' });
+            products.value = response.content;
+            totalRecords.value = response.totalElements;
         } catch (err: any) {
             error.value = err.response?.data?.message || 'Failed to fetch products';
         } finally {
@@ -31,9 +31,9 @@ export const useProductStore = defineStore('product', () => {
     async function createProduct(payload: CreateProductCommand) {
         loading.value = true;
         error.value = null;
-        const { $api } = useNuxtApp();
         try {
-            await $api.post<Product>('/products', payload);
+            const api = useProductApi();
+            await api.createProduct(payload);
             await fetchProducts(); // Refresh list
         } catch (err: any) {
              const message = err.response?.data?.message || 'Failed to create product';
@@ -47,9 +47,9 @@ export const useProductStore = defineStore('product', () => {
     async function updateProduct(id: string, payload: UpdateProductCommand) {
         loading.value = true;
         error.value = null;
-        const { $api } = useNuxtApp();
         try {
-            await $api.put<Product>(`/products/${id}`, payload);
+            const api = useProductApi();
+            await api.updateProduct(id, payload);
             await fetchProducts(); // Refresh list
         } catch (err: any) {
              const message = err.response?.data?.message || 'Failed to update product';
@@ -62,11 +62,11 @@ export const useProductStore = defineStore('product', () => {
 
     async function getProduct(id: string) {
         loading.value = true;
-        const { $api } = useNuxtApp();
         try {
-            const response = await $api.get<Product>(`/products/${id}`);
-            selectedProduct.value = response.data;
-            return response.data;
+            const api = useProductApi();
+            const product = await api.getProductById(id);
+            selectedProduct.value = product;
+            return product;
         } catch (err: any) {
              error.value = err.response?.data?.message || 'Failed to get product';
         } finally {
@@ -75,16 +75,14 @@ export const useProductStore = defineStore('product', () => {
     }
 
     async function searchProducts(query: string): Promise<Product[]> {
-        const { $api } = useNuxtApp();
         try {
-            const response = await $api.get<ProductPageResponse>('/products', { 
-                params: { 
-                    search: query, 
-                    size: 20, 
-                    sort: 'name,asc' 
-                } 
+            const api = useProductApi();
+            const response = await api.getProducts({ 
+                search: query, 
+                size: 20, 
+                sort: 'name,asc' 
             });
-            return response.data.content;
+            return response.content;
         } catch (err) {
             console.error("Failed to search products", err);
             return [];

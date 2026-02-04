@@ -10,24 +10,13 @@
         </div>
 
         <nav class="navbar-menu" v-if="authStore.isAuthenticated">
-          <NuxtLink to="/dashboard" class="nav-link">
-            {{ t("navigation.dashboard") }}
-          </NuxtLink>
-          <NuxtLink to="/products" class="nav-link">
-            {{ t("navigation.products") }}
-          </NuxtLink>
-          <NuxtLink to="/inventory" class="nav-link">
-            {{ t("navigation.inventory") }}
-          </NuxtLink>
-          <NuxtLink to="/locations" class="nav-link">
-            {{ t("navigation.warehouses") }}
-          </NuxtLink>
-          <NuxtLink
-            to="/users"
+          <NuxtLink 
+            v-for="item in filteredNavigation"
+            :key="item.to"
+            :to="item.to" 
             class="nav-link"
-            v-if="authStore.hasRole('ADMIN')"
           >
-            {{ t("navigation.users") }}
+            {{ t(item.label) }}
           </NuxtLink>
 
           <div class="navbar-divider"></div>
@@ -57,9 +46,23 @@
 
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/auth";
+import { navigationItems } from "~/config/navigation";
 
 const { t } = useI18n();
 const authStore = useAuthStore();
+
+// Filter navigation items based on user roles
+const filteredNavigation = computed(() => {
+  if (!authStore.isAuthenticated) return [];
+  
+  return navigationItems.filter(item => {
+    // If no roles defined, accessible by all authenticated users
+    if (!item.roles || item.roles.length === 0) return true;
+    
+    // Check if user has at least one of the required roles
+    return item.roles.some(role => authStore.hasRole(role));
+  });
+});
 </script>
 
 <style scoped>
