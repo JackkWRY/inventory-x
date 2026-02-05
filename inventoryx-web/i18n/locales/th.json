@@ -153,6 +153,7 @@
     "productCode": "รหัสสินค้า",
     "category": "หมวดหมู่",
     "price": "ราคา",
+    "pricePlaceholder": "0.00",
     "cost": "ต้นทุน",
     "description": "คำอธิบาย",
     "status": "สถานะ",
@@ -243,7 +244,12 @@
         "STAFF": "พนักงาน",
         "USER": "ผู้ใช้ทั่วไป"
     },
-    "searchPlaceholder": "ค้นหาด้วย ชื่อผู้ใช้, อีเมล, หรือชื่อ..."
+    "searchPlaceholder": "ค้นหาด้วย ชื่อผู้ใช้, อีเมล, หรือชื่อ...",
+    "usernamePlaceholder": "ระบุชื่อผู้ใช้งาน",
+    "firstNamePlaceholder": "เช่น สมชาย",
+    "lastNamePlaceholder": "เช่น ใจดี",
+    "emailPlaceholder": "example{'@'}email.com",
+    "passwordPlaceholder": "ระบุรหัสผ่าน (ขั้นต่ำ 6 ตัวอักษร)"
   },
   "validation": {
     "required": "กรุณากรอกข้อมูลในช่องนี้",
@@ -321,6 +327,8 @@
     "create": "สร้างสถานที่",
     "edit": "แก้ไขสถานที่",
     "namePlaceholder": "เช่น คลัง A, ร้าน B...",
+    "addressPlaceholder": "ระบุที่อยู่ครบถ้วน",
+    "descriptionPlaceholder": "คำอธิบายเพิ่มเติม (ไม่บังคับ)",
     "searchPlaceholder": "ค้นหาสถานที่..."
   },
   "bulk": {

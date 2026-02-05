@@ -94,12 +94,22 @@ const handleSubmit = () => {
 
         <div class="form-group">
           <label class="form-label">{{ t("locations.address") }}</label>
-          <textarea v-model="form.address" class="form-input" rows="2"></textarea>
+          <textarea 
+            v-model="form.address" 
+            class="form-input" 
+            rows="2"
+            :placeholder="t('locations.addressPlaceholder')"
+          ></textarea>
         </div>
 
         <div class="form-group">
           <label class="form-label">{{ t("locations.description") }}</label>
-          <textarea v-model="form.description" class="form-input" rows="2"></textarea>
+          <textarea 
+            v-model="form.description" 
+            class="form-input" 
+            rows="2"
+            :placeholder="t('locations.descriptionPlaceholder')"
+          ></textarea>
         </div>
 
         <div v-if="location" class="form-group">

@@ -109,6 +109,7 @@ const handleSubmit = () => {
           :disabled="loading || isEditMode"
           required
           minlength="3"
+          :placeholder="t('users.usernamePlaceholder')"
         />
       </div>
       <div class="form-group">
@@ -122,6 +123,7 @@ const handleSubmit = () => {
           :disabled="loading"
           required
           minlength="6"
+          :placeholder="t('users.passwordPlaceholder')"
         />
       </div>
     </div>
@@ -141,6 +143,7 @@ const handleSubmit = () => {
           class="form-input"
           :disabled="loading"
           required
+          :placeholder="t('users.firstNamePlaceholder')"
         />
       </div>
       <div class="form-group">
@@ -152,6 +155,7 @@ const handleSubmit = () => {
           class="form-input"
           :disabled="loading"
           required
+          :placeholder="t('users.lastNamePlaceholder')"
         />
       </div>
     </div>
@@ -166,6 +170,7 @@ const handleSubmit = () => {
         class="form-input"
         :disabled="loading"
         required
+        :placeholder="t('users.emailPlaceholder')"
       />
     </div>
 

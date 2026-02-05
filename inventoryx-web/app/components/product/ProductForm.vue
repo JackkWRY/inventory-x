@@ -170,6 +170,7 @@ const handleCancel = () => {
               step="0.01"
               class="form-input"
               :class="{ 'is-invalid': errors.price }"
+              :placeholder="t('products.pricePlaceholder')"
             />
             <span v-if="errors.price" class="form-error">{{ errors.price }}</span>
           </div>

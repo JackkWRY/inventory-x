@@ -154,6 +154,7 @@
     "productCode": "Product Code",
     "category": "Category",
     "price": "Price",
+    "pricePlaceholder": "0.00",
     "cost": "Cost",
     "description": "Description",
     "status": "Status",
@@ -244,7 +245,12 @@
       "STAFF": "Staff",
       "USER": "User"
     },
-    "searchPlaceholder": "Search by username, email, or name..."
+    "searchPlaceholder": "Search by username, email, or name...",
+    "usernamePlaceholder": "Enter username",
+    "firstNamePlaceholder": "e.g. John",
+    "lastNamePlaceholder": "e.g. Doe",
+    "emailPlaceholder": "example{'@'}email.com",
+    "passwordPlaceholder": "Enter password (min 6 chars)"
   },
   "validation": {
     "required": "This field is required",
@@ -322,6 +328,8 @@
     "create": "Create Location",
     "edit": "Edit Location",
     "namePlaceholder": "e.g., Warehouse A, Store B...",
+    "addressPlaceholder": "Enter full address",
+    "descriptionPlaceholder": "Optional description for this location",
     "searchPlaceholder": "Search locations..."
   },
   "bulk": {
