@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
 import type { DashboardData } from "~/types/dashboard";
-import { useAuthStore } from "./auth";
+import { useDashboardApi } from "~/composables/api/useDashboardApi";
 
 export const useDashboardStore = defineStore("dashboard", () => {
-  const config = useRuntimeConfig();
-  const authStore = useAuthStore();
+  // const config = useRuntimeConfig(); // No longer needed
+  // const authStore = useAuthStore(); // No longer needed
 
   const data = ref<DashboardData | null>(null);
   const loading = ref(false);
@@ -14,16 +14,13 @@ export const useDashboardStore = defineStore("dashboard", () => {
     loading.value = true;
     error.value = null;
     try {
-      const response = await $fetch<DashboardData>("/dashboard", {
-        baseURL: config.public.apiBaseUrl,
-        headers: {
-          Authorization: `Bearer ${authStore.token}`,
-        },
-      });
-      data.value = response;
-    } catch (err: any) {
+      const api = useDashboardApi();
+      data.value = await api.getDashboardData();
+    } catch (err: unknown) {
       console.error("Failed to fetch dashboard data:", err);
-      error.value = err.message || "Failed to load dashboard data";
+      // Safer error handling
+      const message = (err as any).response?.data?.message || (err instanceof Error ? err.message : "Failed to load dashboard data");
+      error.value = message;
     } finally {
       loading.value = false;
     }
